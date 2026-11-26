@@ -76,6 +76,15 @@ The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q
 
 On tile 1446, where only 1.8\% of the area is flooded, every method fails in the same way: baseline A reaches IoU 0.052 with a relative area error of $+18.2$, and LightGBM still predicts 4.65 times the reference area (RAE$_t=+3.65$), because a few dark fields form most of the prediction. On the medium tiles 1074 ($\rho=7.4\%$) and 1265 ($\rho=30.5\%$) LightGBM has IoU 0.707 and 0.734 and area errors of $+27\%$ and $+15\%$; the false alarms sit along field edges and the misses inside vegetated patches. On the almost fully flooded tile 1655 ($\rho=97.3\%$) LightGBM reaches IoU 0.959 and M6 0.980 with an area error of $+0.4\%$. Relative area error is therefore driven by small reference areas, not by poor pixel classification, which is why the per-tile error has to be read together with the total.
 
+Every held-out tile is also exported as a mask, and Fig.~\ref{fig:q1_pred_set} shows five of them that do not appear in Fig.~\ref{fig:q1_visual_cmp}, spanning a reference share from 2\% to 94\%. At the almost dry tile 1720 baseline A labels half of the tile as water, while LightGBM stays at 5.2\%; at the flooded tiles both follow the water outline.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q1_pred_examples.pdf}
+  \caption{Exported tile masks: baseline A (top) and LightGBM M0 (bottom), new water in blue}
+  \label{fig:q1_pred_set}
+\end{figure}
+
 That observation becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig:q1_area_agreement}, which compares estimated and reference tile areas for all 1000 tiles.
 
 \begin{figure}[H]

@@ -54,9 +54,11 @@ The left side is non-increasing in $\tau_A$ and the right side is a constant, so
 
 \textbf{Tile intervals.} The MC spread of the tile area, $\sigma_t=\mathrm{std}_\ell\big(\sum_{p\in t}a_p\mathbb 1[\hat p^{(\ell)}_p\ge\tau_A]\big)$, is stabilized as $\sigma'_t=\sigma_t+c$ with $c$ the larger of the calibration median of $\sigma_t$ and 0.005\,km$^2$. Split-conformal prediction~\cite{lei2018conformal} then gives a distribution-free tile interval:
 \begin{equation}
-s_t=\frac{|A_t-\hat A_t|}{\sigma'_t},\qquad
-\hat q=s_{(\lceil(n+1)(1-\alpha)\rceil)},\qquad
-\mathcal I_t=\Big[\max(0,\hat A_t-\hat q\sigma'_t),\ \min(A^{tile}_t,\hat A_t+\hat q\sigma'_t)\Big],
+\begin{split}
+s_t&=\frac{|A_t-\hat A_t|}{\sigma'_t},\qquad
+\hat q=s_{(\lceil(n+1)(1-\alpha)\rceil)},\\
+\mathcal I_t&=\Big[\max(0,\ \hat A_t-\hat q\sigma'_t),\ \min(A^{tile}_t,\ \hat A_t+\hat q\sigma'_t)\Big],
+\end{split}
 \label{eq:conformal}
 \end{equation}
 with $\alpha=0.1$, scores $s_t$ from the $n\approx200$ calibration tiles of the fold, and $A^{tile}_t$ the tile area. The signed standardized residuals $r_t=(A_t-\hat A_t)/\sigma'_t$ of all calibration folds form the residual pool $\mathcal R$ used for the grade uncertainty below.
@@ -153,10 +155,11 @@ How stable are these thresholds? We refit \eqref{eq:gmm_bayes} on 1000 block-boo
 
 A grade computed from an estimated area inherits its error. For unit $j$ we draw $m=1,\dots,M$ with $M=2000$ a residual $r^{(m)}$ from the pool $\mathcal R$ and a threshold vector $\theta^{(m)}$ from the bootstrap set:
 \begin{equation}
-\small
-A_j^{(m)}=\mathrm{clip}\big(\hat A_j+r^{(m)}\sigma'_j,\ 0,\ A_{reg,j}\big),\qquad
-\pi_{jg}=\frac1M\sum_{m=1}^M\mathbb 1\Big[G\big(A^{(m)}_j/A_{reg,j};\theta^{(m)}\big)=g\Big],\qquad
+\begin{split}
+A_j^{(m)}&=\mathrm{clip}\big(\hat A_j+r^{(m)}\sigma'_j,\ 0,\ A_{reg,j}\big),\\
+\pi_{jg}&=\frac1M\sum_{m=1}^M\mathbb 1\Big[G\big(A^{(m)}_j/A_{reg,j};\theta^{(m)}\big)=g\Big],\qquad
 \sum_g\pi_{jg}=1,
+\end{split}
 \label{eq:grade_mc}
 \end{equation}
 where $G(\rho;\theta)$ is the grade of \eqref{eq:area_thr}. The vector $\pi_j$ replaces a single grade by a distribution that includes both the area error and the threshold uncertainty. Fig.~\ref{fig:q2_grading} shows the mixture fit and the resulting grade confusion.

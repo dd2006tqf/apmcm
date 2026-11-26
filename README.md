@@ -21,7 +21,7 @@ output/               全部结果（复现的核心证据，勿删）
   q2_models/M4_fold*.pt               五折模型权重（44 MB）
   q3_prob_*.tif, q3_w0.tif            概率图与前置水体栅格
   q4_units_*.geojson, q5_roads_cut_*.geojson  单元与断道网络
-figures/              14 张数据图 + 2 张矢量插图 + 1 张 TikZ 图的 .pdf 与生成脚本
+figures/              15 张数据图与示意图 + 2 张矢量插图 + 1 张 TikZ 图的 .pdf 与生成脚本
 RESULTS.md            五问结果速查（论文数字的原始出处）
 CROSS_PROBLEM_LEDGER.json  跨问一致性台账（面积口径、分母、等级阈值）
 ```
@@ -69,7 +69,7 @@ xelatex main.tex && bibtex main && xelatex main.tex && xelatex main.tex
 | 表 8（7.4 节） | `output/q4_results.json` | 393 单元 / 259 受灾、马岭镇 S=0.6432、CR 0.0079 |
 | 表 9、表 10 | `output/q5_results.json` | f1 0.5699、6 开仓点、VoI 0.0387 / 5.5405、57/164 单元不可达 |
 
-图件由 `figures/gen_fig_*.py` 直接读取 `output/*.json` 重绘，编号与论文章节一一对应（图 1 技术路线 … 图 17 帕累托前沿）。
+图件由 `figures/gen_fig_*.py` 直接读取 `output/*.json` 重绘，编号与论文章节一一对应（图 1 场景示意，图 2 技术路线 … 图 18 帕累托前沿）。
 
 ## 6. 已知偏差（论文正文已说明）
 

@@ -6,6 +6,15 @@
 \usepackage[section]{placeins}
 \usepackage[hidelinks]{hyperref}
 \usepackage{etoolbox}
+% 允许最后一行少量拉伸，消除正文右侧 3--10 pt 的溢出
+\setlength{\emergencystretch}{6em}
+% 类文件默认在节号中插入 \thinspace，标题会显示成“4 . 1”，此处收紧为标准点号
+\renewcommand\thesubsection{\arabic{section}.\arabic{subsection}}
+\renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}
+% 引用改为小号上标（原来方括号与正文同字号，显得过大）
+\makeatletter
+\def\@cite#1#2{\textsuperscript{\scriptsize[#1\if@tempswa , #2\fi]}}
+\makeatother
 % 摘要页即第 1 页：去掉 \abstract 自带的 \newpage，让标题与摘要同页
 \makeatletter
 \patchcmd{\abstract}{\newpage}{}{}{}

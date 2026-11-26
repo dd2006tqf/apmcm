@@ -6,6 +6,15 @@ A river flood changes the land surface within hours. Emergency managers then hav
 
 Problem~1 asks for preprocessing and a recognizer of flood-inundated area on the official Attachment~1 (1000 triplets of pre-flood optical tile, post-flood GF-3 SAR tile and label), evaluated on independent samples with pixel accuracy, the error of newly inundated area, the relative area error and spatial overlap, plus an analysis of false positives (FP) and false negatives (FN) by land cover and of the factors behind area error. Problem~2 asks for a fused, more accurate model whose primary goal is a small area error, and for a four-level intensity grading (general, relatively strong, strong, extremely strong) with explicit area or proportion thresholds and an analysis of how area errors move the grades. Problem~3 transfers the model to the flood around 6 July 2026 in Hengzhou City, Guangxi, and asks for pre-existing water, newly inundated area, net increase, proportion and a map. Problem~4 asks for a regional assessment on self-chosen units with newly inundated area, proportion and intensity as core indicators and with the exposure of people and critical facilities. Problem~5 asks for one rescue optimization fed directly by the image and assessment results, and for a letter to the local emergency authority.
 
+Fig.~\ref{fig:scenario} fixes the scene behind these five questions. A permanent channel runs along the valley floor, a road follows the terrace above it, and the settlements stand on ground that is normally dry. During the event the floor is covered by new water, the road is cut where it dips into the flood, and a terrace settlement can be reached only by boat.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_scenario.pdf}
+  \caption{The flood scene shared by the five problems. (a) Before the event the permanent channel $W_0$ carries the water, the valley road is passable and the settlements stand on dry terraces. (b) During the event the valley floor is flooded (new inundation $F$), the road is cut where it crosses the water, and a terrace settlement becomes an island that only a boat can reach.}
+  \label{fig:scenario}
+\end{figure}
+
 \subsection{One Definition Shared by All Five Problems}
 
 The five problems form one chain, so the quantity that travels along it has to be defined once. We use

@@ -14,7 +14,7 @@ The problem names newly inundated area, proportion and intensity as core indicat
 \caption{Indicators of the regional assessment}
 \label{tab:q4_ind}
 \small
-\begin{tabular}{p{0.13\textwidth}p{0.29\textwidth}p{0.36\textwidth}p{0.11\textwidth}}
+\begin{tabular}{p{0.13\textwidth}p{0.28\textwidth}p{0.35\textwidth}p{0.11\textwidth}}
 \toprule
 Criterion & Indicator & Definition & Weight \\
 \midrule
@@ -35,7 +35,7 @@ Terrain enters through the REM guard inside $F$. Built-up land is taken from Wor
 
 \subsection{Combined Weights and the TOPSIS Index}
 
-Indicators are min--max normalized over the affected units, $r_{jk}=(X_{jk}-\min_jX_{jk})/(\max_jX_{jk}-\min_jX_{jk})$. Inside each criterion two objective weightings are combined. Entropy weights $w^e_k\propto1-e_k$ with $e_k=-\frac{1}{\ln n}\sum_j\tilde r_{jk}\ln\tilde r_{jk}$ and $\tilde r_{jk}=r_{jk}/\sum_jr_{jk}$ reward indicators that discriminate between units; CRITIC weights~\cite{diakoulaki1995critic} $w^c_k\propto s_k\sum_l(1-\mathrm{corr}_{kl})$ reward indicators that vary and are not redundant. The game-theoretic combination chooses the mix closest to both:
+Indicators are min--max normalized over the affected units, $r_{jk}=(X_{jk}-\min_jX_{jk})/(\max_jX_{jk}-\min_jX_{jk})$. Inside each criterion two objective weightings are combined. Entropy weights $w^e_k\propto1-e_k$ with $e_k=-\frac{1}{\ln n}\sum_j\tilde r_{jk}\ln\tilde r_{jk}$ and $\tilde r_{jk}=r_{jk}/\sum_jr_{jk}$ reward discrimination between units; CRITIC weights~\cite{diakoulaki1995critic} $w^c_k\propto s_k\sum_l(1-\mathrm{corr}_{kl})$ reward variation that is not redundant. The game-theoretic combination chooses the mix closest to both:
 \begin{equation}
 \begin{bmatrix}w^e\!\cdot\!w^e & w^e\!\cdot\!w^c\\ w^c\!\cdot\!w^e & w^c\!\cdot\!w^c\end{bmatrix}
 \begin{bmatrix}\alpha_1\\ \alpha_2\end{bmatrix}=

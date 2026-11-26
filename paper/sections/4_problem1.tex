@@ -5,9 +5,11 @@
 
 The problem asks for evaluation ``using independent samples''. Neighbouring tiles share the same flood and the same fields, so a random split of tiles, let alone of pixels, would put near-copies of a test tile into training. The 1000 tiles lie on a regular grid of $199\times42$ tile positions. We group them into 67 blocks of $5\times5$ positions (Assumption~1) and assign the blocks to five folds by a greedy stratified rule that balances tile count and flood area. For outer fold $k=0,\dots,4$,
 \begin{equation}
-\mathcal T^{test}_k=\mathcal F_k,\qquad
-\mathcal T^{cal}_k=\mathcal F_{(k+1)\bmod 5},\qquad
-\mathcal T^{train}_k=\Big\{t\notin\mathcal F_k\cup\mathcal F_{k+1}:\ \min_{s\in\mathcal F_k\cup\mathcal F_{k+1}}\lVert g_t-g_s\rVert_\infty>1\Big\},
+\begin{split}
+\mathcal T^{test}_k&=\mathcal F_k,\\
+\mathcal T^{cal}_k&=\mathcal F_{(k+1)\bmod 5},\\
+\mathcal T^{train}_k&=\Big\{t\notin\mathcal F_k\cup\mathcal F_{k+1}:\ \min_{s\in\mathcal F_k\cup\mathcal F_{k+1}}\lVert g_t-g_s\rVert_\infty>1\Big\},
+\end{split}
 \label{eq:folds}
 \end{equation}
 where $\mathcal F_k$ is the set of tiles in fold $k$ and $g_t$ the grid position of tile $t$. The calibration fold is used for every choice that would otherwise peek at the test data (threshold, early stopping, isotonic map, conformal quantile), and the Chebyshev buffer of one tile removes the training tiles that touch a test or calibration tile. The resulting test folds hold 194, 200, 202, 202 and 202 tiles with flood shares 0.184--0.202, and 170--196 buffer tiles are dropped from each training set. Every tile is tested exactly once, so all metrics below are pooled over the 1000 held-out tiles. This design follows the recommendation of blocked cross-validation for spatially structured data~\cite{roberts2017crossvalidation}.
@@ -32,11 +34,12 @@ chosen on the calibration fold. The trees use 63 leaves, learning rate 0.05 and 
 
 Pixel metrics (overall accuracy OA, precision, recall, F1, IoU and Cohen's $\kappa$) come from the pooled confusion matrix. The area metrics follow the problem's emphasis and use the tile error $e_t=\hat A_t-A_t$ with $A_t=\sum_{p\in t}a_py_p$:
 \begin{equation}
-\small
-\Delta A=\sum_te_t,\qquad
-\mathrm{RAE}=\frac{\sum_t\hat A_t-\sum_tA_t}{\sum_tA_t},\qquad
-\mathrm{MAE}_A=\frac1T\sum_t|e_t|,\qquad
+\begin{split}
+\Delta A&=\sum_te_t,\qquad
+\mathrm{RAE}=\frac{\sum_t\hat A_t-\sum_tA_t}{\sum_tA_t},\\
+\mathrm{MAE}_A&=\frac1T\sum_t|e_t|,\qquad
 \mathrm{RAE}_t=\frac{e_t}{A_t}\ \ (A_t\ge0.05\ \mathrm{km}^2).
+\end{split}
 \label{eq:area_metrics}
 \end{equation}
 RAE measures bias of the total, while MAE$_A$ measures how wrong a single tile is; the two differ because tile errors of opposite sign cancel in $\Delta A$ (identity \eqref{eq:fpfn_identity}). The floor of 0.05\,km$^2$ (about 1\% of a tile) avoids dividing by near-zero reference areas. Agreement is also shown by the Bland--Altman bias $\bar e$ and limits $\bar e\pm1.96s_e$~\cite{bland1986agreement}.
@@ -60,7 +63,7 @@ B: LightGBM (M0) & 0.900 & 0.717 & 0.783 & 0.749 & 0.598 & 0.686 & $+0.092$ & 0.
 \end{tabular}}
 \end{table}
 
-The 1000 reference tiles contain 933.41\,km$^2$ of new inundation. LightGBM estimates 1019.12\,km$^2$, an excess of $\Delta A=+85.71$\,km$^2$ (RAE $+9.2\%$), and its fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ with IoU 0.546--0.622, so the pooled value hides a fold spread that a single random split would never show. Baseline A finds 74\% of the flooded pixels but also labels 2245.66\,km$^2$ as new water, 2.4 times the reference. The reason is visible in its own diagnostic: the Ashman test of \eqref{eq:ashman} passes on 92\% of the sub-blocks, also on tiles without water, because dark fields and bright villages form a bimodal histogram too. We report this as a finding about the baseline and did not tune it on the test labels.
+The 1000 reference tiles contain 933.41\,km$^2$ of new inundation. LightGBM returns 1019.12\,km$^2$, 9.2\% above the reference (an excess of 85.71\,km$^2$). Its fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ (IoU 0.546--0.622), so the pooled value hides a spread that a single random split would never show. Baseline A finds 74\% of the flooded pixels but also labels 2245.66\,km$^2$ as new water, 2.4 times the reference. The reason is visible in its own diagnostic: the Ashman test of \eqref{eq:ashman} passes on 92\% of the sub-blocks, also on tiles without water, because dark fields and bright villages form a bimodal histogram too. We report this as a finding about the baseline and did not tune it on the test labels.
 
 The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q1_visual_cmp} therefore shows four held-out tiles of increasing flood share, each predicted by the model of the fold in which it was a test tile; columns 4--6 are confusion maps (true positives, FP, FN) of baseline A, LightGBM and the final Problem~2 model M6.
 

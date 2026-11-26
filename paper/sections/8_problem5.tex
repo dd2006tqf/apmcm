@@ -105,9 +105,10 @@ The front in panel (a) runs from the recommended plan $(f_1,f_2)=(0.570,13.05\ \
 
 The information update is measured as follows. The plan computed from the 4 July inputs opens Xiaoyi, Yunbiao, Liujing, Zhenlong, Hengzhou Town and the Gaocun school, and reaches $f_1=0.477$ under its own inputs. If its depots are kept but the shipments are re-optimized with the 16 July cut network and demand, the result is $f_1=0.609$, $f_2=12.43$\,min and 6775 people served. The value of information is
 \begin{equation}
-\small
-\mathrm{VoI}_1=f_1^{04\to16}-f_1^{*,16}=0.609-0.570=0.039,\qquad
-\mathrm{VoI}_2=f_2^{04\to16}-f_2^{16}\big|_{f_1\le0.609}=12.43-6.89=5.54\ \mathrm{min},
+\begin{split}
+\mathrm{VoI}_1&=f_1^{04\to16}-f_1^{*,16}=0.609-0.570=0.039,\\
+\mathrm{VoI}_2&=f_2^{04\to16}-f_2^{16}\big|_{f_1\le0.609}=12.43-6.89=5.54\ \mathrm{min},
+\end{split}
 \label{eq:voi}
 \end{equation}
 i.e. using the 16 July image to re-plan depots lowers the weighted unmet share by 3.9 points, or, at equal coverage, delivers 5.54\,min faster. Between the two dates the open-depot sets share only half of their members (Jaccard 0.50), the total demand changes by $-3.57$\,t, and 677 admissible pairs are lost while 625 are gained, because the flood moved.

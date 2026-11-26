@@ -46,7 +46,10 @@ A transferred model sees a new sensor, a new polarization (VV instead of HH) and
 \end{equation}
 where $\mathcal D$ is the drainage raster (OSM waterways and water polygons plus WorldCover water) and $z^{DEM}$ the Copernicus 30\,m elevation. New water must darken against the pre-flood pass by a margin $\delta$, as in change-detection chains~\cite{twele2016sentinel1}, and patches smaller than a minimum mapping unit of 50 pixels (0.5\,ha, about 12 independent looks at 20\,m resolution) are speckle. The newly inundated set on date $d$ is
 \begin{equation}
-F_d=\mathrm{MMU}_{50}\Big(\{\bar p\ge\tau_A\}\cap\overline{W_0}\cap\{\mathrm{REM}\le h^*\}\cap\{VV_d-VV_{0627}\le-\delta\}\Big),\qquad h^*=15\ \mathrm{m},\ \delta=3\ \mathrm{dB},
+\begin{split}
+F_d=\mathrm{MMU}_{50}\Big(&\{\bar p\ge\tau_A\}\cap\overline{W_0}\cap\{\mathrm{REM}\le h^*\}\\
+&\cap\{VV_d-VV_{0627}\le-\delta\}\Big),\qquad h^*=15\ \mathrm{m},\quad \delta=3\ \mathrm{dB},
+\end{split}
 \label{eq:F_hz}
 \end{equation}
 receded and flood-time water are

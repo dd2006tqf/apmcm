@@ -12,7 +12,7 @@
 \caption{Public data used for Hengzhou}
 \label{tab:hz_data}
 \small
-\begin{tabular}{p{0.27\textwidth}p{0.2\textwidth}p{0.15\textwidth}p{0.28\textwidth}}
+\begin{tabular}{p{0.27\textwidth}p{0.2\textwidth}p{0.15\textwidth}p{0.265\textwidth}}
 \toprule
 Layer & Date & Resolution & Use \\
 \midrule
@@ -69,9 +69,11 @@ Panel (a) of Fig.~\ref{fig:q1_set_logic} explains why the net increase can be ne
 
 \textbf{Pixel area.} The ground area of a geographic pixel with centre latitude $\varphi_p$ and angular sizes $\Delta\lambda,\Delta\varphi$ follows from the WGS-84 meridian and prime-vertical radii, with $a=6378137$\,m and $e^2=0.00669438$:
 \begin{equation}
-M(\varphi)=\frac{a(1-e^2)}{(1-e^2\sin^2\varphi)^{3/2}},\qquad
-N(\varphi)=\frac{a}{(1-e^2\sin^2\varphi)^{1/2}},\qquad
-a_p=M(\varphi_p)\Delta\varphi\cdot N(\varphi_p)\cos\varphi_p\Delta\lambda .
+\begin{split}
+M(\varphi)&=\frac{a(1-e^2)}{(1-e^2\sin^2\varphi)^{3/2}},\qquad
+N(\varphi)=\frac{a}{(1-e^2\sin^2\varphi)^{1/2}},\\
+a_p&=M(\varphi_p)\,\Delta\varphi\cdot N(\varphi_p)\cos\varphi_p\,\Delta\lambda .
+\end{split}
 \label{eq:pixel_area}
 \end{equation}
 On the official tiles $a_p$ ranges from 74.78 to 75.41\,m$^2$ and the mean tile area is 4.913\,km$^2$. On the Hengzhou UTM grid $a_p=100/k_p^2$\,m$^2$ with the UTM point scale factor $k_p$. Every area in this paper is $\sum a_p$ over a mask.
@@ -85,7 +87,12 @@ z_p=\mathrm{clip}\!\left(\frac{I_p-Q_2}{Q_{98}-Q_2+\epsilon},0,1\right),\qquad \
 \end{equation}
 and then filtered by the Lee filter~\cite{lee1980local} on a $5\times5$ window $\Omega_p$:
 \begin{equation}
-\tilde z_p=\bar z_p+k_p(z_p-\bar z_p),\qquad k_p=\max\!\left(0,1-\frac{C_u^2}{C_{z,p}^2}\right),\qquad C_{z,p}^2=\frac{\mathrm{Var}_{\Omega_p}(z)}{\bar z_p^2+\epsilon},\qquad C_u=\frac{1}{\sqrt L}.
+\begin{split}
+\tilde z_p&=\bar z_p+k_p\,(z_p-\bar z_p),\qquad
+k_p=\max\!\left(0,\ 1-\frac{C_u^2}{C_{z,p}^2}\right),\\
+C_{z,p}^2&=\frac{\mathrm{Var}_{\Omega_p}(z)}{\bar z_p^2+\epsilon},\qquad
+C_u=\frac{1}{\sqrt L}.
+\end{split}
 \label{eq:lee}
 \end{equation}
 The equivalent number of looks $L$ is estimated per tile as the median of $\bar z^2/\mathrm{Var}(z)$ over the 10\% most homogeneous $7\times7$ windows; its median over the official tiles is 31.0. The filter smooths homogeneous areas ($k_p\to0$) and keeps edges ($k_p\to1$), which matters for narrow flooded channels. Because \eqref{eq:rank_norm} uses only the tile itself, no information crosses the validation folds.

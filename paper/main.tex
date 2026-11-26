@@ -5,6 +5,11 @@
 \usepackage{float}
 \usepackage[section]{placeins}
 \usepackage[hidelinks]{hyperref}
+\usepackage{etoolbox}
+% 摘要页即第 1 页：去掉 \abstract 自带的 \newpage，让标题与摘要同页
+\makeatletter
+\patchcmd{\abstract}{\newpage}{}{}{}
+\makeatother
 
 % === TikZ ===
 \usepackage{tikz}
@@ -22,22 +27,18 @@
 
 \begin{document}
 
-% === Title page (the signed control sheet is submitted separately) ===
-\begin{titlepage}
-\centering
-\vspace*{2.6cm}
-\parbox{0.84\textwidth}{\centering\LARGE\bfseries
-Area-Calibrated SAR--Optical Fusion for Newly Inundated Area Mapping,\\[3pt]
+% === Official template layout: abstract is page 1, title sits above the team table ===
+\pagestyle{mainmatterstyle}
+\thispagestyle{mainmatterstyle}
+
+\begin{center}
+\parbox{0.92\textwidth}{\centering\large\bfseries
+Area-Calibrated SAR--Optical Fusion for Newly Inundated Area Mapping,\\[2pt]
 Probabilistic Intensity Grading and Flood-Cut Relief Allocation in Hengzhou\par}
-\vspace{2.2cm}
-{\large 2026 APMCM\quad Problem A\par}
-\vspace{0.6cm}
-{\large Team Number: apmcm26300025\par}
-\vfill
-\end{titlepage}
+\end{center}
 
 \begin{abstract}
-
+\zihao{5}
 Flood relief needs to know where new water stands, whom it reaches and which roads it cuts. This paper analyzes the newly inundated set $F=W_1\setminus W_0$ from pre-flood optical and post-flood SAR imagery, jointly considers area error, intensity, exposure and road isolation, and builds a five-stage chain from recognition to relief allocation in Hengzhou.
 
 For Problem 1, a test on all 65.5 million valid pixels first shows that the official labels mark new inundation (only 2.37\% of flooded labels were water before). After per-tile rank normalization and Lee filtering, a \textbf{LightGBM} classifier evaluated by spatially blocked five-fold validation reaches IoU 0.598 and a total area error of \textbf{+9.2\%} (split-Otsu baseline: +141\%). Tree cover causes most false alarms, wetland most misses.

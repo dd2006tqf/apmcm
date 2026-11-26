@@ -10,7 +10,7 @@ paper/                论文 LaTeX 源码与成品
   sections/           1_introduction … 10_evaluation, Z_ai_disclosure
   appendix/A_code.tex 代码结构与关键片段
   references.bib      17 条参考文献
-  main.pdf            论文成品（46 页）
+  main.pdf            论文成品（45 页）
   AI工具使用详情.pdf   按赛事第 7 条要求单独提交的 AI 使用说明（2 页）
   ai_usage_detail.tex 该说明的源码
   apmcmthesis.cls/.cfg 官方模板
@@ -56,7 +56,7 @@ cd paper
 xelatex main.tex && bibtex main && xelatex main.tex && xelatex main.tex
 ```
 
-环境：TeX Live / MiKTeX（XeLaTeX + ctex + 模板自带 `apmcmthesis.cls`）。结果为 46 页、0 错误、0 未定义引用。单独说明：`xelatex ai_usage_detail.tex` 两遍，产物即 `AI工具使用详情.pdf`。
+环境：TeX Live / MiKTeX（XeLaTeX + ctex + 模板自带 `apmcmthesis.cls`）。结果为 45 页、0 错误、0 未定义引用。单独说明：`xelatex ai_usage_detail.tex` 两遍，产物即 `AI工具使用详情.pdf`。
 
 ## 5. 论文数字与结果文件的对应
 

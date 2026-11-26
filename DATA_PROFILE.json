@@ -1,0 +1,131 @@
+{
+  "_meta": {
+    "n_files": 0,
+    "unprofiled": [
+      "a题数据汇总/公开数据/Boundary/Hengzhou_boundary.geojson",
+      "a题数据汇总/公开数据/Boundary/Hengzhou_boundary.shp",
+      "a题数据汇总/公开数据/OSM/amenities.geojson",
+      "a题数据汇总/公开数据/OSM/buildings_multipolygon.geojson",
+      "a题数据汇总/公开数据/OSM/buildings_ways.geojson",
+      "a题数据汇总/公开数据/OSM/places.geojson",
+      "a题数据汇总/公开数据/OSM/roads.geojson",
+      "a题数据汇总/公开数据/OSM/water_areas_multipolygon.geojson",
+      "a题数据汇总/公开数据/OSM/water_areas_ways.geojson",
+      "a题数据汇总/公开数据/OSM/water_hydrography_all.geojson",
+      "a题数据汇总/公开数据/OSM/water_surface_merged.geojson",
+      "a题数据汇总/公开数据/OSM/waterways_lines.geojson",
+      "a题数据汇总/公开数据/Sentinel1/coverage_gap.geojson"
+    ],
+    "n_unprofiled": 13,
+    "n_images": 3021
+  },
+  "files": {},
+  "images": {
+    "n_images": 3021,
+    "dirs": {
+      "a题数据汇总/Problem A Dataset 1/Dataset/label information": {
+        "n_images": 1000,
+        "exts": {
+          ".tif": 1000
+        }
+      },
+      "a题数据汇总/Problem A Dataset 1/Dataset/post-disaster SAR images": {
+        "n_images": 1000,
+        "exts": {
+          ".tif": 1000
+        }
+      },
+      "a题数据汇总/Problem A Dataset 2/Dataset/pre-disaster optical images": {
+        "n_images": 1000,
+        "exts": {
+          ".tif": 1000
+        }
+      },
+      "a题数据汇总/公开数据/Sentinel1": {
+        "n_images": 5,
+        "exts": {
+          ".png": 2,
+          ".tif": 3
+        }
+      },
+      "a题数据汇总/公开数据/DEM": {
+        "n_images": 3,
+        "exts": {
+          ".tif": 3
+        }
+      },
+      "a题数据汇总/公开数据/LandCover": {
+        "n_images": 3,
+        "exts": {
+          ".tif": 3
+        }
+      },
+      "a题数据汇总/公开数据/Browser_images": {
+        "n_images": 2,
+        "exts": {
+          ".tiff": 2
+        }
+      },
+      "a题数据汇总/公开数据/Browser_images (1)": {
+        "n_images": 2,
+        "exts": {
+          ".tiff": 2
+        }
+      },
+      "a题数据汇总/公开数据/Browser_images (2)": {
+        "n_images": 2,
+        "exts": {
+          ".tiff": 2
+        }
+      },
+      "a题数据汇总/公开数据/WorldPop": {
+        "n_images": 2,
+        "exts": {
+          ".tif": 2
+        }
+      },
+      "a题数据汇总/公开数据/DEM_clip": {
+        "n_images": 1,
+        "exts": {
+          ".tif": 1
+        }
+      },
+      "a题数据汇总/公开数据/Sentinel2": {
+        "n_images": 1,
+        "exts": {
+          ".tif": 1
+        }
+      }
+    },
+    "n_dirs": 12,
+    "class_layouts": {
+      "a题数据汇总/Problem A Dataset 1/Dataset": {
+        "label information": 1000,
+        "post-disaster SAR images": 1000
+      },
+      "a题数据汇总/公开数据": {
+        "Browser_images": 2,
+        "Browser_images (1)": 2,
+        "Browser_images (2)": 2,
+        "DEM": 3,
+        "DEM_clip": 1,
+        "LandCover": 3,
+        "Sentinel1": 5,
+        "Sentinel2": 1,
+        "WorldPop": 2
+      }
+    },
+    "sample_sizes": {
+      "256x256": 40
+    },
+    "sample_modes": {
+      "L": 40
+    },
+    "sample_unreadable": 0,
+    "annotations": {
+      "yolo_txt": 0,
+      "voc_xml": 0,
+      "coco_json": []
+    }
+  }
+}

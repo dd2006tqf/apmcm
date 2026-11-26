@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<style>
+:root{--tx:#000;--edge:#000;--line:#000;--ac:hsl(206,42%,36%);--acbg:hsl(206,40%,95%)}
+html,body{margin:0;padding:0;width:fit-content;height:fit-content;background:transparent}
+.fig,.fig *{font-family:"Times New Roman","SimSun","Songti SC","Microsoft YaHei",serif;
+  -webkit-font-smoothing:antialiased;box-sizing:border-box;font-style:normal !important}
+.fig{width:fit-content;padding:10px 12px;background:transparent;color:var(--tx)}
+.g{display:grid;grid-template-columns:24px 205px 104px 205px;align-items:stretch}
+.bar{grid-column:1;border-right:1px solid var(--edge);margin-right:8px;
+  display:flex;align-items:center;justify-content:center}
+.bar span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:12px;letter-spacing:.06em;white-space:nowrap}
+.n{background:#fff;border:1px solid var(--edge);border-radius:0;padding:6px 10px;
+  text-align:center;line-height:1.3;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.n .t{font-size:13.5px;font-weight:600}
+.n .d{font-size:12px;letter-spacing:.02em}
+.q{display:inline-block;border:1px solid var(--edge);font-size:12px;padding:0 4px;margin-right:5px;font-weight:600;line-height:1.25}
+.n.focus{background:var(--acbg);border:1px solid var(--ac);border-left:3px solid var(--ac)}
+.c2{grid-column:2}.c3{grid-column:3}.c4{grid-column:4}.span{grid-column:2 / 5}
+.va{display:grid;grid-template-columns:1fr 9px 1fr;height:22px}
+.va .s{grid-column:2;display:flex;flex-direction:column;align-items:center}
+.va .ln{flex:1;width:0;border-left:1.2px dashed var(--line)}
+.va .tp{width:0;height:0;border-top:6px solid var(--line);border-left:4px solid transparent;border-right:4px solid transparent}
+.va .lb{grid-column:3;font-size:12px;color:var(--ac);padding-left:6px;align-self:center;white-space:nowrap}
+.va.tall{height:26px}
+.ha{display:flex;flex-direction:column;justify-content:center;align-items:stretch;padding:0 4px}
+.ha .lb{font-size:12px;color:var(--ac);text-align:center;margin-bottom:2px;white-space:nowrap}
+.ha .row{display:flex;align-items:center}
+.ha .ln{flex:1;height:0;border-top:1.2px dashed var(--line)}
+.ha .tp{width:0;height:0;border-left:6px solid var(--line);border-top:4px solid transparent;border-bottom:4px solid transparent}
+</style></head>
+<body>
+<div class="fig" data-mh-palette="plain" data-mh-quality="roadmap-v2">
+<div class="g">
+  <div class="bar" style="grid-row:1 / 3"><span>Inputs</span></div>
+  <div class="n c2" style="grid-row:1" data-mh-node="true" data-mh-role="input" data-mh-col="1" data-mh-row="1">
+    <span class="t">Official tiles</span><span class="d">S2 optical · GF-3 SAR · labels</span></div>
+  <div class="n c4" style="grid-row:1" data-mh-node="true" data-mh-role="input" data-mh-col="2" data-mh-row="1">
+    <span class="t">Hengzhou layers</span><span class="d">S1 · S2 · DEM · OSM · WorldPop</span></div>
+  <div class="va c2" style="grid-row:2" data-mh-col="1"><div class="s"><div class="ln"></div><div class="tp"></div></div></div>
+  <div class="va c4" style="grid-row:2" data-mh-col="2"><div class="s"><div class="ln"></div><div class="tp"></div></div></div>
+
+  <div class="bar" style="grid-row:3 / 5"><span>Shared</span></div>
+  <div class="n focus span" style="grid-row:3" data-mh-node="true" data-mh-focus="true">
+    <span class="t">New inundation \(F=W_1\setminus W_0\)</span><span class="d">latitude pixel area · blocked spatial CV</span></div>
+  <div class="va c2" style="grid-row:4" data-mh-col="1"><div class="s"><div class="ln"></div><div class="tp"></div></div></div>
+  <div class="va c4" style="grid-row:4" data-mh-col="2"><div class="s"><div class="ln"></div><div class="tp"></div></div></div>
+
+  <div class="bar" style="grid-row:5 / 7"><span>Official</span></div>
+  <div class="n c2" style="grid-row:5" data-mh-node="true" data-mh-col="1" data-mh-row="5">
+    <span class="t"><span class="q">Q1</span>Baseline recognizer</span><span class="d">LightGBM · RAE · FP/FN by land cover</span></div>
+  <div class="ha c3" style="grid-row:5"><div class="lb">error hotspots</div><div class="row"><div class="ln"></div><div class="tp"></div></div></div>
+  <div class="n c4" style="grid-row:5" data-mh-node="true" data-mh-col="2" data-mh-row="5">
+    <span class="t"><span class="q">Q2</span>Gated fusion U-Net</span><span class="d">area loss · \(\tau_A\) threshold · GMM grades</span></div>
+  <div class="va tall c4" style="grid-row:6" data-mh-col="2"><div class="s"><div class="ln"></div><div class="tp"></div></div><div class="lb">model, \(\tau_A\), \(\theta_g\)</div></div>
+
+  <div class="bar" style="grid-row:7 / 12"><span>Hengzhou</span></div>
+  <div class="n span" style="grid-row:7" data-mh-node="true">
+    <span class="t"><span class="q">Q3</span>Hengzhou transfer</span><span class="d">S1 registration · REM / ΔVV guards · \(A_{new},\ A_{net},\ \rho\)</span></div>
+  <div class="va tall c2" style="grid-row:8" data-mh-col="1"><div class="s"><div class="ln"></div><div class="tp"></div></div><div class="lb">\(F\) raster</div></div>
+  <div class="va tall c4" style="grid-row:8" data-mh-col="2"><div class="s"><div class="ln"></div><div class="tp"></div></div><div class="lb">cut roads</div></div>
+  <div class="n c2" style="grid-row:9" data-mh-node="true" data-mh-col="1" data-mh-row="9">
+    <span class="t"><span class="q">Q4</span>Unit assessment</span><span class="d">place units · combined weights · TOPSIS</span></div>
+  <div class="ha c3" style="grid-row:9"><div class="lb">demand, priority</div><div class="row"><div class="ln"></div><div class="tp"></div></div></div>
+  <div class="n c4" style="grid-row:9" data-mh-node="true" data-mh-col="2" data-mh-row="9">
+    <span class="t"><span class="q">Q5</span>Relief allocation</span><span class="d">cut road graph · depot MILP · ε-front</span></div>
+  <div class="va c2" style="grid-row:10" data-mh-col="1"><div class="s"><div class="ln"></div><div class="tp"></div></div></div>
+  <div class="va c4" style="grid-row:10" data-mh-col="2"><div class="s"><div class="ln"></div><div class="tp"></div></div></div>
+  <div class="n span" style="grid-row:11" data-mh-node="true" data-mh-role="output">
+    <span class="t">Grade maps · unit ranking · supply plan and letter</span></div>
+</div>
+</div>
+</body></html>

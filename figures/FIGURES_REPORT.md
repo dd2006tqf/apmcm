@@ -1,0 +1,27 @@
+# Figure step report (nature-figure)
+
+All 14 planned data figures and the TikZ diagram are generated as vector PDFs in `figures/`; LaTeX includes with English captions are in `figures/latex_includes.tex` (15 figures). The HTML diagrams `fig_roadmap` and `fig_arch_fusion` belong to the next step.
+
+| Figure | Script | Data source (read only) |
+|---|---|---|
+| tikz_q1_set_logic | tikz_q1_set_logic.tex (pdflatex) | definitions only |
+| fig_q1_label_semantics | gen_fig_q1_label_semantics.py | all 1000 tiles from `_tmp/cache/q1` (feats, y, valid); pixel count asserted = 65,491,966 |
+| fig_q1_visual_cmp | gen_fig_q1_visual_cmp.py | official SAR/optical tiles, `output/q1_pred` (A, B), cached M6 masks |
+| fig_q1_area_agreement | gen_fig_q1_area_agreement.py | problem_1_results.json (A_ref_t, A_hat_t); bias asserted |
+| fig_q1_error_drivers | gen_fig_q1_error_drivers.py | fpfn_worldcover (M0), fpfn_M6, drivers.abs SHAP |
+| fig_q2_model_compare | gen_fig_q2_model_compare.py | problem_2_results.json table + hard_set |
+| fig_q2_ablation | gen_fig_q2_ablation.py | table M0–M6 |
+| fig_q2_grading | gen_fig_q2_grading.py | GMM components, theta, bootstrap CI, jenks, grade_mc confusion |
+| fig_q3_newflood_map | gen_fig_q3_newflood_map.py | q3_newflood_0716 / q3_w0 / q3_receded_0716 rasters, boundary, cut roads; A_new asserted |
+| fig_q3_area_budget | gen_fig_q3_area_budget.py | dates.*.guard_stages_km2 and balance terms |
+| fig_q3_threshold_surface | gen_fig_q3_threshold_surface.py | sensitivity_grid (30) + sensitivity_oat |
+| fig_q4_risk_map | gen_fig_q4_risk_map.py | output/q4_units.geojson |
+| fig_q4_rank_robustness | gen_fig_q4_rank_robustness.py | q4_units.geojson rank intervals, robustness block |
+| fig_q5_route_alloc | gen_fig_q5_route_alloc.py | plan_0716, paths_0716, cut roads |
+| fig_q5_pareto | gen_fig_q5_pareto.py | pareto (15), knee, recourse plan, sensitivity (30) |
+
+Checks: `_utils/figure_check.sh` exit 0 (0 CRITICAL; 6 WARNINGs about colormaps used for scatter/heatmap encodings, intended). `_utils/figure_pdf_quality_check.py` OK; the remaining "complex background" items (contour labels in fig_q3_threshold_surface, the white "F" on red in the TikZ diagram) were checked visually and are readable.
+
+Notes for the paper step:
+- Place names in figures are manual pinyin transliterations (`figures/_figcommon.py::PINYIN`).
+- A new upstream issue was logged as item 10 in `UPSTREAM_ISSUES.md`: an artefact strip of ≈3.4 km² in W0 and in the receded area at the northern co-registration edge (row 623). F is unaffected; A_net is ≈3.4 km² too negative. It is visible in fig_q3_newflood_map and mentioned in its caption.

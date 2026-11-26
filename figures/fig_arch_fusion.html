@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<style>
+:root{--tx:#000;--edge:#000;--line:#000;--ac:hsl(206,42%,36%);--acbg:hsl(206,40%,95%)}
+html,body{margin:0;padding:0;width:fit-content;height:fit-content;background:transparent}
+.fig,.fig *{font-family:"Times New Roman","SimSun","Songti SC","Microsoft YaHei",serif;
+  -webkit-font-smoothing:antialiased;box-sizing:border-box;font-style:normal !important}
+.fig{width:fit-content;padding:10px 12px;background:transparent;color:var(--tx)}
+.g{display:grid;grid-template-columns:122px 18px 146px 18px 128px 18px 118px;align-items:stretch}
+.hd{font-size:12.5px;letter-spacing:.06em;text-align:center;border-bottom:1px solid var(--edge);padding-bottom:3px;margin-bottom:6px}
+.n{background:#fff;border:1px solid var(--edge);padding:5px 7px;text-align:center;line-height:1.28;
+  display:flex;flex-direction:column;justify-content:center;gap:1px}
+.n .t{font-size:13px;font-weight:600}
+.n .d{font-size:12.5px}
+.n.dash{border:1px dashed var(--edge)}
+.n.focus{background:var(--acbg);border:1px solid var(--ac);border-left:3px solid var(--ac)}
+.ha{display:flex;align-items:center;padding:0 2px}
+.ha .ln{flex:1;height:0;border-top:1.2px solid var(--line)}
+.ha .tp{width:0;height:0;border-left:6px solid var(--line);border-top:4px solid transparent;border-bottom:4px solid transparent}
+.ha.bk .ln{border-top-style:dashed}
+.ha.lft .tp{border-left:0;border-right:6px solid var(--line)}
+.vs{height:8px}
+.va{display:flex;flex-direction:column;align-items:center;height:20px}
+.va .ln{flex:1;width:0;border-left:1.2px solid var(--line)}
+.va .tp{width:0;height:0;border-top:6px solid var(--line);border-left:4px solid transparent;border-right:4px solid transparent}
+.va.up .tp{border-top:0;border-bottom:6px solid var(--line)}
+.lab{font-size:12px;color:var(--ac);text-align:center}
+</style></head>
+<body>
+<div class="fig" data-mh-palette="plain">
+<div class="g">
+  <div class="hd" style="grid-column:1;grid-row:1">Inputs</div>
+  <div class="hd" style="grid-column:3;grid-row:1">Encoders, 4 scales</div>
+  <div class="hd" style="grid-column:5;grid-row:1">Fusion at scale \(s\)</div>
+  <div class="hd" style="grid-column:7;grid-row:1">Decoder and output</div>
+
+  <div class="n" style="grid-column:1;grid-row:2" data-mh-col="1">
+    <span class="t">SAR, 3 channels</span><span class="d">\(z\), Lee filtered \(z\), local std</span></div>
+  <div class="ha" style="grid-column:2;grid-row:2"><div class="ln"></div><div class="tp"></div></div>
+  <div class="n" style="grid-column:3;grid-row:2" data-mh-col="3">
+    <span class="t">SAR encoder \(h_S^{(s)}\)</span><span class="d">widths 16 · 32 · 64 · 128</span></div>
+  <div class="ha" style="grid-column:4;grid-row:2"><div class="ln"></div><div class="tp"></div></div>
+  <div class="n" style="grid-column:1;grid-row:4" data-mh-col="1">
+    <span class="t">Optical, 7 channels</span><span class="d">B, G, R, N, NDWI, NDVI, \(m_p\)</span></div>
+  <div class="ha" style="grid-column:2;grid-row:4"><div class="ln"></div><div class="tp"></div></div>
+  <div class="n" style="grid-column:3;grid-row:4" data-mh-col="3">
+    <span class="t">Optical encoder \(h_O^{(s)}\)</span><span class="d">same widths, own weights</span></div>
+  <div class="ha" style="grid-column:4;grid-row:4"><div class="ln"></div><div class="tp"></div></div>
+  <div class="vs" style="grid-column:1;grid-row:3"></div>
+  <div class="n focus" style="grid-column:5;grid-row:2 / 5" data-mh-col="5">
+    <span class="t">Gated fusion</span>
+    <span class="d">\(g=\sigma(W_g*[h_S;h_O])\)</span>
+    <span class="d">\(h=g\odot h_S+(1-g)\odot h_O\)</span>
+    <span class="d">feeds each skip link</span></div>
+  <div class="ha" style="grid-column:6;grid-row:2 / 5"><div class="ln"></div><div class="tp"></div></div>
+  <div class="n" style="grid-column:7;grid-row:2 / 5" data-mh-col="7">
+    <span class="t">U-Net decoder</span>
+    <span class="d">bottleneck 256</span>
+    <span class="d">bilinear upsampling</span>
+    <span class="d">dropout 0.2</span></div>
+  <div class="va up" style="grid-column:1;grid-row:5" data-mh-col="1"><div class="tp"></div><div class="ln"></div></div>
+  <div class="va" style="grid-column:7;grid-row:5" data-mh-col="7"><div class="ln"></div><div class="tp"></div></div>
+  <div class="n dash" style="grid-column:1 / 4;grid-row:6">
+    <span class="t">Modality dropout</span><span class="d">optics zeroed with \(p=0.25\); missing pixels get \(m_p=0\)</span></div>
+  <div class="n" style="grid-column:7;grid-row:6" data-mh-col="7">
+    <span class="t">Probability \(\bar p_p\)</span><span class="d">MC dropout, \(T=10\)</span></div>
+  <div class="va" style="grid-column:7;grid-row:7" data-mh-col="7"><div class="ln"></div><div class="tp"></div></div>
+  <div class="n dash" style="grid-column:5 / 8;grid-row:8">
+    <span class="t">Training loss</span><span class="d">Focal + Dice + \(\lambda_A\,\cdot\) tile area consistency</span></div>
+</div>
+</div>
+</body></html>

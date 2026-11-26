@@ -1,0 +1,254 @@
+{
+ "problem_id": "2026APMCM-A",
+ "n_subproblems": 5,
+ "capabilities": [
+  {
+   "id": "P1-C1",
+   "subproblem": 1,
+   "name": "Image preprocessing",
+   "judge": "machine",
+   "criterion": "SAR per-tile normalization + speckle filter, zero/no-data masking, co-registration check, latitude-dependent pixel area; applied to all 1000 tiles",
+   "source_sentence": "S1,S3,S5",
+   "machine_check": "ingest",
+   "falsifiable_check": "Preprocessing log lists exactly 1000 processed tile IDs 1001-2000 and the area grid uses cos(lat); if fewer tiles or constant 100 m2 pixels, fail"
+  },
+  {
+   "id": "P1-C2",
+   "subproblem": 1,
+   "name": "New-inundation recognition model",
+   "judge": "machine",
+   "criterion": "Pixel-wise mask of new inundation produced for every tile by at least one physics baseline and one learned model",
+   "source_sentence": "S6",
+   "machine_check": "delivery",
+   "required_output": "output/q1_results.json"
+  },
+  {
+   "id": "P1-C3",
+   "subproblem": 1,
+   "name": "Independent spatial validation",
+   "judge": "machine",
+   "criterion": "Spatially blocked folds (clusters/longitude blocks); no tile shared between train and test",
+   "source_sentence": "S7",
+   "machine_check": "leakage",
+   "falsifiable_check": "Train/test tile ID sets disjoint in every fold and no test tile adjacent (<1.05 tile width) to a train tile in the same fold, or blocked by cluster; random pixel split => fail"
+  },
+  {
+   "id": "P1-C4",
+   "subproblem": 1,
+   "name": "Pixel and area metrics",
+   "judge": "machine",
+   "criterion": "OA, Precision, Recall, F1, IoU, kappa plus total new-area error, relative area error and tile MAE reported per fold and pooled",
+   "source_sentence": "S8",
+   "machine_check": "custom",
+   "falsifiable_check": "Results JSON contains finite IoU and RAE computed from saved masks on held-out tiles; metrics only on training tiles or missing area metrics => fail"
+  },
+  {
+   "id": "P1-C5",
+   "subproblem": 1,
+   "name": "FP/FN by land cover",
+   "judge": "semantic",
+   "criterion": "FP and FN area and their net effect on new-area estimate per land-cover stratum",
+   "source_sentence": "S9",
+   "falsifiable_check": "Table has >=3 land-cover strata, FP_area and FN_area per stratum summing to total FP/FN; single aggregate number only => fail"
+  },
+  {
+   "id": "P1-C6",
+   "subproblem": 1,
+   "name": "Key accuracy factors",
+   "judge": "semantic",
+   "criterion": "Ranked drivers of tile area error with quantitative attribution (SHAP or regression)",
+   "source_sentence": "S10",
+   "falsifiable_check": "Driver ranking computed from tile-level held-out errors with an importance metric; qualitative list only => fail"
+  },
+  {
+   "id": "P1-C7",
+   "subproblem": 1,
+   "name": "Label semantics verification",
+   "judge": "machine",
+   "criterion": "Contingency of label x pre-water x SAR-dark computed on all pixels to justify F definition",
+   "source_sentence": "S8",
+   "machine_check": "custom",
+   "falsifiable_check": "Statistic computed over all 1000 tiles (65.5M px); if computed on a sample or absent => fail"
+  },
+  {
+   "id": "P2-C1",
+   "subproblem": 2,
+   "name": "Multi-source fusion improved model",
+   "judge": "machine",
+   "criterion": "Fusion model (SAR+optical[+terrain/texture]) targeted at Q1 poor/uncertain cases evaluated on same folds as Q1",
+   "source_sentence": "S11",
+   "machine_check": "delivery",
+   "required_output": "output/q2_results.json"
+  },
+  {
+   "id": "P2-C2",
+   "subproblem": 2,
+   "name": "Area error reduction",
+   "judge": "semantic",
+   "criterion": "Total |RAE| and tile MAE of new area compared with Q1 baseline on identical folds, with ablation",
+   "source_sentence": "S12",
+   "falsifiable_check": "Q1 and Q2 metrics computed on identical held-out tile sets; comparison across different splits => fail"
+  },
+  {
+   "id": "P2-C3",
+   "subproblem": 2,
+   "name": "Intensity grading with explicit thresholds",
+   "judge": "machine",
+   "criterion": "Four levels general/relatively strong/strong/extremely strong with strictly increasing proportion thresholds (and area thresholds) derived from data",
+   "source_sentence": "S13,S14",
+   "machine_check": "constraint",
+   "falsifiable_check": "0<t1<t2<t3<1 saved in results and derived by a documented data procedure (GMM/Jenks/quantile); hard-coded round numbers without derivation => fail"
+  },
+  {
+   "id": "P2-C4",
+   "subproblem": 2,
+   "name": "Grade uncertainty analysis",
+   "judge": "semantic",
+   "criterion": "Grade-flip probabilities / grade confusion under area-error uncertainty",
+   "source_sentence": "S15",
+   "falsifiable_check": "Monte Carlo or analytic propagation of area error produces per-unit grade probabilities summing to 1; deterministic grade only => fail"
+  },
+  {
+   "id": "P2-C5",
+   "subproblem": 2,
+   "name": "Area confidence interval",
+   "judge": "machine",
+   "criterion": "Bias-corrected area with interval and empirical coverage on held-out tiles",
+   "source_sentence": "S12,S15",
+   "machine_check": "custom",
+   "falsifiable_check": "Empirical coverage of intervals on held-out tiles reported; interval without coverage check => fail",
+   "optional": true
+  },
+  {
+   "id": "P3-C1",
+   "subproblem": 3,
+   "name": "Transfer Q2 model to Hengzhou",
+   "judge": "semantic",
+   "criterion": "Q2 model applied to Sentinel-1 with documented normalization / domain adaptation",
+   "source_sentence": "S16",
+   "falsifiable_check": "Hengzhou masks produced by the saved Q2 model (same weights) after documented intensity mapping; replacing it by an unrelated threshold only => fail"
+  },
+  {
+   "id": "P3-C2",
+   "subproblem": 3,
+   "name": "Study area and imagery selection",
+   "judge": "semantic",
+   "criterion": "Study area and pre/during images with dates, coverage, processing stated",
+   "source_sentence": "S2,S17",
+   "falsifiable_check": "Results record AOI area and image dates (06-27 pre; 07-04/07-16 flood) with coverage; missing dates => fail"
+  },
+  {
+   "id": "P3-C3",
+   "subproblem": 3,
+   "name": "Pre-existing water and new inundation",
+   "judge": "machine",
+   "criterion": "W0 and F rasters with F intersect W0 empty",
+   "source_sentence": "S18",
+   "machine_check": "constraint",
+   "falsifiable_check": "Saved rasters satisfy not any(F & W0) and F subset of W1; else fail"
+  },
+  {
+   "id": "P3-C4",
+   "subproblem": 3,
+   "name": "New area, net increase, proportion",
+   "judge": "machine",
+   "criterion": "A_new, A_net, rho per date with A_net<=A_new and rho=A_new/A_reg",
+   "source_sentence": "S19",
+   "machine_check": "delivery",
+   "required_output": "output/q3_results.json"
+  },
+  {
+   "id": "P3-C5",
+   "subproblem": 3,
+   "name": "Spatial distribution map",
+   "judge": "machine",
+   "criterion": "Georeferenced new-inundation raster saved for mapping",
+   "source_sentence": "S20",
+   "machine_check": "delivery",
+   "required_output": "output/q3_newflood_0716.tif"
+  },
+  {
+   "id": "P4-C1",
+   "subproblem": 4,
+   "name": "Exposure data acquisition",
+   "judge": "semantic",
+   "criterion": "Population, built-up, roads, facilities proxies, terrain layers with source and year",
+   "source_sentence": "S21",
+   "falsifiable_check": "Each exposure layer listed with source/date and overlay computed with F; layers listed but not overlaid => fail"
+  },
+  {
+   "id": "P4-C2",
+   "subproblem": 4,
+   "name": "Assessment units",
+   "judge": "semantic",
+   "criterion": "Explicit unit definition covering the study area",
+   "source_sentence": "S22",
+   "falsifiable_check": "Units partition the AOI (area sum within 1% of AOI); otherwise fail"
+  },
+  {
+   "id": "P4-C3",
+   "subproblem": 4,
+   "name": "Comprehensive assessment model",
+   "judge": "machine",
+   "criterion": "Unit index with hazard core (A_new, rho, grade) plus exposure, weights >=0 summing to 1, ranking and robustness",
+   "source_sentence": "S23",
+   "machine_check": "delivery",
+   "required_output": "output/q4_results.json"
+  },
+  {
+   "id": "P5-C1",
+   "subproblem": 5,
+   "name": "Task choice and formulation",
+   "judge": "semantic",
+   "criterion": "Chosen task with decision time, objectives, demand method, resources, constraints stated",
+   "source_sentence": "S24,S25",
+   "falsifiable_check": "Model file defines decision time, objective(s), demand formula, resources and constraints explicitly; missing any => fail"
+  },
+  {
+   "id": "P5-C2",
+   "subproblem": 5,
+   "name": "Optimization solved",
+   "judge": "machine",
+   "criterion": "MILP solved with status optimal (or gap reported) and all constraints satisfied in audit",
+   "source_sentence": "S25",
+   "machine_check": "constraint",
+   "falsifiable_check": "Constraint audit recomputes flow conservation, capacity, K and reachability from saved solution; any violation => fail"
+  },
+  {
+   "id": "P5-C3",
+   "subproblem": 5,
+   "name": "Upstream results drive decisions",
+   "judge": "semantic",
+   "criterion": "Demand from Q4/Q3, road cuts and site exclusion from Q3 F",
+   "source_sentence": "S26",
+   "falsifiable_check": "Changing F (07-04 vs 07-16) changes the network/demand inputs and the solver is re-run; hard-coded demand independent of Q3/Q4 => fail"
+  },
+  {
+   "id": "P5-C4",
+   "subproblem": 5,
+   "name": "Recommendation letter",
+   "judge": "semantic",
+   "criterion": "Letter covering remote sensing monitoring, information updates, resource allocation, implementation conditions and scope",
+   "source_sentence": "S27,S28",
+   "falsifiable_check": "Letter contains all five elements tied to model results; generic advice without results => fail"
+  },
+  {
+   "id": "P0-C1",
+   "subproblem": 3,
+   "name": "Assumption register and sensitivity",
+   "judge": "semantic",
+   "criterion": "Assumed parameters distinguished from observed data with impact analysis",
+   "source_sentence": "S4",
+   "falsifiable_check": "Each assumed parameter has a sensitivity result; assumptions without impact analysis => fail"
+  },
+  {
+   "id": "P0-C2",
+   "subproblem": 5,
+   "name": "Overall model for the flood event",
+   "judge": "semantic",
+   "criterion": "Integrated chain Q1-Q5 delivered",
+   "source_sentence": "S1",
+   "falsifiable_check": "Q5 inputs trace to Q3/Q4 output files; otherwise fail"
+  }
+ ]
+}

@@ -1,0 +1,52 @@
+\section{Uncertainty Along the Chain and Model Evaluation}
+\label{sec:eval}
+
+\subsection{How Assumed Parameters Propagate}
+
+The problem requires that assumed parameters be separated from observations and that their impact be analysed. Table~\ref{tab:sens_chain} collects the assumed quantities, the range in which each was varied, and its effect on the answer that matters downstream.
+
+\begin{table}[H]
+\centering
+\caption{Assumed parameters and their effect along the chain}
+\label{tab:sens_chain}
+\small
+\begin{tabular}{p{0.24\textwidth}p{0.17\textwidth}p{0.5\textwidth}}
+\toprule
+Parameter (problem) & Range tested & Effect \\
+\midrule
+REM guard $h^*$ (Q3) & 5\,m to none & $A_{new}$ 17.04--40.31\,km$^2$; grade unchanged; Q4 Spearman 0.889 at 30\,m \\
+Threshold shift $\Delta\tau$ (Q3) & $-0.2$ to $+0.2$ & $A_{new}$ 1.57--79.52\,km$^2$ over the grid; grade unchanged \\
+Change margin $\delta$ (Q3) & 0--4.5\,dB & $A_{new}$ 32.40--23.59\,km$^2$ \\
+$W_0$ definition (Q3) & union / SAR only & $A_{new}$ 26.90 / 30.47\,km$^2$; Q4 Spearman 0.932 \\
+SAR scale (Q3) & dB / amplitude & 26.90 / 49.39\,km$^2$; dB chosen by KS distance 0.106 vs 0.241 \\
+Indicator weights (Q4) & Dirichlet, $M=2000$ & median Spearman 0.987, 5\% quantile 0.934 \\
+Depot limit $K$ (Q5) & 3--8 & $f_1^*$ 0.5728--0.5699; $f_2$ about 22 to 9.32\,min \\
+Capacity, fleet, $T_{max}\ge90$, $q$ (Q5) & $\times0.5$--$1.5$; 20--60; 90--240\,min; 2.5--15.6\,kg & $f_1^*$ changes by at most 0.0003 \\
+Road buffer (Q5) & 0 / 20 / 50\,m & $f_1^*$ 0.564 / 0.570 / 0.650 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The table separates two kinds of uncertainty. The area of new inundation in Hengzhou is uncertain by about a factor of two, almost entirely because of the terrain and probability thresholds, which cannot be calibrated without local labels. The decisions taken from it are much more stable: the city grade never leaves ``general'', the unit ranking keeps a Spearman correlation of at least 0.889 under every alternative input of 16 July, and the relief plan changes only when the flood extent on the roads changes. The largest single change in the ranking (Spearman 0.662) comes from using the 4 July instead of the 16 July image, i.e. from new information, not from a modelling choice.
+
+\subsection{Strengths}
+
+First, all accuracy statements rest on spatially blocked validation with a buffer, with every tuning step on a separate calibration fold, so the reported numbers are honest estimates for new areas; the leave-one-cluster-out test (IoU 0.508) quantifies the remaining transfer gap. Second, the model is optimized for the quantity a disaster report uses: the area-preserving threshold and isotonic calibration reduce the total area error to $+1.45\%$, against $+9.2\%$ for the pixel classifier and $+141\%$ for the physics rule, and the grade accuracy rises from 54.3\% to 86.2\%. Third, uncertainty is carried forward instead of dropped: conformal tile intervals with 87.8\% empirical coverage, grade probabilities $\pi_{jg}$, and a scenario grid for Hengzhou. Fourth, the chain is closed: the same raster $F$ defines the hazard of Problem~4 and the cut network of Problem~5, the Problem~4 population and index define demand and priority, and an exact solver with zero gap makes the optimization result reproducible.
+
+\subsection{Weaknesses}
+
+The Hengzhou estimate depends strongly on the physics guards, which remove 82.6\% of the transferred model mask, and on the REM threshold, because no labelled flood sample of the region exists and the optical scene could not be used; with a correctly georeferenced optical image the fused branch, which gave the largest in-domain gain, would also work there. The 27 June baseline was itself a wet-season state, so the net increase is negative and partly reflects seasonal drying; a co-registration edge further adds about 3.4\,km$^2$ of spurious pre-flood water and recession. The relief model uses town centres as facility proxies, 2020 population and an aggregate fleet budget instead of vehicle routes, so its plan is a scenario for the assumed resources; the dominant finding, that isolation and not supply limits relief, is however robust to all of them.
+
+\subsection{Innovations}
+
+\textbf{Label semantics tested before modelling.} The common approach takes the binary label as post-flood water and subtracts a pre-flood water mask. We tested what the labels encode on all 65.5\,M pixels and found that they mark new inundation; the recognizer therefore learns $F$ directly, and Problem~3 still enforces $F\cap W_0=\emptyset$ with an independent $W_0$. This removes a systematic over-count of permanent water and keeps the training target identical to the problem's definition.
+
+\textbf{Area as the calibration target.} Segmentation models are usually thresholded at 0.5 or at maximal F1. We calibrate probabilities isotonically and choose the threshold that makes the mask area equal to the calibrated expected area \eqref{eq:tauA}, with conformal intervals per tile. The total area error falls from $+4.1\%$ to $+1.45\%$ without changing the network, and maps and reported areas remain identical.
+
+\textbf{Grade thresholds as Bayes boundaries with probabilities.} Instead of fixed percentages, the four grades are separated where adjacent components of a Gaussian mixture of the logit flood share are equally likely \eqref{eq:gmm_bayes}, with bootstrap intervals, and the grade of each unit is a probability vector \eqref{eq:grade_mc}. This makes the grading reproducible from data and tells the user when a grade is unreliable.
+
+\textbf{The flood map enters the relief model twice, and new images are valued.} The same raster removes roads and depots and generates demand and priority, and the value of the second satellite pass is measured as the change of the optimal unmet share (3.9 points). This turns ``monitoring supports decisions'' into a number that an emergency manager can weigh against the cost of extra acquisitions.
+
+\subsection{Conclusions}
+
+We built one chain from images to relief. On the official data, a LightGBM pixel classifier reaches IoU 0.598 with a total area error of $+9.2\%$; a dual-branch gated SAR--optical U-Net with area calibration reaches IoU 0.732 and an area error of $+1.45\%$, and four intensity grades are separated at flood shares of 5.9\%, 53.0\% and 96.9\%. Transferred to Hengzhou with co-registered Sentinel-1 data and physical guards, the model finds 26.90\,km$^2$ of new inundation on 16 July (0.78\% of the city, grade ``general'') and a net change of $-52.53$\,km$^2$ caused by water receding after a wet baseline. On 393 settlement catchments the assessment ranks Shitang, Maling and Luancheng as the most affected zones, with a ranking that is stable under weight perturbation. The relief MILP opens six depots and serves 7316 of 13,948 people in need; the remaining need is cut off by water, not short of supplies, which defines where the authority should send boats rather than trucks.

@@ -1,0 +1,57 @@
+\section[Assumptions]{Assumptions and Notation}
+
+\subsection{Model Assumptions}
+
+The following simplifications are needed because the data do not fix them; each assumed parameter is varied in the sensitivity analyses of the problem where it is used.
+
+(1) Tiles of the official dataset inside one block of $5\times5$ tile positions (about $10.4\times11.9$\,km) are spatially dependent, while different blocks are exchangeable. Floods and land cover are autocorrelated over kilometres, so random tile or pixel splits would leak information; block-level independence is what makes held-out metrics and conformal intervals meaningful.
+
+(2) The GF-3 uint8 value is a monotone function of radar backscatter whose radiometric scale is unknown. No calibration metadata is supplied, so the models only see per-tile rank-normalized SAR, and for Sentinel-1 the scale (dB or amplitude) is chosen by distribution matching.
+
+(3) The Hengzhou flood around 6 July 2026 is represented by the Sentinel-1 passes of 4 July and 16 July, and the pass of 27 June is pre-flood. No pass exists on the reference date; both flood-time dates are reported and neither is called the peak.
+
+(4) Pre-flood water is the union of independent water sources (pre-flood SAR water, WorldCover water class, OSM water polygons). The union never counts a permanent water pixel as new, so it yields a conservative newly inundated area.
+
+(5) Population is static at the WorldPop 2020 level and uniform inside each 100\,m cell, and every town or city node hosts a township health centre that can act as relief depot and facility proxy. No 2026 population grid exists, and OSM lists only five public-service points in the city.
+
+(6) Relief need, depot capacities, fleet and time limits are scenario parameters: 3.5\,kg per person per day (survival water plus ration, Sphere minimum standards) over a 3-day horizon, 60\,t per town depot, 200\,t for the city depot, at most six open depots, 40 trucks of 5\,t and a one-way delivery limit of 120\,min.
+
+\subsection{Notation}
+
+The table collects the symbols that are used across several chapters; symbols needed only locally are defined where they appear.
+
+\begin{longtable}{p{0.16\textwidth}p{0.60\textwidth}p{0.14\textwidth}}
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Meaning & Unit \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$p$, $t$ & pixel index, tile index & -- \\
+$a_p$ & true ground area of pixel $p$ & m$^2$ \\
+$z_p$, $\tilde z_p$ & rank-normalized SAR value and its Lee-filtered value & -- \\
+$W_0$, $W_1$, $F$ & pre-flood water, flood-time water, newly inundated set $W_1\setminus W_0$ & pixel set \\
+$R$ & receded water $W_0\setminus W_1$ & pixel set \\
+$A_{new}$, $A_{net}$ & newly inundated area and net increase of inundated area & km$^2$ \\
+$A_{reg}$, $\rho$ & area of region or unit; proportion $A_{new}/A_{reg}$ & km$^2$, -- \\
+$A_t$, $\hat A_t$, $e_t$ & reference, estimated new area of tile $t$, and $e_t=\hat A_t-A_t$ & km$^2$ \\
+RAE, MAE$_A$ & relative total area error; mean absolute tile area error & --, km$^2$ \\
+$\bar p_p$ & mean predicted probability of new inundation (MC dropout) & -- \\
+$q(\cdot)$, $\tau_A$ & isotonic calibration map; area-preserving threshold & -- \\
+$\sigma'_t$, $\mathcal I_t$ & stabilized MC spread of tile area; conformal interval & km$^2$ \\
+$\theta_1,\theta_2,\theta_3$ & proportion thresholds of the four intensity grades & -- \\
+$\pi_{jg}$ & probability that unit $j$ belongs to grade $g$ & -- \\
+$\mathrm{REM}_p$, $h^*$ & relative elevation above nearest drainage; its guard threshold & m \\
+$\Delta VV$, $\delta$ & change of VV backscatter against 27 June; change margin & dB \\
+$X_{jk}$, $w_k$ & indicator $k$ of unit $j$; indicator weight & mixed, -- \\
+$S_j$ & TOPSIS disaster index of unit $j$ & -- \\
+$P_j$, $d_j$ & flooded population and relief demand of unit $j$ & persons, t \\
+$\eta_i$ & 1 if candidate depot $i$ is opened & -- \\
+$x_{ij}$, $u_j$ & relief shipped from depot $i$ to unit $j$; unmet demand of $j$ & t \\
+$t_{ij}$, $\mathcal A$ & travel time on the flood-cut network; admissible pairs & min, -- \\
+$f_1$, $f_2$ & priority-weighted unmet share; priority-weighted delivery time & --, min \\
+\end{longtable}

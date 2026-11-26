@@ -1,0 +1,124 @@
+{
+ "deliverables": [
+  {
+   "path": "figures/problem_1_results.json",
+   "desc": "Q1: preprocessing log, folds, label-semantics test, baselines A/B metrics, FP/FN by land cover, TreeSHAP drivers, LOCO"
+  },
+  {
+   "path": "output/q1_results.json",
+   "desc": "Q1 results (same content)"
+  },
+  {
+   "path": "output/folds.json",
+   "desc": "spatially blocked 5-fold split with buffer"
+  },
+  {
+   "path": "output/q1_worldcover_tiles.npz",
+   "desc": "WorldCover 2021 land cover sampled on the 1000 official tiles"
+  },
+  {
+   "path": "output/coreg_official.json",
+   "desc": "co-registration check SAR vs optical on official tiles"
+  },
+  {
+   "path": "figures/problem_2_results.json",
+   "desc": "Q2: ablation M0-M6, calibration, conformal coverage, GMM grading, MC grade probabilities"
+  },
+  {
+   "path": "output/q2_results.json",
+   "desc": "Q2 results (same content)"
+  },
+  {
+   "path": "output/q2_models/M4_fold0.pt",
+   "desc": "Q2 fused U-Net checkpoint fold 0 (used by Q3)"
+  },
+  {
+   "path": "output/q2_models/M4_fold4.pt",
+   "desc": "Q2 fused U-Net checkpoint fold 4 (used by Q3)"
+  },
+  {
+   "path": "figures/problem_3_results.json",
+   "desc": "Q3: Hengzhou A_new, A_net, rho per date, guards, transfer checks, sensitivity"
+  },
+  {
+   "path": "output/q3_results.json",
+   "desc": "Q3 results (same content)"
+  },
+  {
+   "path": "output/q3_newflood_0716.tif",
+   "desc": "Q3 new-inundation raster 2026-07-16 (main)"
+  },
+  {
+   "path": "output/q3_newflood_0704.tif",
+   "desc": "Q3 new-inundation raster 2026-07-04"
+  },
+  {
+   "path": "output/q3_w0.tif",
+   "desc": "Q3 pre-flood water W0"
+  },
+  {
+   "path": "output/q3_w1_0716.tif",
+   "desc": "Q3 flood-time water W1 2026-07-16"
+  },
+  {
+   "path": "output/q3_receded_0716.tif",
+   "desc": "Q3 receded water 2026-07-16"
+  },
+  {
+   "path": "output/q3_prob_0716.tif",
+   "desc": "Q3 model probability 2026-07-16 (uint8 = 255 p)"
+  },
+  {
+   "path": "output/q3_newflood_0716_sar_only.tif",
+   "desc": "Q3 sensitivity case W0 = SAR only"
+  },
+  {
+   "path": "output/q3_newflood_0716_h30.tif",
+   "desc": "Q3 sensitivity case h* = 30 m"
+  },
+  {
+   "path": "figures/problem_4_results.json",
+   "desc": "Q4: unit indicators, weights, TOPSIS index, levels, zones, robustness"
+  },
+  {
+   "path": "output/q4_results.json",
+   "desc": "Q4 results (same content)"
+  },
+  {
+   "path": "output/q4_units.geojson",
+   "desc": "Q4 assessment units with indicators, S_j, level, rank interval"
+  },
+  {
+   "path": "output/q4_units_0704.csv",
+   "desc": "Q4 demand/priority table from the 07-04 mask (Q5 information update)"
+  },
+  {
+   "path": "figures/problem_5_results.json",
+   "desc": "Q5: MILP plans, Pareto front, VoI, sensitivity, audit, flow paths"
+  },
+  {
+   "path": "output/q5_results.json",
+   "desc": "Q5 results (same content)"
+  },
+  {
+   "path": "output/q5_roads_cut_0716.geojson",
+   "desc": "Q5 road segments with flood-cut flag (07-16)"
+  },
+  {
+   "path": "figures/all_results.json",
+   "desc": "summary of key results and logic probes"
+  },
+  {
+   "path": "figures/sensitivity_results.json",
+   "desc": "sensitivity data Q3/Q4/Q5"
+  },
+  {
+   "path": "code/main.py",
+   "desc": "one-click entry"
+  },
+  {
+   "path": "RESULTS.md",
+   "desc": "results report"
+  }
+ ]
+}

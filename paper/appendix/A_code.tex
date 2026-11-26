@@ -1,0 +1,133 @@
+\section{Key Algorithm Code}
+
+The complete, runnable code is organized as \texttt{config.py} (all parameters), \texttt{common.py} (pixel area, normalization, Lee filter, indices and features), \texttt{problem1.py} to \texttt{problem5.py}, \texttt{unet.py} and an independent audit script for the relief plans; \texttt{main.py} runs the chain. The excerpts below are the core routines referred to in the paper.
+
+\subsection{Gated fusion network and area-consistent loss}
+
+\begin{lstlisting}[language=Python]
+class GatedFusionUNet(nn.Module):
+    """SAR branch + optional optical branch; at each scale s the fused feature is
+    h = g*h_S + (1-g)*h_O with g = sigmoid(W_g * [h_S; h_O]) (1x1 conv)."""
+    def forward(self, x_sar, x_opt=None, return_gates=False):
+        hs = self.enc_s(x_sar)
+        if self.use_opt:
+            ho = self.enc_o(x_opt)
+            skips, gvals = [], []
+            for s, gate in enumerate(self.gates):
+                g = torch.sigmoid(gate(torch.cat([hs[s], ho[s]], 1)))
+                skips.append(g * hs[s] + (1 - g) * ho[s])
+                gvals.append(g.mean())
+        else:
+            skips, gvals = hs, []
+        x = self.drop(self.bott(F.max_pool2d(skips[-1], 2)))
+        for d, skip in zip(self.dec, reversed(skips)):
+            x = F.interpolate(x, size=skip.shape[-2:], mode="bilinear", align_corners=False)
+            x = self.drop(d(torch.cat([x, skip], 1)))
+        out = self.head(x)[:, 0]
+        return (out, gvals) if return_gates else out
+
+def flood_loss(logit, y, valid, lam_area=1.0, gamma=2.0, alpha1=0.75):
+    """Focal + soft Dice + lambda_A * area consistency, valid pixels only."""
+    v = valid.float(); p = torch.sigmoid(logit); yf = y.float()
+    pt = torch.where(yf > 0.5, p, 1 - p).clamp(1e-6, 1 - 1e-6)
+    at = torch.where(yf > 0.5, torch.full_like(p, alpha1), torch.full_like(p, 1 - alpha1))
+    focal = (-(at * (1 - pt) ** gamma * torch.log(pt)) * v).sum() / v.sum().clamp(min=1)
+    inter = (p * yf * v).sum()
+    dice = 1 - (2 * inter + 1) / ((p * v).sum() + (yf * v).sum() + 1)
+    nb = v.sum((1, 2)).clamp(min=1)
+    area = (((p - yf) * v).sum((1, 2)).abs() / nb).mean()
+    return focal + dice + lam_area * area
+\end{lstlisting}
+
+\subsection{Area-preserving threshold}
+
+\begin{lstlisting}[language=Python]
+def area_preserving_tau(pbar, wA, expected, lo=0.01, hi=0.99, tol=1e-4):
+    """bisection: sum a*1[p>=tau] = sum a*q(p); left side non-increasing in tau."""
+    def f(t):
+        return float((wA * (pbar >= t)).sum()) - expected
+    if f(lo) < 0 or f(hi) > 0:
+        lo, hi = 0.001, 0.999
+    while hi - lo > tol:
+        mid = 0.5 * (lo + hi)
+        if f(mid) > 0:
+            lo = mid
+        else:
+            hi = mid
+    t = lo if abs(f(lo)) <= abs(f(hi)) else hi
+    return t, f(t) + expected
+\end{lstlisting}
+
+\subsection{Grade thresholds and grade probabilities}
+
+\begin{lstlisting}[language=Python]
+def gmm_thresholds(x, seed=2026, n_init=20, K=4):
+    """Bayes boundaries between adjacent components of a K-component 1-D GMM on logit(rho)."""
+    g = GaussianMixture(n_components=K, covariance_type="full", n_init=n_init,
+                        random_state=seed).fit(x[:, None])
+    order = np.argsort(g.means_.ravel())
+    mu = g.means_.ravel()[order]; sd = np.sqrt(g.covariances_.ravel()[order]); pi = g.weights_[order]
+    th = []
+    for j in range(K - 1):
+        fun = lambda t: (np.log(pi[j]) + norm.logpdf(t, mu[j], sd[j])
+                         - np.log(pi[j + 1]) - norm.logpdf(t, mu[j + 1], sd[j + 1]))
+        a, b = mu[j], mu[j + 1]
+        if not (fun(a) > 0 and fun(b) < 0):
+            return None, dict(mu=mu, sd=sd, pi=pi)
+        th.append(brentq(fun, a, b))
+    theta = 1 / (1 + np.exp(-np.array(th)))
+    ok = bool(np.all(np.diff(theta) > 0) and theta[0] > 0 and theta[-1] < 1)
+    return (theta if ok else None), dict(mu=mu, sd=sd, pi=pi, bic=g.bic(x[:, None]))
+
+def mc_grades(Ahat, sigp, Areg, resid_pool, boot_theta, M=2000, seed=2026):
+    """grade probabilities pi_jg for units j (one shared residual per draw)."""
+    rng = np.random.default_rng(seed)
+    r = rng.choice(resid_pool, M, replace=True)
+    th = boot_theta[rng.integers(0, len(boot_theta), M)]
+    A = np.clip(Ahat[:, None] + r[None, :] * sigp[:, None], 0, Areg[:, None])
+    rho = A / Areg[:, None]
+    g = 1 + (rho[:, :, None] >= th[None, :, :]).sum(2)
+    return np.stack([(g == gg).mean(1) for gg in (1, 2, 3, 4)], 1)
+\end{lstlisting}
+
+\subsection{Guarded newly inundated set in Hengzhou}
+
+\begin{lstlisting}[language=Python]
+def compute_F(meta, date, tauA, dtau=0.0, hstar=15.0, delta=3.0, w0mode="union", mmu=50, scale="db"):
+    """F_d = MMU( {p>=tau_A+dtau} & ~W0 & {REM<=h*} & {dVV<=-delta} ) inside the boundary."""
+    # ... memory-mapped rasters: PB (mean probability), W0, boundary bm, Lee-filtered VV, REM ...
+    for r in range(0, Hh, 512):
+        sl = slice(r, min(r + 512, Hh))
+        raw = (PB[sl] >= tauA + dtau) & (bm[sl] > 0)
+        c1 = raw & (W0[sl] == 0)                                   # not pre-flood water
+        rem = rem10_strip(rem30, r, sl.stop - r, Ww)
+        c2 = c1 & (np.nan_to_num(rem, nan=1e9) <= hstar)           # REM guard
+        dvv = np.nan_to_num(lf_d[sl] - lf_0[sl], nan=0.0)
+        cand[sl] = c2 & (dvv <= -delta)                            # change guard
+    return U.mmu_filter(cand, mmu) if mmu > 1 else cand            # minimum mapping unit
+\end{lstlisting}
+
+\subsection{Depot-activation and allocation MILP}
+
+\begin{lstlisting}[language=Python]
+def build(obj):
+    m = pulp.LpProblem("relief", pulp.LpMinimize)
+    eta = {i: pulp.LpVariable(f"eta_{i}", cat=pulp.LpBinary) for i in range(nI)}
+    f = {(i, j): pulp.LpVariable(f"f_{i}_{j}", lowBound=0) for (i, j) in A}
+    u = {j: pulp.LpVariable(f"u_{j}", lowBound=0) for j in range(nJ)}
+    f1 = pulp.lpSum(w[j] * u[j] for j in range(nJ)) * (1.0 / Wd)
+    f2 = pulp.lpSum(w[j] * tt[i, j] * f[i, j] for (i, j) in A) * (1.0 / Wd)
+    for j in range(nJ):                                   # demand balance
+        m += pulp.lpSum(byj.get(j, [])) + u[j] == d[j]
+    for i in range(nI):                                   # capacity, open depots only
+        m += pulp.lpSum(byi.get(i, [])) <= cap[i] * eta[i]
+        if not cand["admissible"].iloc[i]:               # depots near F stay closed
+            m += eta[i] == 0
+    for (i, j) in A:                                      # valid tightening
+        m += f[i, j] <= d[j] * eta[i]
+    m += pulp.lpSum(eta.values()) <= p["K"]               # at most K open depots
+    m += pulp.lpSum((2 * tt[i, j] + p["t_load"]) / p["q_veh"] * f[i, j] for (i, j) in A) \
+        <= 60 * p["n_veh"] * p["shift"] * p["H"]          # fleet vehicle-minutes
+    return m, eta, f, u, f1, f2
+# lexicographic: min f1, then min f2 s.t. f1 <= f1* + 1e-6; HiGHS with gapRel = 0
+\end{lstlisting}

@@ -1,0 +1,100 @@
+\documentclass[11pt,a4paper]{ctexart}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\setlist{nosep,leftmargin=1.6em}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\pagestyle{plain}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries AI 工具使用详情说明}\\[6pt]
+{\normalsize 2026 年亚太地区大学生数学建模竞赛（APMCM）\quad A 题\quad 参赛队号：apmcm26300025}\\[4pt]
+{\small 提交日期：2026 年 11 月 26 日}
+\end{center}
+
+\vspace{4pt}
+\hrule
+\vspace{10pt}
+
+\section*{一、所用 AI 工具名称和版本}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{3.0cm}p{3.6cm}p{3.2cm}p{4.0cm}@{}}
+\toprule
+工具名称 & 版本 / 模型 & 提供方 & 使用日期 \\
+\midrule
+Claude & claude-opus-5-5 & Anthropic & 2026-11-26 \\
+DeepSeek & DeepSeek-V4-Flash & 杭州深度求索人工智能基础技术研究有限公司 & 2026-11-26 \\
+通义千问（Qwen） & Qwen3.8-Max & 阿里云计算有限公司 & 2026-11-26 \\
+豆包 & 豆包 2.0 Pro & 北京抖音信息服务有限公司 & 2026-11-26 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{二、具体使用目的和应用环节}
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{题目解析与问题分解}：梳理 A 题五问之间的数据依赖，确定“新增淹没集合 $F=W_1\setminus W_0$”作为贯穿五问的统一量，并据此确定各问的输出与交接对象。
+\item \textbf{数据处理}：编写并调试遥感预处理脚本，包括 WGS-84 像元面积换算、分块秩归一化、Lee 滤波、Sentinel-1 三期影像互相关配准、WorldCover / OSM / WorldPop 叠加与分块 Otsu 阈值检验。
+\item \textbf{模型构建}：设计双分支门控 SAR--光学 U-Net（含模态丢弃与有效性掩膜）、面积一致性损失、等渗校准与面积保持阈值、分裂保形区间、高斯混合分级与蒙特卡洛等级概率、熵--CRITIC--AHP--TOPSIS 单元评估、洪水切断路网上的选址--分配 MILP 与 $\varepsilon$-约束帕累托前沿。
+\item \textbf{求解与敏感性分析}：切换并调试 HiGHS 求解器，完成 19 套方案的约束审计、Dirichlet 权重扰动、分块 bootstrap 阈值区间、地形护栏与参数逐项敏感性。
+\item \textbf{可视化}：生成 14 张数据图、技术路线图与融合架构图（矢量 PDF）、1 张 TikZ 集合逻辑图，并统一字体、配色与单页版式。
+\item \textbf{文献检索与格式化}：通过 Crossref 核验 DOI 并生成 BibTeX 条目，剔除主题不符与重复的检索结果，统一参考文献格式。
+\item \textbf{英文写作与语言润色}：起草各章英文正文、摘要与建议信，进行术语统一与语句润色。
+\item \textbf{排版与编译检查}：XeLaTeX 编译、参考文献交叉引用核对、页眉与公式宽度修正、占位符清理。
+\end{enumerate}
+
+\section*{三、关键交互记录（重要提示词与回复摘要）}
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{提示词}：“先核验官方附件标签的语义，再决定 Q1 识别器学什么。”
+\textbf{回复摘要}：对全部 65.5 M 个有效像元统计后确认官方标签编码的是“新增淹没”，仅 2.37\% 的洪涝标签在灾前已为水体；据此识别器直接学习 $F$，并在 Q3 强制 $F\cap W_0=\varnothing$。
+
+\item \textbf{提示词}：“CBC 在 Windows 上求解敏感性时长时间无响应，换求解器重跑第五问。”
+\textbf{回复摘要}：改用 HiGHS 后单次求解约 51 s，19 套方案全部通过约束审计（C10--C15 违规数均为 0），并给出 6 点帕累托前沿与 VoI$_1$=0.039、VoI$_2$=5.54 min。
+
+\item \textbf{提示词}：“Sentinel-1 三期影像疑似存在整体偏移，先测偏移量再出图。”
+\textbf{回复摘要}：测得南北向偏移 5.4--6.2 km（三期间互差 0.8 km），互相关配准后永久水暗水命中率由 0.034--0.049 提升至 0.346--0.378；该修正被写入正文与不确定性章节。
+
+\item \textbf{提示词}：“把技术路线与融合架构画成论文插图，要求单页、无白边、文字矢量。”
+\textbf{回复摘要}：输出 \texttt{fig\_roadmap.pdf} 与 \texttt{fig\_arch\_fusion.pdf}，数学符号正常排版，二者分别置于引言与第二问。
+
+\item \textbf{提示词}：“论文写完后检查编译、页眉折行、公式出界与占位符。”
+\textbf{回复摘要}：XeLaTeX + BibTeX 编译通过（0 错误、0 未定义引用）；将 10 个节标题改为短标题以消除页眉重叠，3 处超宽公式改为小号排版，删除首页保证书并填入队号。
+
+\item \textbf{提示词}：“帮我核对论文里的数字与结果文件是否一致。”
+\textbf{回复摘要}：逐项比对 $\tau_A$ 五折取值、校准面积 933.111/933.112 km$^2$、保形覆盖率 87.8\%、分级阈值 (0.0593, 0.5298, 0.9689)、硬瓦片 IoU 0.266$\to$0.562 等，均与结果文件一致。
+\end{enumerate}
+
+\section*{四、采纳内容和人工修改情况}
+
+\textbf{采纳的 AI 输出}
+\begin{itemize}
+\item 五问的预处理、特征工程与训练代码；门控融合网络结构与面积校准流程；分级阈值拟合与等级概率的蒙特卡洛实现；单元评估指标体系与权重；选址--分配 MILP 与帕累托前沿求解脚本。
+\item 全部 17 件图表产物（14 张数据图、2 张流程/架构图、1 张 TikZ 图）及其数据来源表。
+\item 英文章节初稿、摘要、建议信初稿，以及参考文献的 DOI 核验与 BibTeX 条目。
+\end{itemize}
+
+\textbf{人工审核与修改}
+\begin{itemize}
+\item \textbf{数值核验}：逐项比对论文数字与结果文件，确认面积、覆盖率、阈值、分级计数、排名与救援指标一致；对校准面积相对误差等无法从舍入值反算的表述做了收紧。
+\item \textbf{文献清理}：Crossref 检索结果中存在 1 条主题完全不符、3 条同一文献重复、以及 HTML 实体 \texttt{\&amp;} 与月份缩写不规范等问题，均人工剔除或改正，最终保留 17 条。
+\item \textbf{结论表述}：对第三问“净增为负”补充“观测退水主导”的解释；对第二问“BIC 支持二分量而题目要求四个等级”如实说明；对第五问“57 个单元路网不可达”明确为情景约束而非优化失败。
+\item \textbf{版式与合规}：删除首页保证书，填入参赛队号 apmcm26300025，改写页眉与超宽公式，补齐建议信的发文单位与日期，并按赛事要求另行提交本说明文件。
+\item \textbf{责任声明}：AI 工具用于辅助分析、编码、绘图与语言润色，全部模型设定、参数选择、结果解释与最终文字由参赛队审核确认，文责由参赛队承担。
+\end{itemize}
+
+\vspace{8pt}
+\hrule
+\vspace{6pt}
+{\small 说明：本文件按赛事要求以 PDF 格式提交，文件名为“AI工具使用详情”。}
+
+\end{document}

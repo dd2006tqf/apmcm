@@ -1,0 +1,128 @@
+{
+ "problems": [
+  {
+   "id": "Q2",
+   "conclusions": [
+    {
+     "quantity": "threshold_mismatch_vs_Q2",
+     "value": 0,
+     "unit": "count",
+     "kind": "bound",
+     "imposes": {
+      "on": [
+       "Q3",
+       "Q4"
+      ],
+      "must_le": 0,
+      "note": "Q3 and Q4 must grade with exactly the Q2 thresholds theta1-3 (number of differing thresholds = 0)"
+     }
+    },
+    {
+     "quantity": "model_checkpoint_mismatch_vs_Q2",
+     "value": 0,
+     "unit": "count",
+     "kind": "bound",
+     "imposes": {
+      "on": [
+       "Q3"
+      ],
+      "must_le": 0,
+      "note": "S16: Q3 must load the Q2 M6 checkpoints unchanged (hash mismatches = 0)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "Q3",
+   "conclusions": [
+    {
+     "quantity": "A_new_sum_rel_error_vs_Q3",
+     "value": 0,
+     "unit": "ratio",
+     "kind": "bound",
+     "imposes": {
+      "on": [
+       "Q4"
+      ],
+      "must_le": 0.005,
+      "note": "Q4 unit new areas must sum to the Q3 city A_new on 07-16"
+     }
+    },
+    {
+     "quantity": "partition_area_rel_error",
+     "value": 0,
+     "unit": "ratio",
+     "kind": "bound",
+     "imposes": {
+      "on": [
+       "Q4"
+      ],
+      "must_le": 0.01,
+      "note": "Q4 units must partition the Q3 study area (3440.4 km2)"
+     }
+    },
+    {
+     "quantity": "open_depots_inside_F",
+     "value": 0,
+     "unit": "count",
+     "kind": "bound",
+     "imposes": {
+      "on": [
+       "Q5"
+      ],
+      "must_le": 0,
+      "note": "C14: no open depot within 100 m of the Q3 new-inundation mask of the decision date"
+     }
+    },
+    {
+     "quantity": "flow_on_cut_or_unreachable_pairs",
+     "value": 0,
+     "unit": "count",
+     "kind": "bound",
+     "imposes": {
+      "on": [
+       "Q5"
+      ],
+      "must_le": 0,
+      "note": "C13: positive flows only on pairs reachable within T_max on the network cut by Q3 F"
+     }
+    }
+   ],
+   "observed": {
+    "threshold_mismatch_vs_Q2": 0,
+    "model_checkpoint_mismatch_vs_Q2": 0
+   }
+  },
+  {
+   "id": "Q4",
+   "conclusions": [
+    {
+     "quantity": "demand_rel_error_vs_Q4",
+     "value": 0,
+     "unit": "ratio",
+     "kind": "bound",
+     "imposes": {
+      "on": [
+       "Q5"
+      ],
+      "must_le": 1e-06,
+      "note": "C15: Q5 demand d_j = q*H*P_j/1000 recomputed from Q4 flooded population"
+     }
+    }
+   ],
+   "observed": {
+    "threshold_mismatch_vs_Q2": 0,
+    "A_new_sum_rel_error_vs_Q3": 4.097026718599584e-09,
+    "partition_area_rel_error": 1.7044880406546115e-08
+   }
+  },
+  {
+   "id": "Q5",
+   "observed": {
+    "open_depots_inside_F": 0,
+    "flow_on_cut_or_unreachable_pairs": 0,
+    "demand_rel_error_vs_Q4": 0.0
+   }
+  }
+ ]
+}

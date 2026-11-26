@@ -1,0 +1,120 @@
+\section[Problem 3]{Problem 3: Newly Inundated Area of Hengzhou with Guarded Model Transfer}
+\label{sec:q3}
+
+\subsection{Study Area and Choice of Imagery}
+
+Hengzhou City lies on the Yu River in southern Guangxi. The study area is the GADM~4.1 boundary of the city, $A_{reg}=3440.09$\,km$^2$ (nominal 3440.4\,km$^2$), because the problem asks for the proportion of the total area of the study region. As a second, physically motivated denominator we use the floodplain zone $\{\mathrm{REM}\le h^*\}$ inside the boundary (defined below), whose area is 2079.5\,km$^2$.
+
+Cloud cover in the rainy season rules out optical imagery during the event, so the flood is observed by radar. Sentinel-1 passes over Hengzhou exist on 27 June, 4 July and 16 July 2026; there is none on 6 July. We use 27 June as pre-flood baseline and both 4 July (two days before the reference date) and 16 July (ten days after) as flood-time observations (Assumption~3). The products are radiometrically terrain-corrected VV/VH backscatter in dB on a 10\,m grid with about 20\,m effective resolution. The latest optical scene before the flood with acceptable cloud cover is Sentinel-2 of 31 May 2026.
+
+\subsection{Verification of the Self-Collected Imagery}
+\label{sec:q3_verify}
+
+Before any model is applied, the Hengzhou layers have to be geometrically consistent with each other. We test this against a permanent-water reference $\mathcal W^{ref}=\{\mathrm{WC}=80\}\cap\mathrm{OSM}_{water}$, the pixels that both WorldCover and OSM map as water; two independent sources agree there, so true water must appear dark in SAR. For each date we search the integer shift that maximizes the dark share on this reference,
+\begin{equation}
+(\Delta r,\Delta c)=\arg\max_{(\Delta r,\Delta c)}\ \frac{1}{|\mathcal W^{ref}|}\sum_{(r,c)\in\mathcal W^{ref}}\mathbb 1\big[VV(r+\Delta r,c+\Delta c)<-15\ \mathrm{dB}\big],
+\label{eq:coreg}
+\end{equation}
+and correct the raster as $VV^{corr}(r,c)=VV(r+\Delta r,c+\Delta c)$.
+
+The result was unexpected and decisive. At the delivered geotransform only 3.4\%, 4.4\% and 4.9\% of the reference water is SAR-dark on the three dates, which is impossible for open water. The best shifts are $\Delta r=-623$, $-544$ and $-539$ rows (6.23, 5.44 and 5.39\,km north--south, at most 10\,m east--west), and after correction the dark share rises to 34.6\%, 35.6\% and 37.8\%. The three dates are also displaced against each other by up to 0.8\,km, so without this step the change guard below would compare different ground locations. All results of Problems~3--5 use the co-registered SAR. The optical scene failed the same kind of test: its share of $\mathrm{NDWI}>0$ on the reference water is 2.6\% at zero shift and at most 4.1\% for any translation within $\pm800$\,m by $\pm320$\,m, with only 35\% valid pixels, and the river pattern differs in shape. The scene cannot be aligned by a translation and is not used. Optics are therefore absent everywhere in Hengzhou ($m_p=0$), which is the situation the modality-dropout training of M6 was designed for, and the optical term is dropped from $W_0$.
+
+\subsection{Pre-flood Water and the Physics Detector}
+
+A physics water detector $D_d$ on date $d$ uses the split-based Otsu rule \eqref{eq:ashman} on Lee-filtered VV in dB. On calibrated Sentinel-1 the literal rule with 64-pixel sub-blocks accepted land-cover contrasts as bimodal and labelled 52\% of the city as water at $-6.9$\,dB, the same failure as baseline A on the official tiles. We therefore use 128-pixel sub-blocks and accept a sub-block only if its dark class has a mean of at most $-15$\,dB, a physical condition for open water. The pooled thresholds are $-12.23$, $-12.02$ and $-12.80$\,dB for the three dates, from 245, 245 and 272 accepted sub-blocks. Pre-flood water is the union of independent sources (Assumption~4),
+\begin{equation}
+W_0=D_{0627}\ \cup\ \{\mathrm{WC}=80\}\ \cup\ \mathrm{OSM}_{water},
+\label{eq:W0}
+\end{equation}
+with an area of 292.57\,km$^2$, of which 182.8\,km$^2$ come from the pre-flood SAR.
+
+\subsection{Transfer of the Problem 2 Model}
+
+The model weights are not changed: the five fold models M6 of Problem~2 form an ensemble, each with two MC-dropout passes, i.e. ten passes per pixel; the checkpoint hashes equal those of Problem~2. Only the input representation is mapped, using the same per-tile rank normalization \eqref{eq:rank_norm} and Lee filter \eqref{eq:lee} on $256\times256$ tiles at 10\,m. Whether dB or linear amplitude $10^{VV/20}$ better resembles the GF-3 training input (Assumption~2) is decided by the two-sample Kolmogorov--Smirnov distance between the normalized Hengzhou land pixels and the official non-flood, non-water pixels,
+\begin{equation}
+T^\star=\arg\min_{T\in\{\mathrm{dB},\,\mathrm{amp}\}}\ \sup_x\Big|\hat F^{HZ}_{T}(x)-\hat F^{off}(x)\Big|,
+\label{eq:ks}
+\end{equation}
+which is 0.106 for dB and 0.241 for amplitude, so dB is used. The isotonic map and the area-preserving threshold are refitted by \eqref{eq:isotonic}--\eqref{eq:tauA} on the pooled calibration predictions of the five members, which gives $\tau_A=0.557$.
+
+\subsection{Physical Guards and the Final Sets}
+
+A transferred model sees a new sensor, a new polarization (VV instead of HH) and no optics, so its raw mask needs physical filtering. Three guards encode what flood water must satisfy. Water cannot stand far above the drainage network, which we measure by the relative elevation above the nearest mapped drainage, a Euclidean variant of the height above nearest drainage~\cite{nobre2011hand}:
+\begin{equation}
+\mathrm{REM}_p=\max\big(0,\ z^{DEM}_p-z^{DEM}_{n(p)}\big),\qquad n(p)=\arg\min_{q\in\mathcal D}\lVert \boldsymbol x_p-\boldsymbol x_q\rVert,
+\label{eq:rem}
+\end{equation}
+where $\mathcal D$ is the drainage raster (OSM waterways and water polygons plus WorldCover water) and $z^{DEM}$ the Copernicus 30\,m elevation. New water must darken against the pre-flood pass by a margin $\delta$, as in change-detection chains~\cite{twele2016sentinel1}, and patches smaller than a minimum mapping unit of 50 pixels (0.5\,ha, about 12 independent looks at 20\,m resolution) are speckle. The newly inundated set on date $d$ is
+\begin{equation}
+F_d=\mathrm{MMU}_{50}\Big(\{\bar p\ge\tau_A\}\cap\overline{W_0}\cap\{\mathrm{REM}\le h^*\}\cap\{VV_d-VV_{0627}\le-\delta\}\Big),\qquad h^*=15\ \mathrm{m},\ \delta=3\ \mathrm{dB},
+\label{eq:F_hz}
+\end{equation}
+receded and flood-time water are
+\begin{equation}
+R_d=\big(W_0\cap D_{0627}\big)\setminus D_d,\qquad W_{1,d}=F_d\cup\big(W_0\setminus R_d\big).
+\label{eq:W1_R}
+\end{equation}
+By construction $F_d\cap W_0=\emptyset$ and $F_d\subseteq W_{1,d}$; both were confirmed on the saved rasters with zero violating pixels. A pre-flood water pixel counts as receded only if SAR saw it as water on 27 June and no longer sees it on date $d$. The literal alternative $W_{1,d}=F_d\cup(W_0\cap D_d)$ would also declare receded every mapped channel that SAR never resolves at 20\,m; it raises the receded area on 16 July from 79.44 to 180.09\,km$^2$ and is reported only for comparison. The areas follow \eqref{eq:def_F} and \eqref{eq:net_identity}:
+\begin{equation}
+A_{new,d}=\sum_{p\in F_d}a_p,\qquad A_{net,d}=A_{new,d}-\sum_{p\in R_d}a_p,\qquad \rho_d=\frac{A_{new,d}}{A_{reg}} .
+\label{eq:areas_hz}
+\end{equation}
+
+\subsection{Newly Inundated Area, Net Increase and Proportion}
+
+Table~\ref{tab:q3_results} gives the answers the problem asks for.
+
+\begin{table}[H]
+\centering
+\caption{Newly inundated area of Hengzhou}
+\label{tab:q3_results}
+\begin{tabular}{lccccc}
+\toprule
+Date & $A_{new}$ (km$^2$) & $A_{net}$ (km$^2$) & $\rho$ & Grade & $\pi$ (G / RS / S / ES) \\
+\midrule
+4 July 2026 & 24.53 & $-54.70$ & 0.713\% & general & 0.74 / 0.25 / 0.010 / 0 \\
+16 July 2026 & 26.90 & $-52.53$ & 0.782\% & general & 0.72 / 0.26 / 0.016 / 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The newly inundated area is 24.53\,km$^2$ on 4 July and 26.90\,km$^2$ on 16 July, i.e. 0.71\% and 0.78\% of the city. All of it lies in the floodplain zone, where the proportion is 1.29\% on 16 July. By the thresholds of Table~\ref{tab:grade_thr} the city-level flood is ``general'' on both dates, with probability 0.72 on 16 July; the relatively-strong probability of 0.26 comes from bootstrap draws of $\theta_1$, whose lower 90\% bound of 0.75\% lies just below $\rho$. On 16 July the new flood covers 13.60\,km$^2$ of former cropland, 9.45\,km$^2$ of tree cover, 1.88\,km$^2$ of built-up land, 1.53\,km$^2$ of grassland and 0.43\,km$^2$ of bare land. The spatial distribution is shown in Fig.~\ref{fig:q3_newflood_map}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q3_newflood_map.pdf}
+  \caption{Newly inundated area of Hengzhou on 16 July 2026}
+  \label{fig:q3_newflood_map}
+\end{figure}
+
+In panel (a) of Fig.~\ref{fig:q3_newflood_map}, displayed on 100\,m cells so that small patches remain visible, the new inundation follows the Yu River and its tributaries as narrow bands along the valley floors, and the receded water lies mostly on the same corridors. Panel (b) zooms into the $6\times6$\,km window with the largest new area at the full 10\,m resolution, where flooded fields touch the road network; these road cuts become the input of Problem~5. The horizontal band near northing 2555\,km is an artefact: the co-registration shift of 27 June leaves an edge without valid pre-flood SAR there, which inflates $W_0$ and $R$ by about 3.4\,km$^2$ each. It contains no new inundation, so $A_{new}$, $\rho$ and everything downstream are unaffected, but $A_{net}$ is about 3.4\,km$^2$ too negative.
+
+Why the net increase is negative while new inundation is positive is answered by the water balance in Fig.~\ref{fig:q3_area_budget}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q3_area_budget.pdf}
+  \caption{Guard cascade and water balance of Hengzhou}
+  \label{fig:q3_area_budget}
+\end{figure}
+
+Panel (b) shows that 79.4\,km$^2$ of water seen by SAR on 27 June is no longer water on 16 July, three times the new inundation. Of this recession, 72.4\,km$^2$ lie outside every mapped water source, mostly under tree cover (49.4\,km$^2$) and cropland (16.7\,km$^2$): wet fields, ponds and seasonally flooded land that were already dark in late June. The 27 June baseline itself was a wet-season state, and \eqref{eq:net_identity} makes the net increase negative ($-52.53$\,km$^2$; the literal variant gives $-153.19$\,km$^2$). The definition $F=W_1\setminus W_0$ is not affected by this, which is exactly why the problem asks for both quantities.
+
+Panel (a) shows the cascade of \eqref{eq:F_hz} on 16 July: the raw model mask of 154.43\,km$^2$ shrinks to 68.85\,km$^2$ after removing $W_0$, to 44.74\,km$^2$ after the REM guard, to 36.98\,km$^2$ after the change guard and to 26.90\,km$^2$ after the MMU. The guards remove 82.6\% of the model area (83.3\% on 4 July). Most of the removed area is permanent water: without optics the model gives permanent water a mean probability of 0.285 and cannot exclude it by itself, while $W_0$ does. The Hengzhou estimate therefore depends heavily on the physics guards, and we state this as a limitation of the transfer rather than tune the guards.
+
+\subsection{Transfer Checks and Sensitivity}
+
+Without labels, credibility has to come from consistency. The unguarded model mask and the physics change mask $\{\Delta VV\le-3\}\cap D_d\setminus W_0$ overlap with IoU 0.207 and an area ratio of 2.60, so the model sees more candidate water than the radar change alone. The VV histogram of the floodplain is clearly bimodal on 16 July (Ashman $D=3.53$) and weakly on 4 July ($D=1.92$). The new-inundation sets of the two dates agree with Jaccard index 0.391; 4 July lies before the reference date and 16 July ten days after it, so partial overlap is expected. The ordering of the $W_0$ variants also behaves as it must: since the union \eqref{eq:W0} contains the SAR-only $W_0$, removing it can only shrink $F$, so $A_{new}$ with the union is a lower bound of $A_{new}$ with SAR-only $W_0$, and indeed the latter is larger (30.47\,km$^2$).
+
+The two guard parameters $h^*$ and $\delta$ and the probability threshold have no Hengzhou data to fix them. Fig.~\ref{fig:q3_threshold_surface} recomputes $A_{new}$ for 30 combinations of a threshold shift $\Delta\tau\in\{-0.2,\dots,0.2\}$ and $h^*\in\{5,10,15,20,30,\infty\}$\,m, plus one-at-a-time changes of the other settings.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q3_threshold_surface.pdf}
+  \caption{Sensitivity of the Hengzhou newly inundated area}
+  \label{fig:q3_threshold_surface}
+\end{figure}
+
+The surface in panel (a) rises monotonically with $h^*$ and falls with $\Delta\tau$, as the guards require. Over the whole grid $A_{new}$ ranges from 1.57 to 79.52\,km$^2$; at $\Delta\tau=0$ it is 17.04, 23.37, 26.90, 28.93, 31.45 and 40.31\,km$^2$ for $h^*=5$, 10, 15, 20, 30\,m and no guard, so the REM guard changes the result by tens of percent and is the softest point of the estimate. The threshold matters more at its upper end: $\Delta\tau=+0.2$ cuts the area to 3.09\,km$^2$. Panel (b) shows the remaining settings: $\delta=0$, 1.5, 3 and 4.5\,dB give 32.40, 30.05, 26.90 and 23.59\,km$^2$; the SAR-only $W_0$ gives 30.47\,km$^2$; the amplitude scale, rejected by \eqref{eq:ks}, gives 49.39\,km$^2$; an MMU of 10 or 100 pixels gives 34.89 or 22.43\,km$^2$. The grade, however, is ``general'' in every one of these cases, because every $\rho$ stays below $\theta_1=5.9\%$ (the largest is 2.3\%). The area is uncertain by a factor of about two, the intensity grade is not.
+
+The model uncertainty can be expressed the same way as in Problem~2. Aggregating the tile intervals \eqref{eq:conformal} comonotonically gives $[0,243.7]$\,km$^2$, which is uninformative at city scale; treating the tile errors as independent gives $[13.48,40.33]$\,km$^2$ on 16 July. Neither is a calibrated city interval, but both contain the scenario values of the main settings.

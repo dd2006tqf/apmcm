@@ -1,0 +1,28 @@
+# 能力清单验收总账（逐项）
+
+- ✅ **P1-C1** [machine] PASS — 结论 PASS —— code/common.py:149-200 (pixel_area_rows cos-lat ellipsoid, rank_normalize, Lee filter, ENL); code/problem1.py:111-162 (all 1000 tiles, invalid masks, 9 label tiles resampled); code/coreg_official.py; output/q1_results.json preprocessing.n_processed=1000, pixel_area_m2_range 74.78-75.41
+- ✅ **P1-C2** [machine] PASS — 产物 output/q1_results.json 已产出（1293419 bytes；仅验证交付存在，不代表内容正确）
+- ✅ **P1-C3** [machine] PASS — 结论 PASS —— code/problem1.py:57-107 (5x5-tile blocks, greedy stratified folds, Chebyshev-1 buffer, check_folds asserts disjointness and buffer); output/folds.json
+- ✅ **P1-C4** [machine] PASS — 结论 PASS —— code/problem1.py:333-393 evaluate() from saved masks output/q1_pred/*.png; code/common.py:271-303; problem_1_results.json models.{A,B}.pooled_pixel/pooled_area/per_fold
+- ✅ **P1-C5** [semantic] PASS — 结论 PASS —— code/problem1.py:306-393 (WorldCover strata, FP/FN area tables, identity check); problem_1_results.json models.B.fpfn_worldcover (8 strata, identity_ok=true)
+- ✅ **P1-C6** [semantic] PASS — 结论 PASS —— code/problem1.py:395-447 (OOF LightGBM regressors, TreeSHAP via pred_contrib, partial Spearman); problem_1_results.json drivers
+- ✅ **P1-C7** [machine] PASS — 结论 PASS —— code/problem1.py:139-144, 165-181; problem_1_results.json label_semantics (n_pixels_total 65,491,966)
+- ✅ **P2-C1** [machine] PASS — 产物 output/q2_results.json 已产出（804426 bytes；仅验证交付存在，不代表内容正确）
+- ✅ **P2-C2** [semantic] PASS — 结论 PASS —— code/problem2.py:418-560 (M0-M6 evaluated with P1.evaluate on identical test tiles, test_set_sha256); problem_2_results.json table, hard_set
+- ✅ **P2-C3** [machine] PASS — 结论 PASS —— code/problem2.py:278-364 (GaussianMixture K=4 on logit rho, Bayes-boundary brentq, Jenks cross-check, 1000 block-bootstrap); problem_2_results.json grading.theta=(0.0593,0.530,0.969), area_thresholds_km2
+- ✅ **P2-C4** [semantic] PASS — 结论 PASS —— code/problem2.py:367-376 mc_grades (residual pool x bootstrap thresholds, M=2000); problem_2_results.json grade_mc (pi rows sum to 1, confusion, flip vs distance)
+- ✅ **P2-C5** [machine][可选] PASS — 结论 PASS —— code/problem2.py:236-271 (split-conformal q-hat on calibration tiles); problem_2_results.json conformal.coverage_overall=0.878, by fold and tercile
+- ✅ **P3-C1** [semantic] PASS — 结论 PASS —— code/problem3.py:417-522 (load_members checks sha256 of the 5 Q2 M4 checkpoints, same rank normalization + Lee as training, KS scale choice, pooled isotonic/tau_A); problem_3_results.json model.checkpoint_hash_mismatches=0, ks_distance
+- ✅ **P3-C2** [semantic] PASS — 结论 PASS —— problem_3_results.json study_area (3440.09 km2), imagery (pre 20260627, flood 20260704/20260716, provenance), coregistration, s2_check
+- ✅ **P3-C3** [machine] PASS — 结论 PASS —— code/problem3.py:541-612 compute_F / water_states / areas_of; output/q3_w0.tif, q3_newflood_0716.tif; problem_3_results.json dates.*.overlap_F_W0_px=0, F_not_in_W1_px=0
+- ✅ **P3-C4** [machine] PASS — 产物 output/q3_results.json 已产出（201485 bytes；仅验证交付存在，不代表内容正确）
+- ✅ **P3-C5** [machine] PASS — 产物 output/q3_newflood_0716.tif 已产出（150872 bytes；仅验证交付存在，不代表内容正确）
+- ✅ **P4-C1** [semantic] PASS — 结论 PASS —— code/problem4.py:114-202 indicators (WorldPop 2020 overlay, WorldCover 2021 built-up/cropland overlay, OSM facility proxies within 500 m of F, flood-cut OSM roads, DEM via REM guard); problem_4_results.json exposure_layers, totals
+- ✅ **P4-C2** [semantic] PASS — 结论 PASS —— code/problem4.py:44-71 build_units (Voronoi of 393 places clipped to boundary, 17 zones); problem_4_results.json partition_rel_error=1.7e-8
+- ✅ **P4-C3** [machine] PASS — 产物 output/q4_results.json 已产出（296677 bytes；仅验证交付存在，不代表内容正确）
+- ✅ **P5-C1** [semantic] PASS — 结论 PASS —— code/problem5.py:26-81 (decision time 07-16, d_j=q*H*P_j/1000 from Q4, resources A16), 83-160 (objectives f1,f2 and constraints C10-C12, fleet); problem_5_results.json task, demand_formula, params
+- ✅ **P5-C2** [machine] PASS — 结论 PASS —— code/problem5.py:83-160 (pulp MILP, HiGHS exact, statuses stored); code/q5_audit.py (fresh recomputation of C10-C15 and fleet for 19 plans); problem_5_results.json audit.PASS=true
+- ✅ **P5-C3** [semantic] PASS — 结论 PASS —— code/problem5.py:43-81 (cut graph and depot exclusion from q3_newflood_<date>.tif, demand/priority from q4_units.geojson or q4_units_0704.csv); problem_5_results.json voi (677 pairs lost, 625 gained, demand change -3.57 t), chain.sha256
+- ⏳ **P5-C4** [semantic] PENDING — 缺考官结论：CAPABILITY_VERDICT.json 里没有 P5-C4 的 verdict
+- ✅ **P0-C1** [semantic] PASS — 结论 PASS —— problem_3_results.json sensitivity_grid/sensitivity_oat (h*, delta, W0 mode, S1 scale, MMU, tau offset); problem_4_results.json robustness; problem_5_results.json sensitivity (K, C, T_max, q, speed, road buffer, fleet, facility proxies); problem_1_results.json fpfn_index_rules (land-cover source)
+- ✅ **P0-C2** [semantic] PASS — 结论 PASS —— problem_5_results.json chain (sha256 of q4_units.geojson, q4_units_0704.csv, q3_newflood_0716/0704.tif); CROSS_PROBLEM_LEDGER.json observed values, _utils/cross_problem_check.py exit 0

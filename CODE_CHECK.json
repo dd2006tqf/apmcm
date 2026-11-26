@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "errors": [],
+  "warnings": [],
+  "code_dir": "code",
+  "py_files": [
+    "code/common.py",
+    "code/config.py",
+    "code/coreg_official.py",
+    "code/fetch_worldcover.py",
+    "code/main.py",
+    "code/network.py",
+    "code/problem1.py",
+    "code/problem2.py",
+    "code/problem3.py",
+    "code/problem4.py",
+    "code/problem5.py",
+    "code/q5_audit.py",
+    "code/summarize.py",
+    "code/unet.py"
+  ],
+  "third_party": [
+    "PIL",
+    "geopandas",
+    "lightgbm",
+    "numpy",
+    "pandas",
+    "pulp",
+    "pyproj",
+    "rasterio",
+    "scipy",
+    "shapely",
+    "skimage",
+    "sklearn",
+    "torch"
+  ],
+  "requirements": [
+    "geopandas",
+    "lightgbm",
+    "numpy",
+    "pandas",
+    "pillow",
+    "pulp",
+    "pyproj",
+    "rasterio",
+    "scikit-image",
+    "scikit-learn",
+    "scipy",
+    "shapely",
+    "torch"
+  ],
+  "readme": "code/README.md"
+}

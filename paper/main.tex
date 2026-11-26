@@ -20,6 +20,10 @@
 \patchcmd{\abstract}{\newpage}{}{}{}
 \makeatother
 
+% 类文件把图表题注设为 \zihao{-4}（12 pt），比正文 10.5 pt 还大；压到 \small
+\captionsetup[figure]{font={small,bf}}
+\captionsetup[table]{font={small,bf}}
+
 % === TikZ ===
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc}

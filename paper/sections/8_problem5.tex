@@ -88,7 +88,27 @@ The plan reaches $f_1^*=0.570$ and $f_2=13.05$\,min. It ships 76.82 of the 146.4
   \label{fig:q5_route_alloc}
 \end{figure}
 
-The two largest depots, Taoxu and Yunbiao, supply 89\% of the tonnage through short paths into the central and eastern flood belt; Shitang and the Gaocun school serve the north and west, and Zhenlong and Liujing cover small remote demands. More than half of the weighted demand stays unmet although the open depots hold 360\,t, almost 2.5 times the total demand, and the fleet uses only 1497 of 86,400 vehicle-minutes. Neither capacity nor trucks are the bottleneck. The unmet share is caused by reachability: the 57 units without any admissible depot are cut off by water, and no allocation over the road network can reach them. This is the most important operational finding of the model, and it is why the letter asks for boats and helicopters for these units.
+The two largest depots, Taoxu and Yunbiao, supply 89\% of the tonnage through short paths into the central and eastern flood belt; Shitang and the Gaocun school serve the north and west, and Zhenlong and Liujing cover small remote demands. More than half of the weighted demand stays unmet although the open depots hold 360\,t, almost 2.5 times the total demand, and the fleet uses only 1497 of 86,400 vehicle-minutes. Neither capacity nor trucks are the bottleneck. The unmet share is caused by reachability: the 57 units without any admissible depot are cut off by water, and no allocation over the road network can reach them. The optimum equals the weighted demand of these 57 units to six decimals (0.569927, against $f_1^*=0.569928$), so the allocation carries no slack: every reachable unit is served in full, and no shipment that stays on this network can lower $f_1$. This is the most important operational finding of the model, and it is why the letter asks for boats and helicopters for these units.
+
+\begin{table}[H]
+\centering
+\caption{The flood map as an input to the relief plan}
+\label{tab:q5_nomap}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Plan & $f_1$ & $f_2$ (min) & Served \\
+\midrule
+MILP on 16 July (recommended) & 0.570 & 13.05 & 7316 \\
+Same model, flood map withheld & 0.001 & 14.55 & 13924 \\
+\quad replayed on the real cut network & 0.592 & 20.52 & 6997 \\
+Greedy nearest-depot & 0.573 & 9.47 & 7237 \\
+Proportional to depot capacity & 0.570 & 19.55 & 7316 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:q5_nomap} prices the flood map itself. Withheld from the model, the same objective reports a nearly perfect plan: $f_1=0.001$ and 13,924 people served. Replayed on the network the water actually cut, that plan serves 6,997 people at $f_1=0.592$, 318 fewer than the plan that saw the map, and takes 20.52\,min against 13.05. The map is therefore not a refinement of the answer, it is what makes the answer feasible. The two heuristics bound the same point from below: a greedy nearest-depot rule gives up 0.3 points of coverage for 3.6\,min of speed, and splitting the tonnage in proportion to depot capacity reproduces the optimal coverage exactly but takes 6.5\,min longer.
 
 \subsection{Trade-off, Value of Information and Sensitivity}
 
@@ -112,6 +132,27 @@ The information update is measured as follows. The plan computed from the 4 July
 \label{eq:voi}
 \end{equation}
 i.e. using the 16 July image to re-plan depots lowers the weighted unmet share by 3.9 points, or, at equal coverage, delivers 5.54\,min faster. Read as a two-stage decision, the 4 July plan is the first stage and the 16 July pass is the recourse a real operation would run; the 3.9 points are then a lower bound on what a frozen plan loses, because keeping the first-stage depots and re-optimizing only the shipments already leaves 0.609, the best a stale depot set can do. The tail sits in the depot set itself: between the two dates the open sets share only half their members (Jaccard 0.50), the total demand changes by $-3.57$\,t, and 677 admissible pairs are lost while 625 are gained, because the flood moved. A plan frozen on 4 July therefore carries at least 3.9 points and 5.5\,min of avoidable loss, which is the quantity the next satellite pass is worth.
+
+A frozen plan can also be asked how it behaves when the inputs move under it. The six depots are held fixed and only the shipments are re-optimized, which is the recourse an operation would actually run, and 600 scenarios perturb the demand and the network (Table~\ref{tab:q5_cvar}). Demand noise of 20\% (lognormal, truncated at three sigma) moves $f_1$ by nothing: mean 0.5699 against 0.5699, served population 7316 against 7316, because the binding constraint is geometry and not the size of the demand. Network noise does cost. Cutting each of the 625 pairs that only reopened after 4 July with probability 0.5 gives $f_1=0.604$ on average, 6787 served and a 5\% quantile of 6345. Over all 600 scenarios $f_1$ averages 0.593 with $\mathrm{CVaR}_{95}=0.651$, so the plan reads as a promise that in 95\% of the futures consistent with the two passes it loses at most eight points of coverage against the point estimate, and in 63\% of them it stays below 0.60. The stress case, in which every reopened pair is cut again, serves 5846 people at $f_1=0.670$: 20\% fewer than the point estimate, which is the price of that many roads closing, and the plan never becomes infeasible.
+
+\begin{table}[H]
+\centering
+\caption{Frozen plan under demand and network uncertainty, 600 scenarios}
+\label{tab:q5_cvar}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Scenario family & $f_1$ mean & $f_1$ CVaR$_{95}$ & Served mean & Served $p_{05}$ \\
+\midrule
+Demand, $\sigma=0.2$ & 0.570 & 0.615 & 7316 & 7316 \\
+Network, half of the reopened pairs cut & 0.604 & 0.650 & 6787 & 6345 \\
+Both & 0.605 & 0.658 & 6795 & 6468 \\
+\midrule
+All 600 & 0.593 & 0.651 & 6966 & 6468 \\
+Stress, every reopened pair cut & 0.670 & -- & 5846 & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Panel (b) shows how $f_1^*$ responds to the assumed resources. It is non-increasing in the depot limit, from 0.5728 at $K=3$ to 0.5699 at $K=8$, while the delivery time drops from about 22\,min for $K\le5$ to 9.32\,min at $K=8$. Halving or raising capacity by 50\% leaves $f_1^*=0.5699$; the time limit changes it only at 60\,min (0.5768); the relief norm from 2.5 to 15.6\,kg per person and day changes it by less than 0.0003; a speed factor of 0.6 gives 0.5705, and the fleet size (20, 40 or 60 trucks) has no effect. Only two settings move $f_1^*$ by more than 0.005. The road buffer does: without a buffer $f_1^*=0.564$, with a 50\,m buffer 0.650, because more roads are cut. Restricting the facility proxies to schools alone gives four open depots, $f_1^*=0.611$ and $f_2=21.08$\,min. The plan is therefore robust to the logistic parameters we had to assume and sensitive to the flood extent on the roads, which is the quantity the remote-sensing chain measures.
 

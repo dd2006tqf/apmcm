@@ -137,6 +137,24 @@ Wetland & 293.59 & 25.46 & 76.89 & $-51.43$ \\
 
 On dry land covers the model raises false alarms: tree cover contributes 79.80\,km$^2$ of FP against only 33.46\,km$^2$ of real new flood, built-up land 19.38\,km$^2$ against 8.79\,km$^2$. Radar shadow behind tree canopies and smooth surfaces in villages look as dark as water. On wet land covers it misses flood: in wetland and areas that WorldCover maps as permanent water, the net error is $-51.43$ and $-24.11$\,km$^2$, because water that rose over a wetland or a lake margin is hard to tell from the water that was already there. The positive and negative nets cancel to the total $+85.71$\,km$^2$; the worst strata by absolute net error are tree, wetland and cropland.
 
+\begin{table}[H]
+\centering
+\caption{Detection rate by size of the reference patch}
+\label{tab:q1_patch}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Reference patch size & Patches & Area (km$^2$) & Baseline A & LightGBM \\
+\midrule
+$<0.005$\,km$^2$ & 33,122 & 41.7 & 88.3\% & 76.0\% \\
+$0.005$--$0.05$\,km$^2$ & 5,527 & 70.4 & 93.3\% & 85.8\% \\
+$>0.05$\,km$^2$ & 1,018 & 821.5 & 71.7\% & 77.8\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:q1_patch} splits the recall by the size of the reference patch, and the profile it shows is the opposite of a speckle-driven error. Baseline A detects 88.3\% of the smallest patches and only 71.7\% of the largest: it over-detects small water and misses large water. LightGBM is flat across the three classes (76.0, 85.8, 77.8) and is ahead of the baseline exactly on the patches above 0.05\,km$^2$ that carry 821.5 of the 933.4\,km$^2$ of reference water, 88\% of the total. Its net error is therefore a large-patch omission rather than a speckle problem, and patches above 0.05\,km$^2$ are the scale on which the spatial model of Problem~2 lifts IoU from 0.618 to 0.797.
+
 \subsection{Key Factors of Area Accuracy}
 
 To find the factors behind the tile error, each held-out tile gets label-free descriptors (raw SAR mean and standard deviation, share of bimodal sub-blocks, ENL, mean NDVI, WorldCover shares, optical invalid share) together with the reference flood share and the boundary density of the reference flood (perimeter over area). A gradient-boosted regressor on the same spatial folds predicts $|e_t|$ from these descriptors (out-of-fold $R^2=0.417$), and TreeSHAP values~\cite{lundberg2020trees} rank the factors. Fig.~\ref{fig:q1_error_drivers} combines this ranking with the land-cover decomposition.

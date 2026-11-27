@@ -62,7 +62,7 @@ In Problem~3 we co-register three Sentinel-1 passes (27 June, 4 July and 16 July
 
 Problem~4 ranks 393 settlement catchments on nine overlay indicators weighted by entropy--CRITIC--AHP and combined by \textbf{TOPSIS}; 13,954 people and 117\,km of roads are flooded, Shitang, Maling and Luancheng rank highest, and the ranking keeps Spearman 0.987 under weight perturbation.
 
-For Problem 5, a \textbf{location--allocation MILP} on the flood-cut network with assessment-based demand and priority is solved exactly by HiGHS. Six depots serve 7316 of the 13,948 people in the demand units; the weighted unmet share of \textbf{0.570} comes from 57 isolated units, not from capacity, and the 16 July image lowers it by 0.039.
+For Problem 5, a \textbf{location--allocation MILP} on the flood-cut network with assessment-based demand and priority is solved exactly by HiGHS. Six depots serve 7316 of the 13,948 people in the demand units; the weighted unmet share of \textbf{0.570} equals the weighted demand of the 57 units the water cut off, so it is a proven floor rather than a slack allocation, and across 600 demand and network scenarios its CVaR$_{95}$ is \textbf{0.651}. The 16 July image lowers the share by 0.039.
 
 Sensitivity tests show that the Hengzhou area varies about twofold with the terrain guard, while grade, ranking and the isolation finding stay stable\cite{deepseek2026,qwen2026,doubao2026}.
 

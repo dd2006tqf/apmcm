@@ -32,7 +32,7 @@ for k, (key, name) in enumerate([('A', 'A: split-Otsu $-$ NDWI'), ('B', 'B: Ligh
     ax.set_xlabel('Mean area (km$^2$/tile)')
     if k == 0:
         ax.set_ylabel('Estimate $-$ reference (km$^2$/tile)')
-    ax.set_title(name, loc='right', pad=3)
+    ax.set_title(name, pad=4, fontsize=9)
     panel(ax, 'ab'[k])
     lax = fig.add_subplot(gs[1, k]); lax.set_axis_off()
     lax.legend(*ax.get_legend_handles_labels(), loc='center', ncol=1, frameon=False)

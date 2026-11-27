@@ -1,53 +1,118 @@
-"""Q2 ablation as waterfalls M1 -> M6 for IoU, MAE_A and |RAE| on the same 1000 held-out tiles.
-Each step shows the change caused by one added component; dashed line = LightGBM M0."""
-import os, sys
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _figcommon import *
-from matplotlib.patches import Patch
-from matplotlib.lines import Line2D
+"""Q2 ablation as a step-wise dumbbell cascade (M1 -> M6) for IoU, MAE_A and |RAE|."""
+import os, sys, json
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.ticker import FormatStrFormatter
 
-T = load('problem_2_results.json')['table']
-seq = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6']
-steps = ['M1\nSAR', '+optical\nfusion', '+area\nloss', '+modality\ndropout', '+MC\ndropout', '+isotonic\n$\\tau_A$', 'M6']
-metrics = [('IoU', 'IoU', 1, 1.0), ('MAE_A', 'MAE$_A$ (km$^2$/tile)', -1, 1.0), ('RAE', '|RAE| (%)', -1, 100.0)]
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FIG = os.path.join(ROOT, "figures")
+SKILL = os.path.join(os.path.expanduser("~"), "AppData", "Local", "Doubao", "User Data", "Default",
+                     ".doubao", "agent_mode", "workspace", ".user_skills", "nature-figure", "scripts")
+sys.path.insert(0, SKILL)
+from audit_panel_alignment import require_matplotlib_panel_alignment
 
-fig = plt.figure(figsize=(6.6, 5.4), layout='constrained')
-set_paper_placement(fig, width_fraction=0.98)
-gs = fig.add_gridspec(4, 1, height_ratios=[0.12, 1, 1, 1])
-axes = []
-for r, (key, ylabel, better, scale) in enumerate(metrics):
-    ax = fig.add_subplot(gs[r + 1, 0], sharex=axes[0] if axes else None)
-    axes.append(ax)
-    v = np.array([abs(T[m][key]) if key == 'RAE' else T[m][key] for m in seq]) * scale
-    ref0 = (abs(T['M0'][key]) if key == 'RAE' else T['M0'][key]) * scale
-    x = np.arange(len(steps))
-    ax.bar(0, v[0], color=C['neutral_mid'], width=0.62)
-    ax.text(0, v[0], f'{v[0]:.3g}', ha='center', va='bottom')
-    for i in range(1, len(seq)):
-        d = v[i] - v[i - 1]
-        good = d * better > 0
-        col = C['green_3'] if good else C['red_2']
-        edge = C['teal'] if good else C['red_strong']
-        ax.bar(i, d, bottom=v[i - 1], color=col, edgecolor=edge, lw=0.7, width=0.62)
-        ax.plot([i - 1 + 0.31, i - 0.31], [v[i - 1], v[i - 1]], color=C['neutral_dark'], lw=0.6)
-        ax.text(i, max(v[i], v[i - 1]), (r'$\pm$<0.001' if abs(d) < 5e-4 else f'{d:+.3f}') if scale == 1 else f'{d:+.1f}', ha='center', va='bottom')
-    ax.plot([len(seq) - 1 + 0.31, len(seq) - 0.31], [v[-1], v[-1]], color=C['neutral_dark'], lw=0.6)
-    ax.bar(len(seq), v[-1], color=C['blue_main'], width=0.62)
-    ax.text(len(seq), v[-1], f'{v[-1]:.3g}', ha='center', va='bottom')
-    ax.axhline(ref0, color=C['neutral_black'], lw=0.9, ls='--')
-    top = max(v.max(), ref0)
-    ax.set_ylim(0, top * 1.22)
-    ax.set_ylabel(ylabel)
-    panel(ax, 'abc'[r])
-axes[-1].xaxis.set_minor_locator(plt.NullLocator())
-axes[-1].set_xticks(np.arange(len(steps)), steps)
-for ax in axes[:-1]:
-    plt.setp(ax.get_xticklabels(), visible=False)
-lax = fig.add_subplot(gs[0, 0]); lax.set_axis_off()
-lax.legend(handles=[Patch(facecolor=C['neutral_mid'], label='Start (M1)'),
-                    Patch(facecolor=C['green_3'], edgecolor=C['teal'], label='Step improves'),
-                    Patch(facecolor=C['red_2'], edgecolor=C['red_strong'], label='Step worsens'),
-                    Patch(facecolor=C['blue_main'], label='Final (M6)'),
-                    Line2D([], [], color=C['neutral_black'], ls='--', label='LightGBM M0')],
-           loc='center', ncol=5, frameon=False, handlelength=1.3, columnspacing=1.0)
-finish(fig, 'fig_q2_ablation')
+DATA = os.path.join(FIG, "problem_2_results.json")
+
+GRAY = "#767676"; DARK = "#272727"
+GREEN = "#8BCF8B"; GREEN_EDGE = "#3C7A4E"
+RED = "#B64342"; RED_FILL = "#E6B0AF"
+ARROW = "#9A9A9A"
+
+mpl.rcParams.update({
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Arial", "DejaVu Sans", "Liberation Sans"],
+    "svg.fonttype": "none",
+    "pdf.fonttype": 42,
+    "font.size": 8.5,
+    "axes.spines.right": False,
+    "axes.spines.top": False,
+    "axes.linewidth": 0.7,
+    "legend.frameon": False,
+    "axes.titlesize": 9,
+    "axes.labelsize": 8.5,
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 7.8,
+})
+
+
+def fmt(delta, key):
+    if abs(delta) < 5e-4:
+        return "\u00b1<0.001"
+    if key == "RAE":
+        return f"{delta:+.1f}"
+    return f"{delta:+.3f}"
+
+
+def draw_panel(ax, key, title, rows, ylabels, letter, formatter, m0):
+    better = 1 if key == "IoU" else -1
+    n = len(rows)
+    for i, row in enumerate(rows):
+        y = n - 1 - i
+        start, end = row["prev"], row["curr"]
+        good = (end - start) * better > 0
+        fill = GREEN if good else RED_FILL
+        edge = GREEN_EDGE if good else RED
+        ax.annotate("", xy=(end, y), xytext=(start, y),
+                    arrowprops=dict(arrowstyle="-|>", color=ARROW, lw=0.8,
+                                    shrinkA=2.4, shrinkB=3.0, mutation_scale=6))
+        ax.plot(start, y, marker="o", mfc="white", mec=GRAY, mew=0.8, ms=4.2, zorder=3)
+        ax.plot(end, y, marker="o", mfc=fill, mec=edge, mew=0.9, ms=5.0, zorder=4)
+        ax.text((start + end) / 2, y + 0.24, fmt(end - start, key),
+                ha="center", va="bottom", fontsize=7.5, color=DARK, zorder=5)
+
+    ax.axvline(m0, color=DARK, lw=0.8, ls="--", zorder=0)
+    ax.set_ylim(-0.55, n - 0.05)
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(ylabels if letter == "a" else [])
+    ax.tick_params(axis="y", length=0, pad=4)
+    ax.set_title(title, fontsize=8.5, pad=2, color=DARK)
+    ax.xaxis.set_major_formatter(formatter)
+    for s in ("left", "right", "top"):
+        ax.spines[s].set_visible(False)
+    ax.text(0.01, 0.99, letter, transform=ax.transAxes, ha="left", va="top",
+            fontsize=9.5, fontweight="bold", color=DARK, zorder=5)
+
+
+def main():
+    d = json.load(open(DATA, encoding="utf-8"))["table"]
+    seq = ["M1", "M2", "M3", "M4", "M5", "M6"]
+    ylabels = ["M5\u2192M6\n+isotonic", "M4\u2192M5\n+MC", "M3\u2192M4\n+modality",
+               "M2\u2192M3\n+area", "M1\u2192M2\n+optical"]
+    specs = [("IoU", "IoU", "IoU", 1.0, 0.50, 0.82),
+             ("MAE_A", "MAE (km\u00b2/tile)", "MAE_A", 1.0, 0.12, 0.55),
+             ("RAE", "|RAE| (%)", "RAE", 100.0, 0.0, 38.0)]
+
+    fig, axes = plt.subplots(1, 3, figsize=(7.2, 2.8), constrained_layout=False)
+    fig.subplots_adjust(left=0.115, right=0.995, bottom=0.18, top=0.86, wspace=0.10)
+    for ax, (key, title, field, scale, lo, hi), letter in zip(axes, specs, "abc"):
+        vals = [d[m][field] * scale for m in seq]
+        m0 = d["M0"][field] * scale
+        rows = [{"prev": vals[i], "curr": vals[i + 1]} for i in range(len(vals) - 1)]
+        if key == "RAE":
+            formatter = FormatStrFormatter("%.0f")
+        else:
+            formatter = FormatStrFormatter("%.2f")
+        draw_panel(ax, key, title, rows, ylabels, letter, formatter, m0)
+        ax.set_xlim(lo, hi)
+
+    fig.canvas.draw()
+    require_matplotlib_panel_alignment(
+        fig, json_out=os.path.join(FIG, "fig_q2_ablation.alignment.json"),
+        overlay_svg=os.path.join(FIG, "fig_q2_ablation.alignment.svg"),
+        tolerance_pt=1.5, gutter_tolerance_pt=1.5,
+        row_groups=[["a", "b", "c"]], strict=True)
+    fig.savefig(os.path.join(FIG, "fig_q2_ablation.svg"), bbox_inches="tight", pad_inches=0.03)
+    fig.savefig(os.path.join(FIG, "fig_q2_ablation.pdf"), bbox_inches="tight", pad_inches=0.03)
+    fig.savefig(os.path.join(FIG, "fig_q2_ablation.png"), dpi=300, bbox_inches="tight", pad_inches=0.03)
+    fig.savefig(os.path.join(FIG, "fig_q2_ablation.tiff"), dpi=600,
+                bbox_inches="tight", pad_inches=0.03,
+                pil_kwargs={"compression": "tiff_lzw"})
+    plt.close(fig)
+
+
+if __name__ == "__main__":
+    main()
+
+

@@ -1,0 +1,195 @@
+{
+ "epochs_max": 40,
+ "n_runs": 20,
+ "n_params": [
+  1964097,
+  2302289,
+  2302433
+ ],
+ "mean_epochs_run": 28.75,
+ "frac_stopped_early": 0.8,
+ "frac_budget_used": 0.71875,
+ "runs": [
+  {
+   "run": "M1_fold0",
+   "n_params": 1964097,
+   "epochs_run": 26,
+   "epochs_max": 40,
+   "best_epoch": 17,
+   "best_cal_MAE": 0.4837803244590759,
+   "seconds": 119.73771667480469
+  },
+  {
+   "run": "M1_fold1",
+   "n_params": 1964097,
+   "epochs_run": 15,
+   "epochs_max": 40,
+   "best_epoch": 6,
+   "best_cal_MAE": 0.5171566009521484,
+   "seconds": 64.32878565788269
+  },
+  {
+   "run": "M1_fold2",
+   "n_params": 1964097,
+   "epochs_run": 19,
+   "epochs_max": 40,
+   "best_epoch": 10,
+   "best_cal_MAE": 0.6481841206550598,
+   "seconds": 72.4985704421997
+  },
+  {
+   "run": "M1_fold3",
+   "n_params": 1964097,
+   "epochs_run": 36,
+   "epochs_max": 40,
+   "best_epoch": 27,
+   "best_cal_MAE": 0.41954126954078674,
+   "seconds": 121.63229441642761
+  },
+  {
+   "run": "M1_fold4",
+   "n_params": 1964097,
+   "epochs_run": 29,
+   "epochs_max": 40,
+   "best_epoch": 20,
+   "best_cal_MAE": 0.3750360906124115,
+   "seconds": 102.07287359237671
+  },
+  {
+   "run": "M2_fold0",
+   "n_params": 2302289,
+   "epochs_run": 24,
+   "epochs_max": 40,
+   "best_epoch": 15,
+   "best_cal_MAE": 0.13913725316524506,
+   "seconds": 124.73876428604126
+  },
+  {
+   "run": "M2_fold1",
+   "n_params": 2302289,
+   "epochs_run": 31,
+   "epochs_max": 40,
+   "best_epoch": 22,
+   "best_cal_MAE": 0.2105141282081604,
+   "seconds": 145.64653372764587
+  },
+  {
+   "run": "M2_fold2",
+   "n_params": 2302289,
+   "epochs_run": 36,
+   "epochs_max": 40,
+   "best_epoch": 27,
+   "best_cal_MAE": 0.1110130175948143,
+   "seconds": 173.02034664154053
+  },
+  {
+   "run": "M2_fold3",
+   "n_params": 2302289,
+   "epochs_run": 40,
+   "epochs_max": 40,
+   "best_epoch": 37,
+   "best_cal_MAE": 0.10317839682102203,
+   "seconds": 179.82355403900146
+  },
+  {
+   "run": "M2_fold4",
+   "n_params": 2302289,
+   "epochs_run": 21,
+   "epochs_max": 40,
+   "best_epoch": 12,
+   "best_cal_MAE": 0.1667625904083252,
+   "seconds": 96.6614100933075
+  },
+  {
+   "run": "M3_fold0",
+   "n_params": 2302289,
+   "epochs_run": 36,
+   "epochs_max": 40,
+   "best_epoch": 27,
+   "best_cal_MAE": 0.1374163180589676,
+   "seconds": 162.32058882713318
+  },
+  {
+   "run": "M3_fold1",
+   "n_params": 2302289,
+   "epochs_run": 27,
+   "epochs_max": 40,
+   "best_epoch": 18,
+   "best_cal_MAE": 0.20563827455043793,
+   "seconds": 123.7341616153717
+  },
+  {
+   "run": "M3_fold2",
+   "n_params": 2302289,
+   "epochs_run": 21,
+   "epochs_max": 40,
+   "best_epoch": 12,
+   "best_cal_MAE": 0.13864479959011078,
+   "seconds": 100.9102303981781
+  },
+  {
+   "run": "M3_fold3",
+   "n_params": 2302289,
+   "epochs_run": 36,
+   "epochs_max": 40,
+   "best_epoch": 27,
+   "best_cal_MAE": 0.10743297636508942,
+   "seconds": 156.4431893825531
+  },
+  {
+   "run": "M3_fold4",
+   "n_params": 2302289,
+   "epochs_run": 40,
+   "epochs_max": 40,
+   "best_epoch": 36,
+   "best_cal_MAE": 0.1464453786611557,
+   "seconds": 175.84553933143616
+  },
+  {
+   "run": "M4_fold0",
+   "n_params": 2302433,
+   "epochs_run": 40,
+   "epochs_max": 40,
+   "best_epoch": 38,
+   "best_cal_MAE": 0.1449422538280487,
+   "seconds": 184.54267692565918
+  },
+  {
+   "run": "M4_fold1",
+   "n_params": 2302433,
+   "epochs_run": 23,
+   "epochs_max": 40,
+   "best_epoch": 14,
+   "best_cal_MAE": 0.2932072877883911,
+   "seconds": 108.42265200614929
+  },
+  {
+   "run": "M4_fold2",
+   "n_params": 2302433,
+   "epochs_run": 20,
+   "epochs_max": 40,
+   "best_epoch": 11,
+   "best_cal_MAE": 0.18604514002799988,
+   "seconds": 93.37152171134949
+  },
+  {
+   "run": "M4_fold3",
+   "n_params": 2302433,
+   "epochs_run": 40,
+   "epochs_max": 40,
+   "best_epoch": 31,
+   "best_cal_MAE": 0.13752073049545288,
+   "seconds": 180.17858171463013
+  },
+  {
+   "run": "M4_fold4",
+   "n_params": 2302433,
+   "epochs_run": 15,
+   "epochs_max": 40,
+   "best_epoch": 6,
+   "best_cal_MAE": 0.2568492591381073,
+   "seconds": 69.29714846611023
+  }
+ ],
+ "note": "All variants share the same 4-level U-Net (widths 16/32/64/128, bottleneck 256); early stopping is patience 8 on calibration MAE."
+}

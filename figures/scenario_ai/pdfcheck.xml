@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pdf2xml SYSTEM "pdf2xml.dtd">
+
+<pdf2xml producer="poppler" version="23.13.0">
+<page number="1" position="absolute" top="0" left="0" height="237" width="778">
+	<fontspec id="0" size="9" family="CALRFJ+ArialMT" color="#2e5f77"/>
+	<fontspec id="1" size="9" family="GANZNG+DejaVuSans" color="#2e5f77"/>
+	<fontspec id="2" size="6" family="GZAAWY+DejaVuSans" color="#2e5f77"/>
+	<fontspec id="3" size="9" family="CALRFJ+ArialMT" color="#24313a"/>
+	<fontspec id="4" size="9" family="CALRFJ+ArialMT" color="#96551f"/>
+	<fontspec id="5" size="9" family="CALRFJ+ArialMT" color="#a5433b"/>
+	<fontspec id="6" size="13" family="MWOAYY+Arial" color="#24313a"/>
+	<fontspec id="7" size="10" family="CALRFJ+ArialMT" color="#24313a"/>
+<image top="18" left="4" width="378" height="211" src="E:\华数数据\workspaces\f7ba95ca861e\figures\scenario_ai\pdfcheck-1_1.png"/>
+<image top="18" left="395" width="378" height="211" src="E:\华数数据\workspaces\f7ba95ca861e\figures\scenario_ai\pdfcheck-1_2.png"/>
+<text top="45" left="62" width="33" height="10" font="0">channel </text>
+<text top="45" left="96" width="9" height="10" font="1"><i>W</i></text>
+<text top="49" left="104" width="4" height="7" font="2">0</text>
+<text top="139" left="170" width="43" height="10" font="3">valley road</text>
+<text top="66" left="271" width="71" height="10" font="3">terrace settlement</text>
+<text top="98" left="77" width="22" height="10" font="4">depot</text>
+<text top="135" left="676" width="62" height="10" font="0">new inundation </text>
+<text top="135" left="738" width="5" height="10" font="1"><i>F</i></text>
+<text top="148" left="570" width="32" height="10" font="5">road cut</text>
+<text top="63" left="589" width="51" height="10" font="3">island village</text>
+<text top="73" left="589" width="36" height="10" font="3">boat only</text>
+<text top="89" left="555" width="17" height="10" font="0">boat</text>
+<text top="1" left="9" width="7" height="14" font="6"><b>a</b></text>
+<text top="3" left="26" width="72" height="11" font="7">Before the flood</text>
+<text top="1" left="400" width="8" height="14" font="6"><b>b</b></text>
+<text top="3" left="417" width="72" height="11" font="7">During the flood</text>
+</page>
+</pdf2xml>

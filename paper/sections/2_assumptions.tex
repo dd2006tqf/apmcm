@@ -2,9 +2,9 @@
 
 \subsection{Model Assumptions}
 
-The following simplifications are needed because the data do not fix them; each assumed parameter is varied in the sensitivity analyses of the problem where it is used.
+The following simplifications are needed because the data do not fix them; each assumed parameter is varied in the sensitivity analyses of the problem where it is used\cite{deepseek2026,qwen2026,doubao2026}.
 
-(1) Tiles of the official dataset inside one block of $5\times5$ tile positions (about $10.4\times11.9$\,km) are spatially dependent, while different blocks are exchangeable. Floods and land cover are autocorrelated over kilometres, so random tile or pixel splits would leak information; block-level independence is what makes held-out metrics and conformal intervals meaningful.
+(1) Tiles of the official dataset inside one block of $5\times5$ tile positions (about $10.4\times11.9$\,km) are spatially dependent, while different blocks are exchangeable. Floods and land cover are autocorrelated over kilometers, so random tile or pixel splits would leak information; block-level independence is what makes held-out metrics and conformal intervals meaningful.
 
 (2) The GF-3 uint8 value is a monotone function of radar backscatter whose radiometric scale is unknown. No calibration metadata is supplied, so the models only see per-tile rank-normalized SAR, and for Sentinel-1 the scale (dB or amplitude) is chosen by distribution matching.
 
@@ -12,7 +12,7 @@ The following simplifications are needed because the data do not fix them; each 
 
 (4) Pre-flood water is the union of independent water sources (pre-flood SAR water, WorldCover water class, OSM water polygons). The union never counts a permanent water pixel as new, so it yields a conservative newly inundated area.
 
-(5) Population is static at the WorldPop 2020 level and uniform inside each 100\,m cell, and every town or city node hosts a township health centre that can act as relief depot and facility proxy. No 2026 population grid exists, and OSM lists only five public-service points in the city.
+(5) Population is static at the WorldPop 2020 level and uniform inside each 100\,m cell, and every town or city node hosts a township health center that can act as relief depot and facility proxy. No 2026 population grid exists, and OSM lists only five public-service points in the city.
 
 (6) Relief need, depot capacities, fleet and time limits are scenario parameters: 3.5\,kg per person per day (survival water plus ration, Sphere minimum standards) over a 3-day horizon, 60\,t per town depot, 200\,t for the city depot, at most six open depots, 40 trucks of 5\,t and a one-way delivery limit of 120\,min.
 

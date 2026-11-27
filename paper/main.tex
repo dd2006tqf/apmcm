@@ -54,17 +54,17 @@ Probabilistic Intensity Grading and Flood-Cut Relief Allocation in Hengzhou\par}
 \zihao{5}
 Flood relief needs to know where new water stands, whom it reaches and which roads it cuts. This paper analyzes the newly inundated set $F=W_1\setminus W_0$ from pre-flood optical and post-flood SAR imagery, jointly considers area error, intensity, exposure and road isolation, and builds a five-stage chain from recognition to relief allocation in Hengzhou.
 
-For Problem 1, a test on all 65.5 million valid pixels first shows that the official labels mark new inundation (only 2.37\% of flooded labels were water before). After per-tile rank normalization and Lee filtering, a \textbf{LightGBM} classifier evaluated by spatially blocked five-fold validation reaches IoU 0.598 and a total area error of \textbf{+9.2\%} (split-Otsu baseline: +141\%). Tree cover causes most false alarms, wetland most misses.
+For Problem 1, a test on all 65.5 million valid pixels first shows that the official labels mark new inundation (only 2.37\% of flooded labels were water before). After per-tile rank normalization and Lee filtering, a \textbf{LightGBM} classifier evaluated by spatially blocked five-fold validation reaches IoU 0.618 and a total area error of \textbf{$-0.2\%$} after a 50 px minimum mapping unit (MMU; raw: 0.598 and $+9.2\%$; split-Otsu baseline: $+134\%$). Tree cover causes most false alarms, wetland most misses; the MMU removes isolated false alarms, not the baseline's connected over-detection.
 
-For Problem 2, a \textbf{dual-branch gated SAR--optical U-Net} with focal, Dice and area-consistency loss, isotonic calibration and an area-preserving threshold reduces the area error to \textbf{+1.45\%} (IoU 0.732; hard-tile IoU 0.266 to 0.562). Bayes boundaries of a Gaussian mixture on the logit flood share give grade thresholds of \textbf{5.9\%, 53.0\% and 96.9\%}; Monte Carlo grade probabilities give 86.2\% correct grades against 54.3\% for LightGBM.
+In Problem~2 a \textbf{dual-branch gated SAR--optical U-Net} with focal, Dice and area-consistency loss reaches IoU \textbf{0.797} and an area error of \textbf{+0.9\%} in-domain after the same 50 px MMU, and raises hard-tile IoU from 0.266 to 0.648; its modality-dropout calibration variant, used for SAR-only transfer, reaches \textbf{+1.45\%} (IoU 0.730; hard-tile 0.562). Bayes boundaries of a Gaussian mixture on the logit flood share give grade thresholds of \textbf{5.9\%, 53.0\% and 96.9\%}; Monte Carlo grade probabilities give 86.2\% correct grades against 54.3\% for LightGBM.
 
-For Problem 3, Sentinel-1 passes of 27 June, 4 July and 16 July 2026 are co-registered (removing a 5.4--6.2\,km offset) and the frozen model is applied with terrain, change and minimum-area guards. New inundation on 16 July is \textbf{26.90\,km$^2$} (0.78\% of the city, grade general), the net increase is $-52.53$\,km$^2$ because a wet baseline receded, and 4 July gives 24.53\,km$^2$.
+In Problem~3 we co-register three Sentinel-1 passes (27 June, 4 July and 16 July 2026) to remove a 5.4--6.2\,km offset, and apply the frozen model with terrain, change and minimum-area guards. New inundation on 16 July is \textbf{26.90\,km$^2$} (0.78\% of the city, grade general), the net increase is $-52.53$\,km$^2$ because a wet baseline receded, and 4 July gives 24.53\,km$^2$.
 
-For Problem 4, 393 settlement catchments are scored by nine overlay indicators with entropy--CRITIC--AHP weights and \textbf{TOPSIS}; 13,954 people and 117\,km of roads are flooded, Shitang, Maling and Luancheng rank highest, and the ranking keeps Spearman 0.987 under weight perturbation.
+Problem~4 ranks 393 settlement catchments on nine overlay indicators weighted by entropy--CRITIC--AHP and combined by \textbf{TOPSIS}; 13,954 people and 117\,km of roads are flooded, Shitang, Maling and Luancheng rank highest, and the ranking keeps Spearman 0.987 under weight perturbation.
 
-For Problem 5, a \textbf{location--allocation MILP} on the flood-cut network with assessment-based demand and priority is solved exactly by HiGHS. Six depots serve 7316 of 13,948 people; the weighted unmet share of \textbf{0.570} comes from 57 isolated units, not from capacity, and the 16 July image lowers it by 0.039.
+For Problem 5, a \textbf{location--allocation MILP} on the flood-cut network with assessment-based demand and priority is solved exactly by HiGHS. Six depots serve 7316 of the 13,948 people in the demand units; the weighted unmet share of \textbf{0.570} comes from 57 isolated units, not from capacity, and the 16 July image lowers it by 0.039.
 
-Sensitivity tests show that the Hengzhou area varies about twofold with the terrain guard, while grade, ranking and the isolation finding stay stable.
+Sensitivity tests show that the Hengzhou area varies about twofold with the terrain guard, while grade, ranking and the isolation finding stay stable\cite{deepseek2026,qwen2026,doubao2026}.
 
 \keywords{newly inundated area; SAR--optical gated fusion; area-preserving calibration; Gaussian-mixture intensity grading; location--allocation MILP}
 \end{abstract}
@@ -89,16 +89,16 @@ Sensitivity tests show that the Hengzhou area varies about twofold with the terr
 
 \noindent To: Emergency Management Bureau of Hengzhou City, Guangxi\\
 From: APMCM Team apmcm26300025\\
-Date: 26 November 2026\\
+Date: 27 November 2026\\
 Subject: Using satellite flood maps for relief allocation in Hengzhou
 
 \medskip
 
 Dear Director,
 
-We have analysed the flood around 6 July 2026 in Hengzhou with radar satellite images and public geographic data, and we used the results to plan the distribution of relief supplies. This letter summarizes what we found and proposes measures for monitoring, information updates and the allocation of rescue resources.
+We analyzed the flood around 6 July 2026 in Hengzhou with radar satellite images and public geographic data, and we used the results to plan the distribution of relief supplies\cite{deepseek2026,qwen2026,doubao2026}.
 
-\textbf{What the images show.} The Sentinel-1 radar passes of 4 July and 16 July show 24.5\,km$^2$ and 26.9\,km$^2$ of land that was dry on 27 June and is under water on the flood date, about 0.8\% of the city. By the intensity scale we derived from labelled flood images, this is a ``general'' flood at city level, but the water lies along the Yu River valley where people and roads are concentrated. On 16 July about 13,950 people lived on flooded land, 117\,km of roads were cut, and 75 settlement catchments had no road connection to an unflooded town centre or school. The most affected areas are Shitang, Maling, Luancheng, Yunbiao, Xiaoyi and Nayang; the village catchments of Maling town, Wangzhai, Xinxing, Yangjiang and Xinzhang rank highest.
+\textbf{What the images show.} The Sentinel-1 radar passes of 4 July and 16 July show 24.5\,km$^2$ and 26.9\,km$^2$ of land that was dry on 27 June and is under water on the flood date, about 0.8\% of the city. By the intensity scale we derived from labeled flood images, this is a ``general'' flood at city level, but the water lies along the Yu River valley where people and roads are concentrated. On 16 July about 13,950 people lived on flooded land, 117\,km of roads were cut, and 75 settlement catchments had no road connection to an unflooded town center or school. The most affected areas are Shitang, Maling, Luancheng, Yunbiao, Xiaoyi and Nayang; the village catchments of Maling town, Wangzhai, Xinxing, Yangjiang and Xinzhang rank highest.
 
 \textbf{Remote-sensing monitoring.} We recommend a radar-first monitoring protocol. Optical satellites were blind during the event: no cloud-free scene existed in June, and the nearest scene of 31 May could not be used. Radar sees through cloud, but no radar pass existed between 4 and 16 July, so the peak of the flood was not observed. The Bureau should request additional radar acquisitions through the emergency satellite tasking channels available to it as soon as a flood warning is issued, and keep one recent dry-season or pre-flood radar image of the whole city on file as the reference for change detection. Every new image should be checked for geolocation against known rivers before use: the images we obtained were displaced by 5.4--6.2\,km and would have produced a wrong flood map without correction.
 
@@ -106,7 +106,7 @@ We have analysed the flood around 6 July 2026 in Hengzhou with radar satellite i
 
 \textbf{Allocation of rescue resources.} For 16 July we recommend opening relief depots at Taoxu (about 40\,t of supplies over three days), Yunbiao (29\,t), Shitang (5.6\,t), the Gaocun school (2.0\,t), Zhenlong (0.7\,t) and Liujing (0.1\,t), with deliveries along the paths that avoid flooded roads. This serves about 7300 people within two hours of driving. The remaining 6600 people live almost entirely in the 57 affected catchments that no road vehicle can reach within two hours, and more depot stock or more trucks would not help them: in our calculations, raising depot capacity by half, adding 50\% more trucks or extending the delivery limit to four hours left the unserved share almost unchanged. These catchments need boats, high-clearance vehicles or helicopter drops, and pre-positioned supplies before the next flood. If speed matters more than coverage, for example for medicines, a plan that serves about 5200 people with an average delivery time of 4.8 minutes instead of 13 minutes is available.
 
-\textbf{Implementation conditions.} The measures assume that radar data arrive within a day of acquisition, that a small number of local field checks (a few dozen points with flood or no flood) can be collected after each event to recalibrate the image model, and that the Bureau holds an up-to-date list of township health centres, schools and shelters with their stock and access roads; our analysis had to use town centres as stand-ins because public data list only five facilities. Population figures are from 2020 and should be replaced by the current household register. The amount of relief per person (3.5\,kg per day of water and food) and depot capacities are planning values that the Bureau should set from its own norms; our results showed that the plan is not sensitive to them.
+\textbf{Implementation conditions.} The measures assume that radar data arrive within a day of acquisition, that a small number of local field checks (a few dozen points with flood or no flood) can be collected after each event to recalibrate the image model, and that the Bureau holds an up-to-date list of township health centers, schools and shelters with their stock and access roads; our analysis had to use town centers as stand-ins because public data list only five facilities. Population figures are from 2020 and should be replaced by the current household register. The amount of relief per person (3.5\,kg per day of water and food) and depot capacities are planning values that the Bureau should set from its own norms; our results showed that the plan is not sensitive to them.
 
 \textbf{Scope of applicability.} The method is suited to river floods on plains and valley floors that radar can observe, such as the Yu River corridor. It is less reliable for flash floods in steep terrain, for short floods between two passes, and for water under dense tree canopy or between tall buildings, where radar shadow mimics water and water can be hidden. On test images the model estimated the total flooded area within 1.5\%, but for a single small area the error can be several tens of percent, and in Hengzhou the flooded area depends on terrain filters by up to a factor of two. The intensity grade, the ranking of the most affected areas and the finding that road isolation, not supply, limits relief were stable in all our checks, and these are the results we recommend using for decisions.
 
@@ -120,11 +120,12 @@ APMCM Team apmcm26300025
 \bibliographystyle{unsrt}
 \bibliography{references}
 
+% === AI 工具使用声明（紧随参考文献）===
+\input{sections/Z_ai_disclosure}
+
 % === Appendix ===
 \begin{appendices}
 \input{appendix/A_code}
 \end{appendices}
 
-% === AI 工具使用声明（自动插入）===
-\input{sections/Z_ai_disclosure}
 \end{document}

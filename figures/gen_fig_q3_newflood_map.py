@@ -74,7 +74,7 @@ rr[rr['cut'].astype(bool)].geometry.scale(1e-3, 1e-3, origin=(0, 0)).plot(ax=ax2
 ax2.set_xlim(ext_b[0], ext_b[1]); ax2.set_ylim(ext_b[2], ext_b[3])
 ax2.set_aspect('equal')
 ax2.set_xlabel('Easting (km)')
-ax2.set_title(f'Zoom: $A_{{new}}$ = {zoom_km2:.2f} km$^2$', loc='right', pad=3)
+ax2.set_title(f'Zoom: $A_{{new}}$ = {zoom_km2:.2f} km$^2$', loc='right', pad=3, fontsize=10)
 panel(ax2, 'b')
 from matplotlib.lines import Line2D
 lax = fig.add_subplot(gs[1, :]); lax.set_axis_off()

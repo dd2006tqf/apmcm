@@ -3,7 +3,7 @@
 
 \subsection{Independent Samples by Spatially Blocked Cross-Validation}
 
-The problem asks for evaluation ``using independent samples''. Neighbouring tiles share the same flood and the same fields, so a random split of tiles, let alone of pixels, would put near-copies of a test tile into training. The 1000 tiles lie on a regular grid of $199\times42$ tile positions. We group them into 67 blocks of $5\times5$ positions (Assumption~1) and assign the blocks to five folds by a greedy stratified rule that balances tile count and flood area. For outer fold $k=0,\dots,4$,
+Evaluation has to use ``independent samples''. Neighboring tiles share the same flood and the same fields, so a random split of tiles, let alone of pixels, would put near-copies of a test tile into training. The 1000 tiles lie on a regular grid of $199\times42$ tile positions. We group them into 67 blocks of $5\times5$ positions (Assumption~1) and assign the blocks to five folds by a greedy stratified rule that balances tile count and flood area. For outer fold $k=0,\dots,4$,
 \begin{equation}
 \begin{split}
 \mathcal T^{test}_k&=\mathcal F_k,\\
@@ -46,11 +46,11 @@ RAE measures bias of the total, while MAE$_A$ measures how wrong a single tile i
 
 \subsection{Recognition Results on 1000 Held-out Tiles}
 
-Table~\ref{tab:q1_metrics} gives the pooled results. The two baselines differ by a factor of more than two in IoU and by a factor of 15 in total area bias.
+Table~\ref{tab:q1_metrics} gives the pooled results. The two baselines differ by a factor of more than two in IoU and by a factor of 15 in total area bias. A 50 px minimum mapping unit (MMU), applied identically to both, raises the LightGBM IoU from 0.598 to 0.618 and removes its total bias ($+9.2\%$ to $-0.2\%$), whereas baseline A moves only from 0.278 to 0.281 and stays at $+134\%$: the baseline's excess is a dense, connected over-detection, not speckle.
 
 \begin{table}[H]
 \centering
-\caption{Held-out performance of the Problem 1 recognizers}
+\caption{Problem 1 recognizers with and without the MMU}
 \label{tab:q1_metrics}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccccccc}
@@ -58,16 +58,25 @@ Table~\ref{tab:q1_metrics} gives the pooled results. The two baselines differ by
 Model & OA & Precision & Recall & F1 & IoU & $\kappa$ & RAE & MAE$_A$ (km$^2$) & median $|\mathrm{RAE}_t|$ \\
 \midrule
 A: split-Otsu $-$ NDWI & 0.634 & 0.308 & 0.740 & 0.435 & 0.278 & 0.227 & $+1.406$ & 1.756 & 2.84 \\
+A + 50 px MMU & 0.643 & 0.313 & 0.733 & 0.438 & 0.281 & 0.234 & $+1.343$ & 1.710 & 2.49 \\
 B: LightGBM (M0) & 0.900 & 0.717 & 0.783 & 0.749 & 0.598 & 0.686 & $+0.092$ & 0.430 & 0.52 \\
+B + 50 px MMU & 0.911 & 0.765 & 0.763 & 0.764 & 0.618 & 0.709 & $-0.002$ & 0.368 & 0.36 \\
 \bottomrule
 \end{tabular}}
 \end{table}
 
-The 1000 reference tiles contain 933.41\,km$^2$ of new inundation. LightGBM returns 1019.12\,km$^2$, 9.2\% above the reference (an excess of 85.71\,km$^2$). Its fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ (IoU 0.546--0.622), so the pooled value hides a spread that a single random split would never show. Baseline A finds 74\% of the flooded pixels but also labels 2245.66\,km$^2$ as new water, 2.4 times the reference. The reason is visible in its own diagnostic: the Ashman test of \eqref{eq:ashman} passes on 92\% of the sub-blocks, also on tiles without water, because dark fields and bright villages form a bimodal histogram too. We report this as a finding about the baseline and did not tune it on the test labels.
+The 1000 reference tiles contain 933.41\,km$^2$ of new inundation. LightGBM returns 1019.12\,km$^2$, 9.2\% above the reference (an excess of 85.71\,km$^2$). After the 50 px MMU the same classifier returns 931.30\,km$^2$, 0.2\% below the reference; 79\% of the removed pixels were false positives (FP falls from 3.84 to 2.92\,M pixels while TP falls only from 9.75 to 9.50\,M). Its fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ (IoU 0.546--0.622), so the pooled value hides a spread that a single random split would never show. Baseline A finds 74\% of the flooded pixels but also labels 2245.66\,km$^2$ as new water, 2.4 times the reference; the same MMU removes only 58\,km$^2$, because its over-detection is connected. The reason is visible in its own diagnostic: the Ashman test of \eqref{eq:ashman} passes on 92\% of the sub-blocks, also on tiles without water, because dark fields and bright villages form a bimodal histogram too. We report this as a finding about the baseline and did not tune it on the test labels. The sweep applies the MMU directly to the probability mask, with no morphological closing. Fig.~\ref{fig:q1_mmu} sweeps the threshold: 25 px leaves $+3.7\%$, 50 px gives $-0.2\%$, and 100 px buys only 0.6 pp more IoU at the cost of $-5.5\%$ bias, so 50 px is the knee rather than a test-tuned maximum.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q1_mmu.pdf}
+  \caption{Minimum mapping unit sweep for Problem 1}
+  \label{fig:q1_mmu}
+\end{figure}
 
 The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q1_visual_cmp} therefore shows four held-out tiles of increasing flood share, each predicted by the model of the fold in which it was a test tile; columns 4--6 are confusion maps (true positives, FP, FN) of baseline A, LightGBM and the final Problem~2 model M6.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q1_visual_cmp.pdf}
   \caption{Held-out predictions on four official tiles}
@@ -76,12 +85,12 @@ The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q
 
 On tile 1446, where only 1.8\% of the area is flooded, every method fails in the same way: baseline A reaches IoU 0.052 with a relative area error of $+18.2$, and LightGBM still predicts 4.65 times the reference area (RAE$_t=+3.65$), because a few dark fields form most of the prediction. On the medium tiles 1074 ($\rho=7.4\%$) and 1265 ($\rho=30.5\%$) LightGBM has IoU 0.707 and 0.734 and area errors of $+27\%$ and $+15\%$; the false alarms sit along field edges and the misses inside vegetated patches. On the almost fully flooded tile 1655 ($\rho=97.3\%$) LightGBM reaches IoU 0.959 and M6 0.980 with an area error of $+0.4\%$. Relative area error is therefore driven by small reference areas, not by poor pixel classification, which is why the per-tile error has to be read together with the total.
 
-Every held-out tile is also exported as a mask, and Fig.~\ref{fig:q1_pred_set} shows five of them that do not appear in Fig.~\ref{fig:q1_visual_cmp}, spanning a reference share from 2\% to 94\%. At the almost dry tile 1720 baseline A labels half of the tile as water, while LightGBM stays at 5.2\%; at the flooded tiles both follow the water outline.
+Every held-out tile is also exported as a mask, and Fig.~\ref{fig:q1_pred_set} shows five of them that do not appear in Fig.~\ref{fig:q1_visual_cmp}, spanning a reference share from 2\% to 94\%. At the almost dry tile 1720 baseline A labels half of the tile as water, while LightGBM stays at 5.2\%; at the flooded tiles both follow the water outline. The upper row is baseline A and the lower row LightGBM; new water is blue.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q1_pred_examples.pdf}
-  \caption{Exported tile masks: baseline A (top) and LightGBM M0 (bottom), new water in blue}
+  \caption{Exported tile masks of baseline A and LightGBM}
   \label{fig:q1_pred_set}
 \end{figure}
 
@@ -90,7 +99,7 @@ That observation becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q1_area_agreement.pdf}
-  \caption{Bland--Altman agreement of tile new-inundation area}
+  \caption{Bland--Altman agreement of tile area}
   \label{fig:q1_area_agreement}
 \end{figure}
 
@@ -98,18 +107,18 @@ Baseline A over-estimates by $+1.31$\,km$^2$ per tile on average, with 95\% limi
 
 \subsection{False Positives and False Negatives by Land Cover}
 
-The problem asks how FP and FN under different land covers affect the area. With land-cover stratum $c$, identity \eqref{eq:fpfn_identity} decomposes exactly:
+False positives and false negatives differ by land cover, and the area error decomposes with them. With land-cover stratum $c$, identity \eqref{eq:fpfn_identity} decomposes exactly:
 \begin{equation}
 \mathrm{FP}_c=\sum_{p\in c}a_p\hat y_p(1-y_p),\qquad
 \mathrm{FN}_c=\sum_{p\in c}a_p(1-\hat y_p)y_p,\qquad
 \Delta A=\sum_c(\mathrm{FP}_c-\mathrm{FN}_c).
 \label{eq:fpfn_strata}
 \end{equation}
-The attachment carries no land cover, so the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbour; this describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
+The attachment carries no land cover, so the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbor; this describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
 
 \begin{table}[H]
 \centering
-\caption{Area decomposition of LightGBM errors by pre-flood land cover (km$^2$)}
+\caption{LightGBM area error by pre-flood land cover}
 \label{tab:q1_fpfn}
 \begin{tabular}{lcccc}
 \toprule
@@ -126,21 +135,21 @@ Wetland & 293.59 & 25.46 & 76.89 & $-51.43$ \\
 \end{tabular}
 \end{table}
 
-The table shows two opposite mechanisms. On dry land covers the model raises false alarms: tree cover contributes 79.80\,km$^2$ of FP against only 33.46\,km$^2$ of real new flood, built-up land 19.38\,km$^2$ against 8.79\,km$^2$. Radar shadow behind tree canopies and smooth surfaces in villages look as dark as water. On wet land covers it misses flood: in wetland and areas that WorldCover maps as permanent water, the net error is $-51.43$ and $-24.11$\,km$^2$, because water that rose over a wetland or a lake margin is hard to tell from the water that was already there. The positive and negative nets cancel to the total $+85.71$\,km$^2$; the worst strata by absolute net error are tree, wetland and cropland.
+On dry land covers the model raises false alarms: tree cover contributes 79.80\,km$^2$ of FP against only 33.46\,km$^2$ of real new flood, built-up land 19.38\,km$^2$ against 8.79\,km$^2$. Radar shadow behind tree canopies and smooth surfaces in villages look as dark as water. On wet land covers it misses flood: in wetland and areas that WorldCover maps as permanent water, the net error is $-51.43$ and $-24.11$\,km$^2$, because water that rose over a wetland or a lake margin is hard to tell from the water that was already there. The positive and negative nets cancel to the total $+85.71$\,km$^2$; the worst strata by absolute net error are tree, wetland and cropland.
 
 \subsection{Key Factors of Area Accuracy}
 
 To find the factors behind the tile error, each held-out tile gets label-free descriptors (raw SAR mean and standard deviation, share of bimodal sub-blocks, ENL, mean NDVI, WorldCover shares, optical invalid share) together with the reference flood share and the boundary density of the reference flood (perimeter over area). A gradient-boosted regressor on the same spatial folds predicts $|e_t|$ from these descriptors (out-of-fold $R^2=0.417$), and TreeSHAP values~\cite{lundberg2020trees} rank the factors. Fig.~\ref{fig:q1_error_drivers} combines this ranking with the land-cover decomposition.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q1_error_drivers.pdf}
   \caption{Error structure of the Problem 1 model}
   \label{fig:q1_error_drivers}
 \end{figure}
 
-Panel (a) of Fig.~\ref{fig:q1_error_drivers} repeats the FP/FN bars of Table~\ref{tab:q1_fpfn} and adds the net error of the Problem~2 model M6 for later comparison. Panel (b) ranks the drivers of absolute tile error by mean $|\mathrm{SHAP}|$: the raw SAR standard deviation is first (0.196), followed by tree share (0.077), boundary density of the flood (0.074), ENL (0.073), NDVI mean (0.057), bimodality share (0.050) and pre-flood water share (0.045). High SAR variance and low ENL mean strong speckle and mixed scattering, tree share is the FP mechanism of Table~\ref{tab:q1_fpfn}, and a high boundary density means fragmented flood that a pixel classifier cuts into pieces. For the signed error the reference flood share comes first, i.e. the model over-estimates on lightly flooded tiles and under-estimates on heavily flooded ones.
+The error drivers are ranked in panel (b) of Fig.~\ref{fig:q1_error_drivers} by mean $|\mathrm{SHAP}|$: raw SAR standard deviation first (0.196), then tree share (0.077), boundary density of the flood (0.074), ENL (0.073), NDVI mean (0.057), bimodality share (0.050) and pre-flood water share (0.045). High SAR variance with low ENL means speckle and mixed scattering, tree share is the false-alarm mechanism of Table~\ref{tab:q1_fpfn}, and a high boundary density means fragmented flood that a pixel classifier cuts into pieces. Panel (a) sets the same drivers against the FP/FN bars of Table~\ref{tab:q1_fpfn} and, for later comparison, the net error of the Problem~2 model M6. Once the error is signed the ordering changes: reference flood share comes first, so the model over-estimates lightly flooded tiles and under-estimates heavily flooded ones.
 
 A harder notion of independence holds out a whole spatial cluster. Training on three of the four clusters and testing on the fourth lowers the pooled IoU from 0.598 to 0.508 and F1 from 0.749 to 0.674, and the cluster RAE is $+26\%$ on the 512-tile cluster and $+15\%$ on the 450-tile cluster. Transfer to an unseen region thus costs about 0.09 IoU and adds a positive area bias, which is what Problem~3 has to face in Guangxi.
 
-These analyses define what Problem~2 must fix. The 397 tiles with $A_t\ge0.05$\,km$^2$ and $|\mathrm{RAE}_t|>0.5$ under LightGBM form the ``hard set''. The dominant error mechanisms are dark dry surfaces (tree, built-up) and fragmented or vegetated flood, both of which need spatial context and the optical land state, and the dominant error measure is a positive total bias that pixel-wise training does not control.
+These analyses define what Problem~2 must fix. The 397 tiles with $A_t\ge0.05$\,km$^2$ and $|\mathrm{RAE}_t|>0.5$ under LightGBM form the ``hard set''. The dominant error mechanisms are dark dry surfaces (tree, built-up) and fragmented or vegetated flood, both of which need spatial context and the optical land state, and the dominant error measure is a positive total bias that pixel-wise training does not control\cite{deepseek2026,qwen2026,doubao2026}.

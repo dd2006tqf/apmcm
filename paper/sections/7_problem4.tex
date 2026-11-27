@@ -7,7 +7,7 @@ Township boundaries of Hengzhou are not publicly available, and the 17 towns are
 
 \subsection{Indicator System}
 
-The problem names newly inundated area, proportion and intensity as core indicators and asks for the exposure of people and critical facilities. Every indicator in Table~\ref{tab:q4_ind} is an overlay of the Problem~3 raster $F_{0716}$ with a public layer, so the assessment changes whenever $F$ changes; all indicators are oriented so that larger means worse.
+The core indicators are newly inundated area, proportion and intensity; exposure of people and critical facilities enters as the fourth. Every indicator in Table~\ref{tab:q4_ind} is an overlay of the Problem~3 raster $F_{0716}$ with a public layer, so the assessment changes whenever $F$ changes; all indicators are oriented so that larger means worse.
 
 \begin{table}[H]
 \centering
@@ -59,12 +59,12 @@ so $S_j=1$ for a unit at the worst observed value of every indicator. Four disas
 
 \subsection{Spatial Pattern of Disaster Severity}
 
-The levels contain 3 units in Level~I, 28 in Level~II, 96 in Level~III and 132 in Level~IV. The question is whether severity follows the flood alone or whether exposure reorders it; the bivariate map in Fig.~\ref{fig:q4_risk_map} crosses the hazard ($H_1$) with the exposure ($E_1$), each split at the tertiles of the affected units.
+The levels contain 3 units in Level~I, 28 in Level~II, 96 in Level~III and 132 in Level~IV. Whether severity follows the flood alone, or whether exposure reorders it, is visible in the bivariate map of Fig.~\ref{fig:q4_risk_map}, which crosses the hazard ($H_1$) with the exposure ($E_1$), each split at the tertiles of the affected units.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q4_risk_map.pdf}
-  \caption{Bivariate hazard--exposure map of the 393 units}
+  \caption{Hazard--exposure map of the 393 units}
   \label{fig:q4_risk_map}
 \end{figure}
 
@@ -74,11 +74,11 @@ Severity is concentrated in a belt across the middle north of the city. The unit
 
 A ranking used for relief must not depend on a particular weight vector. We draw $M=2000$ weight sets with $\Omega\sim\mathrm{Dir}(50\,\Omega_0)$ and $w^{(c)}\sim\mathrm{Dir}(50\,w^{(c)}_0)$ around the baseline, recompute the ranking each time, and compare it with rankings from hazard indicators only and from alternative Problem~3 inputs. Fig.~\ref{fig:q4_rank_robustness} summarizes the outcome.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q4_rank_robustness.pdf}
   \caption{Robustness of the unit ranking}
   \label{fig:q4_rank_robustness}
 \end{figure}
 
-Weight perturbation hardly moves the ranking: the median Spearman correlation with the baseline is 0.987 and its 5\% quantile 0.934, and the 5--95\% rank intervals of the top units in panel (a) are narrow. Ranking by hazard alone gives Spearman 0.792 and keeps 8 of the top 10, so exposure and response reorder about a fifth of the ranking, which is the purpose of including them. The input data matter more than the weights. With the 4 July flood the correlation drops to 0.662 and only 6 of the top 10 remain (243 affected units, 14,301 flooded people), with the SAR-only $W_0$ it is 0.932 (8 of 10), and with $h^*=30$\,m it is 0.889 (9 of 10). The ranking is therefore a statement about the 16 July observation; the letter in Section~\ref{sec:letter} turns this into a recommendation to recompute it after each pass.
+Weight perturbation hardly moves the ranking: the median Spearman correlation with the baseline is 0.987 and its 5\% quantile 0.934, and the 5--95\% rank intervals of the top units in panel (a) are narrow. Ranking by hazard alone gives Spearman 0.792 and keeps 8 of the top 10, so exposure and response reorder about a fifth of the ranking, which is the purpose of including them. The input data matter more than the weights. With the 4 July flood the correlation drops to 0.662 and only 6 of the top 10 remain (243 affected units, 14,301 flooded people), with the SAR-only $W_0$ it is 0.932 (8 of 10), and with $h^*=30$\,m it is 0.889 (9 of 10). The ranking is therefore a statement about the 16 July observation; the letter in Section~\ref{sec:letter} turns this into a recommendation to recompute it after each pass\cite{deepseek2026,qwen2026,doubao2026}.

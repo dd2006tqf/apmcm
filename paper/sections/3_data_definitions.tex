@@ -1,11 +1,11 @@
 \section[Data and Preprocessing]{Data, Verification and Shared Preprocessing}
 \label{sec:data_def}
 
-\subsection{Two Data Worlds}
+\subsection{Official Tiles and Self-Collected Layers}
 
-\textbf{Official data (Attachment~1).} The attachment holds 1000 co-registered triplets with IDs 1001--2000: a pre-flood Sentinel-2 tile with four uint8 bands (B, G, R, NIR), a post-flood GF-3 HH SAR tile with one uint8 band, and a binary label, each $256\times256$ pixels and stored as GeoTIFF in WGS-84 geographic coordinates with a pixel size of $8.333\times10^{-5}$\,degree. The GeoTIFF tags place the tiles at 112.69--116.91$^\circ$E and 28.43--29.30$^\circ$N in four spatial clusters of 512, 450, 22 and 16 tiles, which is consistent with the Dongting and Poyang lake basins; the attachment states no event date, so we do not assign one. Pixel-weighted, 18.99\% of the labelled pixels are flooded, but the median tile has only 3.76\% flood and 15 tiles have none, so the class imbalance is strong and many tiles carry almost no target. The README shipped with the data quotes a mean flood share of 24.5\%; a full traversal of the 1000 label files gives 18.99\%, and we use the verified value.
+\textbf{Official data (Attachment~1).} The attachment holds 1000 co-registered triplets with IDs 1001--2000: a pre-flood Sentinel-2 tile with four uint8 bands (B, G, R, NIR), a post-flood GF-3 HH SAR tile with one uint8 band, and a binary label, each $256\times256$ pixels and stored as GeoTIFF in WGS-84 geographic coordinates with a pixel size of $8.333\times10^{-5}$\,degree. The GeoTIFF tags place the tiles at 112.69--116.91$^\circ$E and 28.43--29.30$^\circ$N in four spatial clusters of 512, 450, 22 and 16 tiles, which is consistent with the Dongting and Poyang lake basins; the attachment states no event date, so we do not assign one. Pixel-weighted, 18.99\% of the labeled pixels are flooded, but the median tile has only 3.76\% flood and 15 tiles have none, so the class imbalance is strong and many tiles carry almost no target. The README shipped with the data quotes a mean flood share of 24.5\%; a full traversal of the 1000 label files gives 18.99\%, and we use the verified value.
 
-\textbf{Self-collected data (Hengzhou).} Problems~3--5 use only public layers, listed in Table~\ref{tab:hz_data}. They are reprojected to the 10\,m UTM~49N grid of the Sentinel-1 product (nearest neighbour for classes, bilinear for continuous values) and clipped to the GADM~4.1 boundary, whose geodesic area is 3440.09\,km$^2$.
+\textbf{Self-collected data (Hengzhou).} Problems~3--5 use only public layers, listed in Table~\ref{tab:hz_data}. They are reprojected to the 10\,m UTM~49N grid of the Sentinel-1 product (nearest neighbor for classes, bilinear for continuous values) and clipped to the GADM~4.1 boundary, whose geodesic area is 3440.09\,km$^2$.
 
 \begin{table}[H]
 \centering
@@ -36,7 +36,7 @@ The labels are binary and could mean either ``water after the flood'' ($W_1$) or
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q1_label_semantics.pdf}
-  \caption{Label-semantics test on all valid official pixels}
+  \caption{Label-semantics test on all valid pixels}
   \label{fig:q1_label_semantics}
 \end{figure}
 
@@ -67,7 +67,7 @@ Panel (a) of Fig.~\ref{fig:q1_set_logic} explains why the net increase can be ne
 
 \subsection{Shared Preprocessing}
 
-\textbf{Pixel area.} The ground area of a geographic pixel with centre latitude $\varphi_p$ and angular sizes $\Delta\lambda,\Delta\varphi$ follows from the WGS-84 meridian and prime-vertical radii, with $a=6378137$\,m and $e^2=0.00669438$:
+\textbf{Pixel area.} The ground area of a geographic pixel with center latitude $\varphi_p$ and angular sizes $\Delta\lambda,\Delta\varphi$ follows from the WGS-84 meridian and prime-vertical radii, with $a=6378137$\,m and $e^2=0.00669438$:
 \begin{equation}
 \begin{split}
 M(\varphi)&=\frac{a(1-e^2)}{(1-e^2\sin^2\varphi)^{3/2}},\qquad
@@ -78,7 +78,7 @@ a_p&=M(\varphi_p)\,\Delta\varphi\cdot N(\varphi_p)\cos\varphi_p\,\Delta\lambda .
 \end{equation}
 On the official tiles $a_p$ ranges from 74.78 to 75.41\,m$^2$ and the mean tile area is 4.913\,km$^2$. On the Hengzhou UTM grid $a_p=100/k_p^2$\,m$^2$ with the UTM point scale factor $k_p$. Every area in this paper is $\sum a_p$ over a mask.
 
-\textbf{Geometry.} Label, SAR and optical tie points differ by at most 0.47 pixel. Nine label tiles have an anisotropic pixel size ($7.9119\times10^{-5}$ by $8.3349\times10^{-5}$ degree) and are resampled by nearest neighbour onto the SAR grid; pixels outside the label footprint are excluded from all metrics.
+\textbf{Geometry.} Label, SAR and optical tie points differ by at most 0.47 pixel. Nine label tiles have an anisotropic pixel size ($7.9119\times10^{-5}$ by $8.3349\times10^{-5}$ degree) and are resampled by nearest neighbor onto the SAR grid; pixels outside the label footprint are excluded from all metrics.
 
 \textbf{SAR normalization and speckle.} The radiometric scale of the GF-3 values is unknown (Assumption~2), so each tile is rank-normalized with its own 2\% and 98\% quantiles,
 \begin{equation}
@@ -97,4 +97,4 @@ C_u=\frac{1}{\sqrt L}.
 \end{equation}
 The equivalent number of looks $L$ is estimated per tile as the median of $\bar z^2/\mathrm{Var}(z)$ over the 10\% most homogeneous $7\times7$ windows; its median over the official tiles is 31.0. The filter smooths homogeneous areas ($k_p\to0$) and keeps edges ($k_p\to1$), which matters for narrow flooded channels. Because \eqref{eq:rank_norm} uses only the tile itself, no information crosses the validation folds.
 
-\textbf{Optical indices and features.} The validity mask is $m_p=\mathbb 1[\max(B,G,R,N)>0]$; 60 official tiles have more than 5\% invalid optical pixels. From the bands we compute $\mathrm{NDWI}=(G-N)/(G+N+\epsilon)$, $\mathrm{NDVI}=(N-R)/(N+R+\epsilon)$ and the brightness $(B+G+R+N)/1020$. The pixel classifier of Problem~1 uses 19 features: $z$, $\tilde z$, local mean and standard deviation of $\tilde z$ on $3\times3$, $7\times7$ and $15\times15$ windows, the $7\times7$ minimum of $\tilde z$, the three indices and the $7\times7$ mean NDWI, the four scaled bands, $m_p$, and the interaction $\tilde z(1-\mathrm{NDWI}^+)$, which encodes ``dark now and not water before''.
+\textbf{Optical indices and features.} The validity mask is $m_p=\mathbb 1[\max(B,G,R,N)>0]$; 60 official tiles have more than 5\% invalid optical pixels. From the bands we compute $\mathrm{NDWI}=(G-N)/(G+N+\epsilon)$, $\mathrm{NDVI}=(N-R)/(N+R+\epsilon)$ and the brightness $(B+G+R+N)/1020$. The pixel classifier of Problem~1 uses 19 features: $z$, $\tilde z$, local mean and standard deviation of $\tilde z$ on $3\times3$, $7\times7$ and $15\times15$ windows, the $7\times7$ minimum of $\tilde z$, the three indices and the $7\times7$ mean NDWI, the four scaled bands, $m_p$, and the interaction $\tilde z(1-\mathrm{NDWI}^+)$, which encodes ``dark now and not water before''\cite{deepseek2026,qwen2026,doubao2026}.

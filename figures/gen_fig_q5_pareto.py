@@ -70,7 +70,7 @@ rec = q5["plan_0716"]
 rc = q5["recourse_0704_to_0716"]
 
 fig = plt.figure(figsize=(6.6, 3.65))
-gs = fig.add_gridspec(1, 2, width_ratios=[1.05, 1.0], wspace=0.28)
+gs = fig.add_gridspec(1, 2, width_ratios=[0.95, 1.12], wspace=0.26)
 
 # ------------------------------------------------------------------ panel a
 ax = fig.add_subplot(gs[0, 0])

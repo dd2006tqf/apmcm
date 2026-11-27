@@ -96,13 +96,11 @@ Why the net increase is negative while new inundation is positive is answered by
 
 \begin{table}[H]
 \centering
-\caption{Guard cascade and water balance of Hengzhou; values in km$^2$. Removed is the decrease from the previous stage.}
+\caption{Guard cascade and water balance (km$^2$)}
 \label{tab:q3_budget}
 \scriptsize
-\setlength{\tabcolsep}{2.2pt}
+\setlength{\tabcolsep}{5.2pt}
 \renewcommand{\arraystretch}{0.82}
-\begin{minipage}[t]{0.58\textwidth}
-\raggedright
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
  & \multicolumn{2}{c}{4 July} & \multicolumn{2}{c}{16 July} \\
@@ -114,26 +112,20 @@ After $W_0$ guard    &  68.43 & 78.09 &  68.85 & 85.58 \\
 After REM guard      &  44.95 & 23.48 &  44.74 & 24.11 \\
 After $\Delta$VV guard & 34.32 & 10.63 & 36.98 &  7.76 \\
 After MMU            &  24.53 &  9.79 &  26.90 & 10.08 \\
-\bottomrule
-\end{tabular}
-\end{minipage}\hspace{0.02\textwidth}%
-\begin{minipage}[t]{0.38\textwidth}
-\raggedright
-\begin{tabular}{@{}lrr@{}}
-\toprule
-Term & 4 July & 16 July \\
 \midrule
-$W_0$             & 292.57 & 292.57 \\
-Receded $R$       &  79.23 &  79.44 \\
-New $A_{new}$     &  24.53 &  26.90 \\
-$W_1$             & 237.87 & 240.03 \\
-Net $A_{net}$     & $-54.70$ & $-52.53$ \\
+\multicolumn{5}{@{}l}{\textit{Water balance}} \\
+Term & \multicolumn{2}{c}{4 July} & \multicolumn{2}{c}{16 July} \\
+\midrule
+$W_0$             & \multicolumn{2}{c}{292.57} & \multicolumn{2}{c}{292.57} \\
+Receded $R$       & \multicolumn{2}{c}{ 79.23} & \multicolumn{2}{c}{ 79.44} \\
+New $A_{new}$     & \multicolumn{2}{c}{ 24.53} & \multicolumn{2}{c}{ 26.90} \\
+$W_1$             & \multicolumn{2}{c}{237.87} & \multicolumn{2}{c}{240.03} \\
+Net $A_{net}$     & \multicolumn{2}{c}{$-54.70$} & \multicolumn{2}{c}{$-52.53$} \\
 \bottomrule
 \end{tabular}
-\end{minipage}
 \end{table}
 
-The lower block of Table~\ref{tab:q3_budget} shows that 79.4\,km$^2$ of water seen by SAR on 27 June is no longer water on 16 July, three times the new inundation. Of this recession, 72.4\,km$^2$ lie outside every mapped water source, mostly under tree cover (49.4\,km$^2$) and cropland (16.7\,km$^2$): wet fields, ponds and seasonally flooded land that were already dark in late June. The 27 June baseline itself was a wet-season state, and \eqref{eq:net_identity} makes the net increase negative ($-52.53$\,km$^2$; the literal variant gives $-153.19$\,km$^2$). The definition $F=W_1\setminus W_0$ is not affected by this, which is why both quantities are requested.
+The water-balance rows of Table~\ref{tab:q3_budget} show that 79.4\,km$^2$ of water seen by SAR on 27 June is no longer water on 16 July, three times the new inundation. Of this recession, 72.4\,km$^2$ lie outside every mapped water source, mostly under tree cover (49.4\,km$^2$) and cropland (16.7\,km$^2$): wet fields, ponds and seasonally flooded land that were already dark in late June. The 27 June baseline itself was a wet-season state, and \eqref{eq:net_identity} makes the net increase negative ($-52.53$\,km$^2$; the literal variant gives $-153.19$\,km$^2$). The definition $F=W_1\setminus W_0$ is not affected by this, which is why both quantities are requested.
 
 On 16 July the cascade of \eqref{eq:F_hz} runs from a raw model mask of 154.43\,km$^2$ to 68.85\,km$^2$ after removing $W_0$, 44.74\,km$^2$ after the REM guard, 36.98\,km$^2$ after the change guard and 26.90\,km$^2$ after the MMU (Table~\ref{tab:q3_budget}), i.e. the guards remove 82.6\% of the model area (83.3\% on 4 July). Most of that removed area is permanent water: without optics the model assigns it a mean probability of 0.285 and cannot exclude it on its own, while $W_0$ does. The Hengzhou estimate therefore rests on the physics guards, and we record that as a limitation of the transfer instead of tuning them.
 

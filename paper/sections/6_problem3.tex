@@ -92,6 +92,15 @@ The newly inundated area is 24.53\,km$^2$ on 4 July and 26.90\,km$^2$ on 16 July
 
 On 100\,m cells (panel a of Fig.~\ref{fig:q3_newflood_map}) the new inundation follows the Yu River and its tributaries as narrow bands along the valley floors, and the receded water lies on the same corridors. The $6\times6$\,km window with the largest new area is shown at the full 10\,m resolution in panel (b), where flooded fields touch the road network; those road cuts feed Problem~5. One artifact needs a word: the horizontal band near northing 2555\,km, an edge left by the 27 June co-registration shift where pre-flood SAR is invalid, inflates $W_0$ and $R$ by about 3.4\,km$^2$ each. It carries no new inundation, so $A_{new}$, $\rho$ and everything downstream are unaffected, while $A_{net}$ is about 3.4\,km$^2$ too negative.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q3_terrain.pdf}
+  \caption{New inundation draped on the Copernicus DEM, 16 July 2026}
+  \label{fig:q3_terrain}
+\end{figure}
+
+Fig.~\ref{fig:q3_terrain} places the same masks on the terrain. The 40$\times$32\,km window is the one with the densest new water; it contains 6.4\,km$^2$ of $F$ and 54.5\,km$^2$ of $W_0$, about a quarter and a fifth of the city totals. Every new pixel lies below 200\,m (median 58\,m) and follows the valley floor, whereas the eastern ridge rises to 710\,m and stays dry: the flood is a corridor phenomenon, not a sheet.
+
 Why the net increase is negative while new inundation is positive is answered by the water balance in Table~\ref{tab:q3_budget}.
 
 \begin{table}[H]

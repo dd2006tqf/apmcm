@@ -181,3 +181,12 @@ where $G(\rho;\theta)$ is the grade of \eqref{eq:area_thr}. The vector $\pi_j$ r
 \end{figure}
 
 Where the two weakest regimes meet on the logit axis, the bootstrap bands of $\theta_1$ and $\theta_3$ stay narrow while that of $\theta_2$ widens (panel a). Row-normalized confusion against the Monte Carlo grade of M6 (panel b) keeps 70\% of the general, 62\% of the relatively strong, 55\% of the strong and 83\% of the extremely strong tiles in their grade, and the errors fall almost entirely into the neighboring grade. With the deterministic M6 area the grade is correct for 86.2\% of the tiles, against 54.3\% for LightGBM, so area calibration pays off directly in the grading. The expected Monte Carlo accuracy is 67.0\%, lower because threshold uncertainty is included. Within four standardized errors of a threshold the flip probability $1-\max_g\pi_{jg}$ is 0.33--0.37, and 0.22 farther away; a unit near a threshold should therefore carry $\pi_j$ with its grade\cite{deepseek2026,qwen2026,doubao2026}.
+
+Under a normal approximation of the signed tile-area error, Fig.~\ref{fig:q2_flip} makes this geometry explicit. The change probability is near zero deep inside a grade, peaks at one half exactly on a threshold, and the ridge widens as $\sigma$ grows. The four bins of the 1000 test tiles, placed at their mean estimated proportion and the standard deviation of their signed error, are $(1.1\%,0.026)$, $(10.2\%,0.098)$, $(32.1\%,0.141)$ and $(86.8\%,0.294)$. The 5--20\% bin and the highest bin sit in the high-probability band of the surface, consistent with the Monte Carlo flip rate of 0.33--0.37 even though most tiles lie far from $\theta_2$ and $\theta_3$.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q2_flip_surface.pdf}
+  \caption{Probability of a grade change against true flood proportion and area-error scale (normal approximation of the tile-area error; red markers: four error bins of the 1000 test tiles)}
+  \label{fig:q2_flip}
+\end{figure}

@@ -1,6 +1,6 @@
 # 2026 APMCM Problem A —— 洪水识别 · 强度分级 · 救援优化（完整复现仓库）
 
-本仓库包含论文全部源码、五问求解代码、结果文件、图件与已编译 PDF。除原始数据（约 2.57 GB，见第 2 节）外，**克隆后即可重算全部数字、重绘全部图、重编论文**。
+本仓库包含论文全部源码、五问求解代码、结果文件、图件与已编译 PDF。除横州自收集原始数据（约 2.2 GB，见第 2 节）外，**克隆后即可重算全部数字、重绘全部图、重编论文**；官方附件已移出仓库，放在 `E:\华数数据\official_data_a\`。
 
 ## 1. 目录结构
 
@@ -23,7 +23,7 @@ output/               全部结果（复现的核心证据，勿删）
   q4_units_*.geojson, q5_roads_cut_*.geojson  单元与断道网络
 figures/              论文成品图件（PDF/PNG）；绘图脚本已归档到 support_materials/figure_generation/
 support_materials/    支撑材料：数据、求解代码、补充实验与绘图代码
-  data/               官方附件 + 横州自收集数据（2.57 GB，不入 Git）
+  data/               横州自收集数据（约 2.2 GB，不入 Git）
   code/               五问求解主程序快照
   experiments/        补充实验脚本与结果快照
   figure_generation/  全部 Figure 生成脚本与公共绘图模块
@@ -33,16 +33,18 @@ CROSS_PROBLEM_LEDGER.json  跨问一致性台账（面积口径、分母、等�
 
 ## 2. 数据准备（唯一未入库的部分）
 
-原始数据共约 2.57 GB：官方附件解压后约 0.36 GB（1000 组 256×256 三波段 GeoTIFF），自收集横州公开数据约 2.20 GB，超过 GitHub 单库承载能力，故不入库。请从赛事官网下载后按下列路径放置：
+横州自收集数据约 2.20 GB，超过 GitHub 单库承载能力，故不入库；官方附件已移出仓库，放在 `E:\华数数据\official_data_a\`。按下列路径放置：
 
 ```
-user_data/a题数据汇总/
+E:\华数数据\official_data_a\
   Problem A Dataset 1/Dataset/{label information, post-disaster SAR images}
   Problem A Dataset 2/Dataset/pre-disaster optical images
+
+user_data/a题数据汇总/
   公开数据/{Boundary, DEM, LandCover, OSM, Sentinel1, Sentinel2, WorldPop}
 ```
 
-官方附件仅用于第 1–2 问；第 3–5 问只用公开数据层（Sentinel-1 RTC、ESA WorldCover v200、Copernicus DEM GLO-30、OSM/Geofabrik、WorldPop、GADM 4.1），清单见论文表 1。WorldCover 分块可用 `python code/fetch_worldcover.py` 通过 HTTP COG 自动拉取（约 15 min）。
+官方附件仅用于第 1–2 问，运行时把 `FLOOD_DATA_DIR` 指向 `E:\华数数据\official_data_a`；第 3–5 问只用公开数据层（Sentinel-1 RTC、ESA WorldCover v200、Copernicus DEM GLO-30、OSM/Geofabrik、WorldPop、GADM 4.1），清单见论文表 1。WorldCover 分块可用 `python code/fetch_worldcover.py` 通过 HTTP COG 自动拉取（约 15 min）。
 
 ## 3. 复现命令
 
@@ -83,8 +85,8 @@ xelatex main.tex && bibtex main && xelatex main.tex && xelatex main.tex
 
 ## 7. 未入库内容
 
-`user_data/`（原始数据 2.57 GB）、`_tmp/`（运行缓存 8.6 GB）、`.mh/`（Agent 会话记录 214 MB）。前两者可由第 2–3 节重新获得，第三者与复现无关。
+`user_data/`（横州自收集数据约 2.2 GB）、`_tmp/`（运行缓存 8.6 GB）、`.mh/`（Agent 会话记录 214 MB）。前两者可由第 2–3 节重新获得，第三者与复现无关。官方数据不在仓库内，位于 `E:\华数数据\official_data_a`。
 
 ## 8. 支撑材料
 
-`support_materials/` 是论文提交用材料归档，包含 `code/` 求解主程序、`experiments/` 补充实验与结果、`figure_generation/` 全部绘图脚本，以及 `data/` 中的官方附件和横州自收集数据（3039 个文件，2.57 GB）。`figures/` 中的 Python 脚本已全部移入该目录，成品目录只保留 PDF/PNG，避免脚本与资产混放。数据目录不纳入 Git，提交时请整体压缩/拷贝。详细索引见 `support_materials/README.md`。
+`support_materials/` 是论文提交用材料归档，包含 `code/` 求解主程序、`experiments/` 补充实验与结果、`figure_generation/` 全部绘图脚本，以及 `data/` 中的横州自收集数据（39 个文件，约 2.2 GB）。官方附件已移出仓库。`figures/` 中的 Python 脚本已全部移入该目录，成品目录只保留 PDF/PNG，避免脚本与资产混放。数据目录不纳入 Git，提交时请整体压缩/拷贝；200 MB 提交版见 `support_materials_200mb/`。详细索引见 `support_materials/README.md`。

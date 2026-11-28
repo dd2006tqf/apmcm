@@ -57,9 +57,18 @@ Demand is balanced between deliveries and unmet need, so no shortfall hides. Ton
 
 \subsection{Recommended Relief Plan for 16 July}
 
-The lexicographic solve opens six depots. Table~\ref{tab:q5_plan} lists them with their shipments.
+The lexicographic solve opens six depots; Fig.~\ref{fig:q5_route_alloc} maps them and Table~\ref{tab:q5_plan} lists their shipments.
 
-\begin{table}[!ht]
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q5_route_alloc.pdf}
+  \caption{Recommended relief plan}
+  \label{fig:q5_route_alloc}
+\end{figure}
+
+Taoxu and Yunbiao supply 89\% of the tonnage into the central and eastern flood belt; Shitang and the Gaocun school serve north and west; Zhenlong and Liujing cover small remote demands. More than half the weighted demand stays unmet although 360\,t of capacity is almost 2.5 times the total demand and the fleet uses 1497 of 86,400 vehicle-minutes: capacity and trucks are not the bottleneck, reachability is. Water cuts off the 57 units with no admissible depot, and no allocation over the road network reaches them. The optimum equals their weighted demand to six decimals (0.569927 against $f_1^*=0.569928$), every reachable unit is served in full, and no shipment on this network can lower $f_1$. That is why the letter asks for boats and helicopters for these units.
+
+\begin{table}[H]
 \centering
 \caption{Open depots of the recommended plan}
 \label{tab:q5_plan}
@@ -80,18 +89,11 @@ Total & & 360 & 76.82 \\
 \end{tabularx}}
 \end{table}
 
-The plan reaches $f_1^*=0.570$ and $f_2=13.05$\,min. It ships 76.82 of the 146.46\,t demanded and serves 7316 of the 13,948 people in the demand units. Fig.~\ref{fig:q5_route_alloc} draws the delivery paths on the cut network.
+The plan reaches $f_1^*=0.570$ and $f_2=13.05$\,min. It ships 76.82 of the 146.46\,t demanded and serves 7316 of the 13,948 people in the demand units.
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q5_route_alloc.pdf}
-  \caption{Recommended relief plan}
-  \label{fig:q5_route_alloc}
-\end{figure}
+Table~\ref{tab:q5_nomap} prices the flood map itself. Withheld, the same objective reports a near-perfect plan, $f_1=0.001$ and 13,924 served; replayed on the network the water actually cut, that plan serves 6,997 at $f_1=0.592$, 318 fewer than the plan that saw the map, and takes 20.52\,min against 13.05.
 
-Taoxu and Yunbiao supply 89\% of the tonnage into the central and eastern flood belt; Shitang and the Gaocun school serve north and west; Zhenlong and Liujing cover small remote demands. More than half the weighted demand stays unmet although 360\,t of capacity is almost 2.5 times the total demand and the fleet uses 1497 of 86,400 vehicle-minutes: capacity and trucks are not the bottleneck, reachability is. Water cuts off the 57 units with no admissible depot, and no allocation over the road network reaches them. The optimum equals their weighted demand to six decimals (0.569927 against $f_1^*=0.569928$), every reachable unit is served in full, and no shipment on this network can lower $f_1$. That is why the letter asks for boats and helicopters for these units.
-
-\begin{table}[!ht]
+\begin{table}[H]
 \centering
 \caption{The flood map as an input to the relief plan}
 \label{tab:q5_nomap}
@@ -109,7 +111,7 @@ Proportional to depot capacity & 0.570 & 19.55 & 7316 \\
 \end{tabularx}}
 \end{table}
 
-Table~\ref{tab:q5_nomap} prices the flood map itself. Withheld, the same objective reports a near-perfect plan, $f_1=0.001$ and 13,924 served; replayed on the network the water actually cut, that plan serves 6,997 at $f_1=0.592$, 318 fewer than the plan that saw the map, and takes 20.52\,min against 13.05. The map is not a refinement of the answer; it is what makes the answer feasible. A greedy nearest-depot rule gives up 0.3 points of coverage for 3.6\,min of speed, and splitting tonnage in proportion to depot capacity reproduces the optimal coverage exactly while taking 6.5\,min longer.
+The map is not a refinement of the answer; it is what makes the answer feasible. A greedy nearest-depot rule gives up 0.3 points of coverage for 3.6\,min of speed, and splitting tonnage in proportion to depot capacity reproduces the optimal coverage exactly while taking 6.5\,min longer.
 
 \subsection{Trade-off, Value of Information and Sensitivity}
 
@@ -134,16 +136,18 @@ Two solves measure the update. On the 4 July inputs the plan opens Xiaoyi, Yunbi
 \end{equation}
 Re-planning with the 16 July image lowers the weighted unmet share by 3.9 points, or delivers 5.54\,min faster at equal coverage. Read as two stages, 4 July is the first stage and 16 July the recourse a real operation would run; a frozen plan loses at least 3.9 points and 5.5\,min, since re-optimizing shipments alone already leaves 0.609. The tail sits in the depot set: the two open sets share half their members (Jaccard 0.50), demand changes by $-3.57$\,t, and 677 pairs are lost while 625 are gained. That is what the next satellite pass is worth.
 
-Inputs can also move under a frozen plan---six depots fixed, shipments re-optimized---across 600 scenarios that perturb demand and the network (Table~\ref{tab:q5_cvar}, Fig.~\ref{fig:q5_cvar}). Demand noise of 20\% moves $f_1$ by nothing: geometry, not demand size, binds. Network noise costs---cutting each of the 625 pairs that reopened after 4 July with probability 0.5 gives $f_1=0.604$ and a 5\% quantile of 6345 served---and over all 600 scenarios $\mathrm{CVaR}_{95}=0.651$, so in 95\% of futures the plan loses at most eight points of coverage and in 63\% stays below 0.60. With every reopened pair cut, 5846 are served at $f_1=0.670$, 20\% fewer, and the plan never becomes infeasible.
+Inputs can also move under a frozen plan---six depots fixed, shipments re-optimized---across 600 scenarios that perturb demand and the network: Fig.~\ref{fig:q5_cvar} plots every scenario, Table~\ref{tab:q5_cvar} its family statistics.
 
-\begin{figure}[!ht]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.86\textwidth,keepaspectratio]{../figures/fig_q5_cvar.pdf}
   \caption{Frozen-plan coverage under 600 scenarios}
   \label{fig:q5_cvar}
 \end{figure}
 
-\begin{table}[!ht]
+Each dot is one scenario: demand noise of 20\% collapses the cloud onto the point estimate, since geometry binds, while network noise shifts it and stretches the tail to the stress case at 0.670.
+
+\begin{table}[H]
 \centering
 \caption{Frozen plan under demand and network uncertainty, 600 scenarios}
 \label{tab:q5_cvar}
@@ -161,6 +165,8 @@ Stress, every reopened pair cut & 0.670 & -- & 5846 & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+Cutting each of the 625 pairs that reopened after 4 July with probability 0.5 moves the mean to $f_1=0.604$, with a 5\% quantile of 6345 served; over all 600 scenarios $\mathrm{CVaR}_{95}=0.651$, so in 95\% of futures the plan loses at most eight points of coverage and in 63\% stays below 0.60. With every reopened pair cut, 5846 are served at $f_1=0.670$, 20\% fewer, and the plan never becomes infeasible.
 
 Panel (b) shows the response to assumed resources: $f_1^*$ falls from 0.5728 at $K=3$ to 0.5699 at $K=8$, and delivery time from about 22 to 9.32\,min; capacity, fleet size and the relief norm move $f_1^*$ by at most 0.0003, the time limit only at 60\,min (0.5768), and a speed factor of 0.6 gives 0.5705. Only the road buffer moves it further (0.564 without, 0.650 at 50\,m, as more roads are cut). Schools alone as facility proxies open four depots, $f_1^*=0.611$, $f_2=21.08$\,min. The plan is robust to the logistics parameters we had to assume and sensitive to the flood extent on the roads, which the remote-sensing chain measures.
 

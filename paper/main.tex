@@ -52,17 +52,15 @@ Probabilistic Intensity Grading and Flood-Cut Relief Allocation in Hengzhou\par}
 
 \begin{abstract}
 \zihao{5}
-Flood relief needs to know where new water stands, whom it reaches and which roads it cuts. This paper analyzes the newly inundated set $F=W_1\setminus W_0$ from pre-flood optical and post-flood SAR imagery, jointly considers area error, intensity, exposure and road isolation, and builds a five-stage chain from recognition to relief allocation in Hengzhou.
+Flood relief needs to know where new water stands, whom it reaches and which roads it cuts. This paper analyzes the newly inundated set $F=W_1\setminus W_0$ from pre-flood optical and post-flood SAR imagery and builds a five-stage chain from recognition to relief allocation in Hengzhou.
 
-For Problem 1, a test on all 65.5 million valid pixels first shows that the official labels mark new inundation (only 2.37\% of flooded labels were water before). After per-tile rank normalization and Lee filtering, a \textbf{LightGBM} classifier evaluated by spatially blocked five-fold validation reaches IoU 0.618 and a total area error of \textbf{$-0.2\%$} after a 50 px minimum mapping unit (MMU; raw: 0.598 and $+9.2\%$; split-Otsu baseline: $+134\%$). Tree cover causes most false alarms, wetland most misses; the MMU removes isolated false alarms, not the baseline's connected over-detection.
+Problem~1 is a recognizer, and it begins with the labels themselves: across all 65.5 million valid pixels only 2.37\% of flooded labels were water before. After per-tile rank normalization and Lee filtering, LightGBM under spatially blocked five-fold validation reaches IoU 0.618 and a total area error of $-0.2\%$ with a 50 px minimum mapping unit (raw 0.598 and $+9.2\%$; split-Otsu $+134\%$). Tree cover produces most false alarms and wetland most misses; the MMU removes isolated alarms, not the baseline's connected over-detection.
 
-In Problem~2 a \textbf{dual-branch gated SAR--optical U-Net} with focal, Dice and area-consistency loss reaches IoU \textbf{0.797} and an area error of \textbf{+0.9\%} in-domain after the same 50 px MMU, and raises hard-tile IoU from 0.266 to 0.648; its modality-dropout calibration variant, used for SAR-only transfer, reaches \textbf{+1.45\%} (IoU 0.730; hard-tile 0.562). Bayes boundaries of a Gaussian mixture on the logit flood share give grade thresholds of \textbf{5.9\%, 53.0\% and 96.9\%}; Monte Carlo grade probabilities give 86.2\% correct grades against 54.3\% for LightGBM.
+Problem~2 raises the task to a dual-branch gated SAR--optical U-Net with focal, Dice and area-consistency loss: IoU \textbf{0.797}, area error $+0.9\%$ in domain, hard-tile IoU 0.266 to 0.648, and $+1.45\%$ for the modality-dropout variant that carries the model onto SAR-only imagery. Grading needs no second model: Bayes boundaries of a Gaussian mixture on the logit flood share place the four grades at 5.9\%, 53.0\% and 96.9\%, and Monte Carlo grade probabilities return 86.2\% correct grades where LightGBM returns 54.3\%.
 
-In Problem~3 we co-register three Sentinel-1 passes (27 June, 4 July and 16 July 2026) to remove a 5.4--6.2\,km offset, and apply the frozen model with terrain, change and minimum-area guards. New inundation on 16 July is \textbf{26.90\,km$^2$} (0.78\% of the city, grade general), the net increase is $-52.53$\,km$^2$ because a wet baseline receded, and 4 July gives 24.53\,km$^2$.
+Problem~3 is where the chain becomes empirical. Three Sentinel-1 passes (27 June, 4 July, 16 July 2026) are co-registered to remove a 5.4--6.2\,km offset, and the frozen model runs behind terrain, change and minimum-area guards. New inundation on 16 July is \textbf{26.90\,km$^2$} (0.78\% of the city, grade general) and 24.53\,km$^2$ on 4 July, while the net increase is $-52.53$\,km$^2$: the wet-season baseline receded further than the flood advanced.
 
-Problem~4 ranks 393 settlement catchments on nine overlay indicators weighted by entropy--CRITIC--AHP and combined by \textbf{TOPSIS}; 13,954 people and 117\,km of roads are flooded, Shitang, Maling and Luancheng rank highest, and the ranking keeps Spearman 0.987 under weight perturbation.
-
-For Problem 5, a \textbf{location--allocation MILP} on the flood-cut network with assessment-based demand and priority is solved exactly by HiGHS. Six depots serve 7316 of the 13,948 people in the demand units; the weighted unmet share of \textbf{0.570} equals the weighted demand of the 57 units the water cut off, so it is a proven floor rather than a slack allocation, and across 600 demand and network scenarios its CVaR$_{95}$ is \textbf{0.651}. The 16 July image lowers the share by 0.039.
+Problem~4 ranks 393 settlement catchments on nine overlay indicators (entropy--CRITIC--AHP weights, TOPSIS combination); 13,954 people and 117\,km of roads are flooded, Shitang, Maling and Luancheng lead, and the ranking keeps Spearman 0.987 under weight perturbation. Problem~5 solves a location--allocation MILP exactly on the flood-cut network: six depots reach 7316 of 13,948 people, and the weighted unmet share \textbf{0.570} equals the weighted demand of the 57 cut-off units, a proven floor rather than slack. Across 600 scenarios CVaR$_{95}$ is 0.651; the 16 July image lowers the share by 0.039.
 
 Sensitivity tests across the terrain guard, the probability threshold and the water definition leave the grade, the unit ranking and the isolation finding unchanged\cite{deepseek2026,qwen2026,doubao2026}.
 
@@ -117,6 +115,8 @@ APMCM Team apmcm26300025
 \input{sections/10_evaluation}
 
 % === References ===
+% References start on a fresh page (section XI)
+\clearpage
 \bibliographystyle{unsrt}
 \bibliography{references}
 

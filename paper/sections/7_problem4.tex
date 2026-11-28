@@ -33,12 +33,12 @@ Response & R1 access time (min) & flood-cut network time from the flooded-popula
 
 Terrain enters through the REM guard inside $F$. Built-up land is taken from WorldCover because OSM holds only 609 building footprints. Hospitals and shelters are represented by the facility proxies of Assumption~5 (town and city nodes plus schools), because OSM lists only five service points. A road edge is impassable if any of its sample points, taken every 20\,m, lies within 20\,m of $F$; unreachable units get twice the largest finite access time, 165.6\,min. Over the whole city the overlay finds 13,954 flooded people, 1.88\,km$^2$ of flooded built-up land, 13.60\,km$^2$ of flooded cropland, 8 of 22 facility proxies within 500\,m of new water, and 117.4 of 2542.3\,km of roads cut; 75 affected units have no road path to an unflooded facility.
 
-At 1\,km the two fields separate rather than co-vary (Fig.~\ref{fig:q4_grid1km}). Across the 1010 cells that carry new water the rank correlation of water area with resident population is $\rho_S=0.36$; the ten cells with the largest area hold 8.2\% of the flooded population, and the ten that hold the most people carry 4.9\% of the new water. A cell can be nearly dry and still shelter several hundred people, so exposure is not a rescaling of the flood map, and the exposure criterion carries its own population and facility indicators instead of weighting area alone.
+At 1\,km the two fields separate rather than co-vary (Fig.~\ref{fig:q4_grid1km}). Across the 1010 cells that carry new water the rank correlation of water area with resident population is $\rho_S=0.36$; the ten cells with the largest area hold 8.2\% of the flooded population, and the ten that hold the most people carry 4.9\% of the new water. A cell can be nearly dry and still shelter several hundred people, so exposure is not a rescaling of the flood map, and the exposure criterion carries its own population and facility indicators instead of weighting area alone. Panels (a) and (b) of Fig.~\ref{fig:q4_grid1km} map the two fields and panel (c) their joint distribution, with the ten largest areas and the ten most populated cells ringed.
 
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q4_grid1km.pdf}
-  \caption{A 1\,km exposure layer over the mapped new inundation (union of the two comparable passes). (a) New water per cell, log colour scale. (b) People living on newly flooded land in the same cell. (c) Joint distribution over the 1010 flooded cells; blue circles mark the ten largest areas, orange circles the ten most populated cells. Area and population are far from proportional: $\rho_S=0.36$, the ten largest areas hold 8.2\% of the flooded population and the ten most populated cells hold 4.9\% of the new water.}
+  \caption{A 1\,km exposure layer over the mapped new inundation}
   \label{fig:q4_grid1km}
 \end{figure}
 

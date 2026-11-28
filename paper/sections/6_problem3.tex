@@ -5,12 +5,12 @@
 
 Hengzhou City lies on the Yu River in southern Guangxi. The study area is the GADM~4.1 boundary of the city, $A_{reg}=3440.09$\,km$^2$ (nominal 3440.4\,km$^2$), because the problem asks for the proportion of the total area of the study region. As a second, physically motivated denominator we use the floodplain zone $\{\mathrm{REM}\le h^*\}$ inside the boundary (defined below), whose area is 2079.5\,km$^2$.
 
-Cloud cover in the rainy season rules out optical imagery during the event, so the flood is observed by radar. Sentinel-1 passes over Hengzhou exist on 27 June, 4 July and 16 July 2026; there is none on 6 July. We use 27 June as pre-flood baseline and both 4 July (two days before the reference date) and 16 July (ten days after) as flood-time observations (Assumption~3). The products are radiometrically terrain-corrected VV/VH backscatter in dB on a 10\,m grid with about 20\,m effective resolution. The latest optical scene before the flood with acceptable cloud cover is Sentinel-2 of 31 May 2026.
+Cloud cover in the rainy season rules out optical imagery during the event, so the flood is observed by radar. Sentinel-1 passes over Hengzhou exist on 27 June, 4 July and 16 July 2026. There is none on 6 July. We use 27 June as pre-flood baseline and both 4 July (two days before the reference date) and 16 July (ten days after) as flood-time observations (Assumption~3). The products are radiometrically terrain-corrected VV/VH backscatter in dB on a 10\,m grid with about 20\,m effective resolution. The latest optical scene before the flood with acceptable cloud cover is Sentinel-2 of 31 May 2026.
 
 \subsection{Verification of the Self-Collected Imagery}
 \label{sec:q3_verify}
 
-Before any model is applied, the Hengzhou layers have to be geometrically consistent with each other. We test this against a permanent-water reference $\mathcal W^{ref}=\{\mathrm{WC}=80\}\cap\mathrm{OSM}_{water}$, the pixels that both WorldCover and OSM map as water; two independent sources agree there, so true water must appear dark in SAR. For each date we search the integer shift that maximizes the dark share on this reference,
+Before any model is applied, the Hengzhou layers have to be geometrically consistent with each other. We test this against a permanent-water reference $\mathcal W^{ref}=\{\mathrm{WC}=80\}\cap\mathrm{OSM}_{water}$, the pixels that both WorldCover and OSM map as water. Two independent sources agree there, so true water must appear dark in SAR. For each date we search the integer shift that maximizes the dark share on this reference,
 \begin{equation}
 (\Delta r,\Delta c)=\arg\max_{(\Delta r,\Delta c)}\ \frac{1}{|\mathcal W^{ref}|}\sum_{(r,c)\in\mathcal W^{ref}}\mathbb 1\big[VV(r+\Delta r,c+\Delta c)<-15\ \mathrm{dB}\big],
 \label{eq:coreg}
@@ -30,7 +30,7 @@ with an area of 292.57\,km$^2$, of which 182.8\,km$^2$ come from the pre-flood S
 
 \subsection{Transfer of the Problem 2 Model}
 
-The model weights are not changed: the five fold models M6 of Problem~2 form an ensemble, each with two MC-dropout passes, i.e. ten passes per pixel; the checkpoint hashes equal those of Problem~2. Only the input representation is mapped, using the same per-tile rank normalization \eqref{eq:rank_norm} and Lee filter \eqref{eq:lee} on $256\times256$ tiles at 10\,m. Whether dB or linear amplitude $10^{VV/20}$ better resembles the GF-3 training input (Assumption~2) is decided by the two-sample Kolmogorov--Smirnov distance between the normalized Hengzhou land pixels and the official non-flood, non-water pixels,
+The model weights are not changed: the five fold models M6 of Problem~2 form an ensemble, each with two MC-dropout passes, i.e. ten passes per pixel. The checkpoint hashes equal those of Problem~2. Only the input representation is mapped, using the same per-tile rank normalization \eqref{eq:rank_norm} and Lee filter \eqref{eq:lee} on $256\times256$ tiles at 10\,m. Whether dB or linear amplitude $10^{VV/20}$ better resembles the GF-3 training input (Assumption~2) is decided by the two-sample Kolmogorov--Smirnov distance between the normalized Hengzhou land pixels and the official non-flood, non-water pixels,
 \begin{equation}
 T^\star=\arg\min_{T\in\{\mathrm{dB},\,\mathrm{amp}\}}\ \sup_x\Big|\hat F^{HZ}_{T}(x)-\hat F^{off}(x)\Big|,
 \label{eq:ks}
@@ -57,7 +57,7 @@ receded and flood-time water are
 R_d=\big(W_0\cap D_{0627}\big)\setminus D_d,\qquad W_{1,d}=F_d\cup\big(W_0\setminus R_d\big).
 \label{eq:W1_R}
 \end{equation}
-By construction $F_d\cap W_0=\emptyset$ and $F_d\subseteq W_{1,d}$; both were confirmed on the saved rasters with zero violating pixels. A pre-flood water pixel counts as receded only if SAR saw it as water on 27 June and no longer sees it on date $d$. The literal alternative $W_{1,d}=F_d\cup(W_0\cap D_d)$ would also declare receded every mapped channel that SAR never resolves at 20\,m; it raises the receded area on 16 July from 79.44 to 180.09\,km$^2$ and is reported only for comparison. The areas follow \eqref{eq:def_F} and \eqref{eq:net_identity}:
+By construction $F_d\cap W_0=\emptyset$ and $F_d\subseteq W_{1,d}$. Both were confirmed on the saved rasters with zero violating pixels. A pre-flood water pixel counts as receded only if SAR saw it as water on 27 June and no longer sees it on date $d$. The literal alternative $W_{1,d}=F_d\cup(W_0\cap D_d)$ would also declare receded every mapped channel that SAR never resolves at 20\,m. It raises the receded area on 16 July from 79.44 to 180.09\,km$^2$ and is reported only for comparison. The areas follow \eqref{eq:def_F} and \eqref{eq:net_identity}:
 \begin{equation}
 A_{new,d}=\sum_{p\in F_d}a_p,\qquad A_{net,d}=A_{new,d}-\sum_{p\in R_d}a_p,\qquad \rho_d=\frac{A_{new,d}}{A_{reg}} .
 \label{eq:areas_hz}
@@ -92,7 +92,7 @@ The 27 June pass is the reference. $W_0$ is defined on it and $F$ is empty by co
   \label{fig:q3_newflood_map}
 \end{figure}
 
-On 100\,m cells (panel a of Fig.~\ref{fig:q3_newflood_map}) the new inundation follows the Yu River and its tributaries as narrow bands along the valley floors, and the receded water lies on the same corridors. The $6\times6$\,km window with the largest new area is shown at the full 10\,m resolution in panel (b), where flooded fields touch the road network; those road cuts feed Problem~5. One artifact needs a word: the horizontal band near northing 2555\,km, an edge left by the 27 June co-registration shift where pre-flood SAR is invalid, inflates $W_0$ and $R$ by about 3.4\,km$^2$ each. It carries no new inundation, so $A_{new}$, $\rho$ and everything downstream are unaffected, while $A_{net}$ is about 3.4\,km$^2$ too negative.
+On 100\,m cells (panel a of Fig.~\ref{fig:q3_newflood_map}) the new inundation follows the Yu River and its tributaries as narrow bands along the valley floors, and the receded water lies on the same corridors. The $6\times6$\,km window with the largest new area is shown at the full 10\,m resolution in panel (b), where flooded fields touch the road network. Those road cuts feed Problem~5. One artifact needs a word: the horizontal band near northing 2555\,km, an edge left by the 27 June co-registration shift where pre-flood SAR is invalid, inflates $W_0$ and $R$ by about 3.4\,km$^2$ each. It carries no new inundation, so $A_{new}$, $\rho$ and everything downstream are unaffected, while $A_{net}$ is about 3.4\,km$^2$ too negative.
 
 \begin{figure}[H]
   \centering
@@ -101,7 +101,7 @@ On 100\,m cells (panel a of Fig.~\ref{fig:q3_newflood_map}) the new inundation f
   \label{fig:q3_terrain}
 \end{figure}
 
-Fig.~\ref{fig:q3_terrain} places the same masks on the terrain. The 40$\times$32\,km window is the one with the densest new inundation; it contains 6.4\,km$^2$ of $F$ and 54.5\,km$^2$ of $W_0$, about a quarter and a fifth of the city totals. Every new pixel lies below 200\,m (median 58\,m) and follows the valley floor, whereas the eastern ridge rises to 710\,m and stays dry: the flood is a corridor phenomenon, not a sheet.
+Fig.~\ref{fig:q3_terrain} places the same masks on the terrain. The 40$\times$32\,km window is the one with the densest new inundation. It contains 6.4\,km$^2$ of $F$ and 54.5\,km$^2$ of $W_0$, about a quarter and a fifth of the city totals. Every new pixel lies below 200\,m (median 58\,m) and follows the valley floor, whereas the eastern ridge rises to 710\,m and stays dry: the flood is a corridor phenomenon, not a sheet.
 
 Why the net increase is negative while new inundation is positive is answered by the water balance in Table~\ref{tab:q3_budget}.
 

@@ -13,7 +13,7 @@ g^{(s)}=\sigma\!\left(W_g^{(s)}*\big[h_S^{(s)};h_O^{(s)}\big]\right),\qquad
 h^{(s)}=g^{(s)}\odot h_S^{(s)}+\big(1-g^{(s)}\big)\odot h_O^{(s)},
 \label{eq:gate}
 \end{equation}
-where $W_g^{(s)}$ is a $1\times1$ convolution, $\sigma$ the logistic function and $\odot$ the element-wise product. The fused map $h^{(s)}$ feeds the skip connection of a U-Net decoder (bottleneck 256 channels, bilinear upsampling, dropout 0.2), which ends in a $1\times1$ convolution to the logit $o_p$; the network has 2.30\,M parameters. Fig.~\ref{fig:arch_fusion} shows the data flow.
+where $W_g^{(s)}$ is a $1\times1$ convolution, $\sigma$ the logistic function and $\odot$ the element-wise product. The fused map $h^{(s)}$ feeds the skip connection of a U-Net decoder (bottleneck 256 channels, bilinear upsampling, dropout 0.2), which ends in a $1\times1$ convolution to the logit $o_p$. The network has 2.30\,M parameters. Fig.~\ref{fig:arch_fusion} shows the data flow.
 
 \begin{figure}[!ht]
   \centering
@@ -22,7 +22,7 @@ where $W_g^{(s)}$ is a $1\times1$ convolution, $\sigma$ the logistic function an
   \label{fig:arch_fusion}
 \end{figure}
 
-The gate of \eqref{eq:gate} decides per pixel and per channel how much to trust each sensor. Where the optical image says ``river before the flood'' the gate can lean on optics to suppress a SAR-dark pixel; where optics are cloudy it can lean on SAR. The trained model distributes its weight almost evenly, with mean SAR gate values of 0.52, 0.57, 0.56 and 0.53 at the four scales, so neither sensor is ignored. The modality-dropout block at the bottom of Fig.~\ref{fig:arch_fusion} sets the entire optical input and $m_p$ to zero with probability 0.25 per training sample, and invalid optical pixels are always zeroed. The model therefore learns to work from SAR alone where optics are missing, which is the case for all of Hengzhou (Section~\ref{sec:q3}).
+The gate of \eqref{eq:gate} decides per pixel and per channel how much to trust each sensor. Where the optical image says ``river before the flood'' the gate can lean on optics to suppress a SAR-dark pixel. Where optics are cloudy it can lean on SAR. The trained model distributes its weight almost evenly, with mean SAR gate values of 0.52, 0.57, 0.56 and 0.53 at the four scales, so neither sensor is ignored. The modality-dropout block at the bottom of Fig.~\ref{fig:arch_fusion} sets the entire optical input and $m_p$ to zero with probability 0.25 per training sample, and invalid optical pixels are always zeroed. The model therefore learns to work from SAR alone where optics are missing, which is the case for all of Hengzhou (Section~\ref{sec:q3}).
 
 \textbf{Area-consistent loss.} With $\hat p_p=\sigma(o_p)$, $\hat p_{p,y}$ the probability of the true class, batch $\mathcal B$ and $N_b$ valid pixels in sample $b$, training minimizes
 \begin{equation}
@@ -50,7 +50,7 @@ q=\arg\min_{q\ \text{non-decreasing}}\ \sum_{p\in\mathrm{cal}}\big(y_p-q(\bar p_
 \sum_{p\in\mathrm{cal}}a_p\,\mathbb 1\big[\bar p_p\ge\tau_A\big]=\sum_{p\in\mathrm{cal}}a_p\,q(\bar p_p).
 \label{eq:tauA}
 \end{equation}
-The left side is non-increasing in $\tau_A$ and the right side is a constant, so \eqref{eq:tauA} has a solution found by bisection on $[0.01,0.99]$ with tolerance $10^{-4}$. The final mask is $\hat F=\{\bar p\ge\tau_A\}$, and the reported area is the area of that mask, so maps and areas always agree. The fold thresholds were $\tau_A=0.708$, 0.515, 0.388, 0.690 and 0.574; on the calibration folds the mask area is 933.111\,km$^2$ against an expected area of 933.112\,km$^2$, a relative gap of $6\times10^{-7}$. The identity holds on calibration data by construction; on test data the remaining bias is an empirical result.
+The left side is non-increasing in $\tau_A$ and the right side is a constant, so \eqref{eq:tauA} has a solution found by bisection on $[0.01,0.99]$ with tolerance $10^{-4}$. The final mask is $\hat F=\{\bar p\ge\tau_A\}$, and the reported area is the area of that mask, so maps and areas always agree. The fold thresholds were $\tau_A=0.708$, 0.515, 0.388, 0.690 and 0.574. On the calibration folds the mask area is 933.111\,km$^2$ against an expected area of 933.112\,km$^2$, a relative gap of $6\times10^{-7}$. The identity holds on calibration data by construction. On test data the remaining bias is an empirical result.
 
 \textbf{Tile intervals.} The MC spread of the tile area, $\sigma_t=\mathrm{std}_\ell\big(\sum_{p\in t}a_p\mathbb 1[\hat p^{(\ell)}_p\ge\tau_A]\big)$, is stabilized as $\sigma'_t=\sigma_t+c$ with $c$ the larger of the calibration median of $\sigma_t$ and 0.005\,km$^2$. Split-conformal prediction~\cite{lei2018conformal} then gives a distribution-free tile interval:
 \begin{equation}
@@ -92,7 +92,7 @@ M6 + 50 px MMU & 0.730 & 0.844 & 0.807 & $0.000$ & 0.238 & 0.35 & 0.558 & $-0.08
 \end{tabular}}
 \end{table}
 
-The same information for the seven trained variants, ranked column by column, is shown in Fig.~\ref{fig:q2_model_compare}; no single variant wins every metric.
+The same information for the seven trained variants, ranked column by column, is shown in Fig.~\ref{fig:q2_model_compare}. No single variant wins every metric.
 
 \begin{figure}[!ht]
   \centering

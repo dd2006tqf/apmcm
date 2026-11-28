@@ -2,13 +2,13 @@
 
 \subsection{Model Assumptions}
 
-The following simplifications are needed because the data do not fix them; each assumed parameter is varied in the sensitivity analyses of the problem where it is used\cite{deepseek2026,qwen2026,doubao2026}.
+The following simplifications are needed because the data do not fix them. Each assumed parameter is varied in the sensitivity analyses of the problem where it is used\cite{deepseek2026,qwen2026,doubao2026}.
 
-(1) Tiles of the official dataset inside one block of $5\times5$ tile positions (about $10.4\times11.9$\,km) are spatially dependent, while different blocks are exchangeable. Floods and land cover are autocorrelated over kilometers, so random tile or pixel splits would leak information; block-level independence is what makes held-out metrics and conformal intervals meaningful.
+(1) Tiles of the official dataset inside one block of $5\times5$ tile positions (about $10.4\times11.9$\,km) are spatially dependent, while different blocks are exchangeable. Floods and land cover are autocorrelated over kilometers, so random tile or pixel splits would leak information. Block-level independence is what makes held-out metrics and conformal intervals meaningful.
 
 (2) The GF-3 uint8 value is a monotone function of radar backscatter whose radiometric scale is unknown. No calibration metadata is supplied, so the models only see per-tile rank-normalized SAR, and for Sentinel-1 the scale (dB or amplitude) is chosen by distribution matching.
 
-(3) The Hengzhou flood around 6 July 2026 is represented by the Sentinel-1 passes of 4 July and 16 July, and the pass of 27 June is pre-flood. No pass exists on the reference date; both flood-time dates are reported and neither is called the peak.
+(3) The Hengzhou flood around 6 July 2026 is represented by the Sentinel-1 passes of 4 July and 16 July, and the pass of 27 June is pre-flood. No pass exists on the reference date. Both flood-time dates are reported and neither is called the peak.
 
 (4) Pre-flood water is the union of independent water sources (pre-flood SAR water, WorldCover water class, OSM water polygons). The union never counts a permanent water pixel as new, so it yields a conservative newly inundated area.
 
@@ -18,7 +18,7 @@ The following simplifications are needed because the data do not fix them; each 
 
 \subsection{Notation}
 
-The table collects the symbols that are used across several chapters; symbols needed only locally are defined where they appear.
+The table collects the symbols that are used across several chapters. Symbols needed only locally are defined where they appear.
 
 \begin{longtable}{p{0.16\textwidth}p{0.60\textwidth}p{0.14\textwidth}}
 \toprule

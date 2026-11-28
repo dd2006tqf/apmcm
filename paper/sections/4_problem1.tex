@@ -23,12 +23,12 @@ D_b=\frac{\sqrt2\,|\mu_1-\mu_2|}{\sqrt{s_1^2+s_2^2}}>2\quad\text{and}\quad \min(
 \end{equation}
 where $\mu_i,s_i,n_i$ are the class means, standard deviations and sizes (Ashman's $D$). The tile threshold is the median of the accepted $\tau_b$, with a fold-level median as fallback. Then $\hat F_A=\{\tilde z<\tau\}\setminus\{\mathrm{NDWI}>0\}$, and components smaller than 10 pixels are removed. Labels are not used at all, so baseline A measures how far a rule without training gets.
 
-\textbf{Baseline B: LightGBM pixel classifier.} The second recognizer learns $\Pr(y_p=1\mid\boldsymbol x_p)$ from the 19 features of Section~\ref{sec:data_def} with gradient-boosted trees~\cite{lightgbm2020package}. Because labels mark new inundation, the classifier learns $F$ directly. Up to 2000 pixels per training tile are drawn, half positive and half negative where possible (about 0.8\,M rows per fold), which handles the imbalance; the prior shift this causes is absorbed by the threshold
+\textbf{Baseline B: LightGBM pixel classifier.} The second recognizer learns $\Pr(y_p=1\mid\boldsymbol x_p)$ from the 19 features of Section~\ref{sec:data_def} with gradient-boosted trees~\cite{lightgbm2020package}. Because labels mark new inundation, the classifier learns $F$ directly. Up to 2000 pixels per training tile are drawn, half positive and half negative where possible (about 0.8\,M rows per fold), which handles the imbalance. The prior shift this causes is absorbed by the threshold
 \begin{equation}
 \tau_k=\arg\max_{\tau\in\{0.05,0.06,\dots,0.95\}}\ \mathrm{F1}\big(\mathcal T^{cal}_k;\tau\big),
 \label{eq:tau_f1}
 \end{equation}
-chosen on the calibration fold. The trees use 63 leaves, learning rate 0.05 and early stopping after 50 rounds on calibration pixels; the selected thresholds were 0.46, 0.58, 0.77, 0.40 and 0.59 with 390--1211 trees.
+chosen on the calibration fold. The trees use 63 leaves, learning rate 0.05 and early stopping after 50 rounds on calibration pixels. The selected thresholds were 0.46, 0.58, 0.77, 0.40 and 0.59 with 390--1211 trees.
 
 \subsection{Pixel and Area Metrics}
 
@@ -114,7 +114,7 @@ False positives and false negatives differ by land cover, and the area error dec
 \Delta A=\sum_c(\mathrm{FP}_c-\mathrm{FN}_c).
 \label{eq:fpfn_strata}
 \end{equation}
-The attachment carries no land cover, so the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbor; this describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
+The attachment carries no land cover, so the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbor. This describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
 
 \begin{table}[H]
 \centering
@@ -136,7 +136,7 @@ Wetland & 293.59 & 25.46 & 76.89 & $-51.43$ \\
 \end{tabularx}}
 \end{table}
 
-On dry land covers the model raises false alarms: tree cover contributes 79.80\,km$^2$ of FP against only 33.46\,km$^2$ of real new flood, built-up land 19.38\,km$^2$ against 8.79\,km$^2$. Radar shadow behind tree canopies and smooth surfaces in villages look as dark as water. On wet land covers it misses flood: in wetland and areas that WorldCover maps as permanent water, the net error is $-51.43$ and $-24.11$\,km$^2$, because water that rose over a wetland or a lake margin is hard to tell from the water that was already there. The positive and negative nets cancel to the total $+85.71$\,km$^2$; the worst strata by absolute net error are tree, wetland and cropland.
+On dry land covers the model raises false alarms: tree cover contributes 79.80\,km$^2$ of FP against only 33.46\,km$^2$ of real new flood, built-up land 19.38\,km$^2$ against 8.79\,km$^2$. Radar shadow behind tree canopies and smooth surfaces in villages look as dark as water. On wet land covers it misses flood: in wetland and areas that WorldCover maps as permanent water, the net error is $-51.43$ and $-24.11$\,km$^2$, because water that rose over a wetland or a lake margin is hard to tell from the water that was already there. The positive and negative nets cancel to the total $+85.71$\,km$^2$. The worst strata by absolute net error are tree, wetland and cropland.
 
 \begin{table}[H]
 \centering

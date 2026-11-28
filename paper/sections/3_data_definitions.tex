@@ -3,7 +3,7 @@
 
 \subsection{Official Tiles and Self-Collected Layers}
 
-\textbf{Official data (Attachment~1).} The attachment holds 1000 co-registered triplets with IDs 1001--2000: a pre-flood Sentinel-2 tile with four uint8 bands (B, G, R, NIR), a post-flood GF-3 HH SAR tile with one uint8 band, and a binary label, each $256\times256$ pixels and stored as GeoTIFF in WGS-84 geographic coordinates with a pixel size of $8.333\times10^{-5}$\,degree. The GeoTIFF tags place the tiles at 112.69--116.91$^\circ$E and 28.43--29.30$^\circ$N in four spatial clusters of 512, 450, 22 and 16 tiles, which is consistent with the Dongting and Poyang lake basins; the attachment states no event date, so we do not assign one. Pixel-weighted, 18.99\% of the labeled pixels are flooded, but the median tile has only 3.76\% flood and 15 tiles have none, so the class imbalance is strong and many tiles carry almost no target. The README shipped with the data quotes a mean flood share of 24.5\%; a full traversal of the 1000 label files gives 18.99\%, and we use the verified value.
+\textbf{Official data (Attachment~1).} Attachment~1 holds 1000 co-registered triplets, IDs 1001--2000: one pre-flood Sentinel-2 tile with four uint8 bands (B, G, R, NIR), one post-flood GF-3 HH SAR tile with a single uint8 band, and a binary label, each $256\times256$ pixels and stored as GeoTIFF in WGS-84 geographic coordinates at $8.333\times10^{-5}$\,degree per pixel. GeoTIFF tags place the tiles between 112.69 and 116.91$^\circ$E and 28.43 and 29.30$^\circ$N, in four spatial clusters of 512, 450, 22 and 16 tiles -- consistent with the Dongting and Poyang lake basins. The attachment states no event date, and we do not assign one. Class imbalance is strong: pixel-weighted, 18.99\% of the labeled pixels are flooded, yet the median tile carries only 3.76\% flood and 15 tiles carry none, which leaves many tiles with almost no target. The README quotes a mean flood share of 24.5\%; a full traversal of the 1000 label files gives 18.99\%, and the verified value is the one used here.
 
 \textbf{Self-collected data (Hengzhou).} Problems~3--5 use only public layers, listed in Table~\ref{tab:hz_data}. They are reprojected to the 10\,m UTM~49N grid of the Sentinel-1 product (nearest neighbor for classes, bilinear for continuous values) and clipped to the GADM~4.1 boundary, whose geodesic area is 3440.09\,km$^2$.
 
@@ -38,7 +38,7 @@ Fig.~\ref{fig:data_samples} shows only representative samples, not the full inve
   \label{fig:data_samples}
 \end{figure}
 
-Two of its rows needed repair, and the repair is part of the method. The Sentinel-1 rasters are shifted north--south by 5.4--6.2\,km relative to their geotransform, and the Sentinel-2 scene cannot be aligned by any translation; both findings, and how they were handled, are reported in Section~\ref{sec:q3_verify} because they only affect Problems~3--5. The official tiles passed the same kind of test: on the 491 tiles with 3--60\% optical water, the median shift that best aligns SAR-dark pixels with optical water is $(0,0)$ pixels, and 63.3\% of the tiles align within 2 pixels, so the official triplets are used on their native grid.
+Two of its rows needed repair, and the repair belongs to the method. Relative to their geotransform the Sentinel-1 rasters are shifted north--south by 5.4--6.2\,km, and the Sentinel-2 scene cannot be aligned by any translation; both findings, and how they were handled, are reported in Section~\ref{sec:q3_verify}, since they affect only Problems~3--5. Official tiles passed the same test: on the 491 tiles carrying 3--60\% optical water, the shift that best aligns SAR-dark pixels with optical water has a median of $(0,0)$ pixels, and 63.3\% of the tiles align within 2 pixels, which keeps the official triplets on their native grid.
 
 \subsection{What the Official Labels Actually Mark}
 
@@ -55,12 +55,12 @@ The distributions in Fig.~\ref{fig:q1_label_semantics} separate cleanly. Panel (
 
 \subsection{Area Definitions and Their Set Logic}
 
-The four sets of \eqref{eq:def_F} are related by $W_1=F\cup(W_0\cap W_1)$ and $W_0=(W_0\cap W_1)\cup R$ with $R=W_0\setminus W_1$, so
+The four sets of \eqref{eq:def_F} are related by $W_1=F\cup(W_0\cap W_1)$ and $W_0=(W_0\cap W_1)\cup R$ with $R=W_0\setminus W_1$, which gives
 \begin{equation}
 A_{net}=|W_1|_a-|W_0|_a=A_{new}-|R|_a\le A_{new},
 \label{eq:net_identity}
 \end{equation}
-where $|\cdot|_a$ is the area-weighted size of a set. When an estimate $\hat F$ is compared with the reference $F$, the area error splits into false alarms and misses,
+where $|\cdot|_a$ is the area-weighted size of a set. Comparing an estimate $\hat F$ with the reference $F$ splits the area error into false alarms and misses,
 \begin{equation}
 \hat A-A=|\hat F\setminus F|_a-|F\setminus\hat F|_a=|\mathrm{FP}|_a-|\mathrm{FN}|_a .
 \label{eq:fpfn_identity}
@@ -74,7 +74,7 @@ Fig.~\ref{fig:q1_set_logic} draws both identities.
   \label{fig:q1_set_logic}
 \end{figure}
 
-Panel (a) of Fig.~\ref{fig:q1_set_logic} explains why the net increase can be negative while new inundation is positive: any receded water $R$ (drained ponds, a lower river stage) is subtracted from $A_{new}$, and this happens in Hengzhou. Panel (b) explains why IoU alone is not enough for this problem. Identity \eqref{eq:fpfn_identity} lets a model with many false alarms and as many misses report an almost exact total area. We therefore always report the area error together with IoU, and split it by land cover into its FP and FN parts.
+Panel (a) of Fig.~\ref{fig:q1_set_logic} explains why the net increase can be negative while new inundation is positive: any receded water $R$ (drained ponds, a lower river stage) is subtracted from $A_{new}$, and this happens in Hengzhou. Panel (b) explains why IoU alone is not enough for this problem. Identity \eqref{eq:fpfn_identity} lets a model with many false alarms and as many misses report an almost exact total area. Area error is always reported together with IoU here, split by land cover into FP and FN parts.
 
 \subsection{Shared Preprocessing}
 
@@ -91,7 +91,7 @@ On the official tiles $a_p$ ranges from 74.78 to 75.41\,m$^2$ and the mean tile 
 
 \textbf{Geometry.} Label, SAR and optical tie points differ by at most 0.47 pixel. Nine label tiles have an anisotropic pixel size ($7.9119\times10^{-5}$ by $8.3349\times10^{-5}$ degree) and are resampled by nearest neighbor onto the SAR grid. Pixels outside the label footprint are excluded from all metrics.
 
-\textbf{SAR normalization and speckle.} The radiometric scale of the GF-3 values is unknown (Assumption~2), so each tile is rank-normalized with its own 2\% and 98\% quantiles,
+\textbf{SAR normalization and speckle.} The radiometric scale of the GF-3 values is unknown (Assumption~2), and each tile is rank-normalized with its own 2\% and 98\% quantiles,
 \begin{equation}
 z_p=\mathrm{clip}\!\left(\frac{I_p-Q_2}{Q_{98}-Q_2+\epsilon},0,1\right),\qquad \epsilon=10^{-6},
 \label{eq:rank_norm}

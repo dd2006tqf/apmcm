@@ -3,7 +3,7 @@
 
 \subsection{Independent Samples by Spatially Blocked Cross-Validation}
 
-Evaluation has to use ``independent samples''. Neighboring tiles share the same flood and the same fields, so a random split of tiles, let alone of pixels, would put near-copies of a test tile into training. The 1000 tiles lie on a regular grid of $199\times42$ tile positions. We group them into 67 blocks of $5\times5$ positions (Assumption~1) and assign the blocks to five folds by a greedy stratified rule that balances tile count and flood area. For outer fold $k=0,\dots,4$,
+Evaluation has to use ``independent samples''. Neighboring tiles share one flood and one field pattern; a random split of tiles, let alone of pixels, would put near-copies of a test tile into training. The 1000 tiles lie on a regular grid of $199\times42$ tile positions. We group them into 67 blocks of $5\times5$ positions (Assumption~1) and assign the blocks to five folds by a greedy stratified rule that balances tile count and flood area. For outer fold $k=0,\dots,4$,
 \begin{equation}
 \begin{split}
 \mathcal T^{test}_k&=\mathcal F_k,\\
@@ -12,27 +12,27 @@ Evaluation has to use ``independent samples''. Neighboring tiles share the same 
 \end{split}
 \label{eq:folds}
 \end{equation}
-where $\mathcal F_k$ is the set of tiles in fold $k$ and $g_t$ the grid position of tile $t$. The calibration fold is used for every choice that would otherwise peek at the test data (threshold, early stopping, isotonic map, conformal quantile), and the Chebyshev buffer of one tile removes the training tiles that touch a test or calibration tile. The resulting test folds hold 194, 200, 202, 202 and 202 tiles with flood shares 0.184--0.202, and 170--196 buffer tiles are dropped from each training set. Every tile is tested exactly once, so all metrics below are pooled over the 1000 held-out tiles. This design follows the recommendation of blocked cross-validation for spatially structured data~\cite{roberts2017crossvalidation}.
+where $\mathcal F_k$ is the set of tiles in fold $k$ and $g_t$ the grid position of tile $t$. The calibration fold is used for every choice that would otherwise peek at the test data (threshold, early stopping, isotonic map, conformal quantile), and the Chebyshev buffer of one tile removes the training tiles that touch a test or calibration tile. The resulting test folds hold 194, 200, 202, 202 and 202 tiles with flood shares 0.184--0.202, and 170--196 buffer tiles are dropped from each training set. Every tile is tested exactly once; all metrics below are pooled over the 1000 held-out tiles. This design follows the recommendation of blocked cross-validation for spatially structured data~\cite{roberts2017crossvalidation}.
 
 \subsection{Two Recognizers of Different Kinds}
 
-\textbf{Baseline A: physics two-stage rule.} The classical route estimates post-flood water from SAR and subtracts pre-flood water from optics. Each tile is cut into 16 sub-blocks of $64\times64$ pixels, and Otsu's threshold $\tau_b$ on $\tilde z$ is accepted for a sub-block only if its two classes are clearly bimodal~\cite{martinis2009splitbased},
+\textbf{Baseline A: physics two-stage rule.} Baseline A follows the classical route: estimate post-flood water from SAR, subtract pre-flood water from optics. Each tile is cut into 16 sub-blocks of $64\times64$ pixels, and an Otsu threshold $\tau_b$ on $\tilde z$ is accepted for a sub-block only when its two classes are clearly bimodal~\cite{martinis2009splitbased},
 \begin{equation}
 D_b=\frac{\sqrt2\,|\mu_1-\mu_2|}{\sqrt{s_1^2+s_2^2}}>2\quad\text{and}\quad \min(n_1,n_2)\ge0.1\,(n_1+n_2),
 \label{eq:ashman}
 \end{equation}
-where $\mu_i,s_i,n_i$ are the class means, standard deviations and sizes (Ashman's $D$). The tile threshold is the median of the accepted $\tau_b$, with a fold-level median as fallback. Then $\hat F_A=\{\tilde z<\tau\}\setminus\{\mathrm{NDWI}>0\}$, and components smaller than 10 pixels are removed. Labels are not used at all, so baseline A measures how far a rule without training gets.
+where $\mu_i,s_i,n_i$ are the class means, standard deviations and sizes (Ashman's $D$). Accepted thresholds are pooled by their median, with a fold-level median as fallback, and $\hat F_A=\{\tilde z<\tau\}\setminus\{\mathrm{NDWI}>0\}$; components smaller than 10 pixels are removed. No labels enter at any point, which makes baseline A the measure of how far a rule without training gets.
 
-\textbf{Baseline B: LightGBM pixel classifier.} The second recognizer learns $\Pr(y_p=1\mid\boldsymbol x_p)$ from the 19 features of Section~\ref{sec:data_def} with gradient-boosted trees~\cite{lightgbm2020package}. Because labels mark new inundation, the classifier learns $F$ directly. Up to 2000 pixels per training tile are drawn, half positive and half negative where possible (about 0.8\,M rows per fold), which handles the imbalance. The prior shift this causes is absorbed by the threshold
+\textbf{Baseline B: LightGBM pixel classifier.} Baseline B learns $\Pr(y_p=1\mid\boldsymbol x_p)$ from the 19 features of Section~\ref{sec:data_def} with gradient-boosted trees~\cite{lightgbm2020package}. Its labels mark new inundation, so the classifier learns $F$ directly. Up to 2000 pixels per training tile are drawn, half positive and half negative where possible (about 0.8\,M rows per fold), which handles the imbalance; the prior shift this causes is absorbed by the threshold
 \begin{equation}
 \tau_k=\arg\max_{\tau\in\{0.05,0.06,\dots,0.95\}}\ \mathrm{F1}\big(\mathcal T^{cal}_k;\tau\big),
 \label{eq:tau_f1}
 \end{equation}
-chosen on the calibration fold. The trees use 63 leaves, learning rate 0.05 and early stopping after 50 rounds on calibration pixels. The selected thresholds were 0.46, 0.58, 0.77, 0.40 and 0.59 with 390--1211 trees.
+chosen on the calibration fold. Trees use 63 leaves, learning rate 0.05 and early stopping after 50 rounds on calibration pixels. Selected thresholds were 0.46, 0.58, 0.77, 0.40 and 0.59, with 390--1211 trees.
 
 \subsection{Pixel and Area Metrics}
 
-Pixel metrics (overall accuracy OA, precision, recall, F1, IoU and Cohen's $\kappa$) come from the pooled confusion matrix. The area metrics follow the problem's emphasis and use the tile error $e_t=\hat A_t-A_t$ with $A_t=\sum_{p\in t}a_py_p$:
+Pixel metrics (overall accuracy OA, precision, recall, F1, IoU and Cohen's $\kappa$) come from the pooled confusion matrix. Area metrics, which the problem emphasizes, use the tile error $e_t=\hat A_t-A_t$ with $A_t=\sum_{p\in t}a_py_p$:
 \begin{equation}
 \begin{split}
 \Delta A&=\sum_te_t,\qquad
@@ -42,7 +42,7 @@ Pixel metrics (overall accuracy OA, precision, recall, F1, IoU and Cohen's $\kap
 \end{split}
 \label{eq:area_metrics}
 \end{equation}
-RAE measures bias of the total, while MAE$_A$ measures how wrong a single tile is; the two differ because tile errors of opposite sign cancel in $\Delta A$ (identity \eqref{eq:fpfn_identity}). The floor of 0.05\,km$^2$ (about 1\% of a tile) avoids dividing by near-zero reference areas. Agreement is also shown by the Bland--Altman bias $\bar e$ and limits $\bar e\pm1.96s_e$~\cite{bland1986agreement}.
+Bias of the total is what RAE measures; how wrong a single tile is, that is MAE$_A$. The two differ because errors of opposite sign cancel in $\Delta A$ (identity \eqref{eq:fpfn_identity}). Dividing by near-zero reference areas is avoided by a floor of 0.05\,km$^2$ (about 1\% of a tile). Agreement is also shown by the Bland--Altman bias $\bar e$ and limits $\bar e\pm1.96s_e$~\cite{bland1986agreement}.
 
 \subsection{Recognition Results on 1000 Held-out Tiles}
 
@@ -65,7 +65,9 @@ B + 50 px MMU & 0.911 & 0.765 & 0.763 & 0.764 & 0.618 & 0.709 & $-0.002$ & 0.368
 \end{tabular}}
 \end{table}
 
-The 1000 reference tiles contain 933.41\,km$^2$ of new inundation. LightGBM returns 1019.12\,km$^2$, 9.2\% above the reference (an excess of 85.71\,km$^2$). After the 50 px MMU the same classifier returns 931.30\,km$^2$, 0.2\% below the reference; 79\% of the removed pixels were false positives (FP falls from 3.84 to 2.92\,M pixels while TP falls only from 9.75 to 9.50\,M). Its fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ (IoU 0.546--0.622), and the ten-fold design is what exposes that spread: a single random split would report one number. Baseline A finds 74\% of the flooded pixels but also labels 2245.66\,km$^2$ as new inundation, 2.4 times the reference; the same MMU removes only 58\,km$^2$, because its over-detection is connected. Its own diagnostic shows why. The Ashman test of \eqref{eq:ashman} passes on 92\% of the sub-blocks, also on tiles without water, because dark fields and bright villages form a bimodal histogram too. We report this as a finding about the baseline. Fig.~\ref{fig:q1_mmu} sweeps the threshold: 25 px leaves $+3.7\%$, 50 px gives $-0.2\%$, and 100 px buys only 0.6 pp more IoU at the cost of $-5.5\%$ bias, so 50 px is the knee. Decomposed by \eqref{eq:fpfn_identity}, the MMU mask carries a quantity disagreement of 2.0\,km$^2$ and a location disagreement of 438\,km$^2$ ($2\min(\mathrm{FP},\mathrm{FN})$): 47\% of the reference flood sits on the wrong side of the boundary, and the $-0.2\%$ of \eqref{eq:area_metrics} is only the residual of two errors that are each over two hundred times larger. This is the reason Problem~2 replaces the pixel classifier with a spatial model.
+Across the 1000 reference tiles there are 933.41\,km$^2$ of new inundation. LightGBM returns 1019.12\,km$^2$, 9.2\% above the reference (an excess of 85.71\,km$^2$). Applying the 50 px MMU to the same classifier brings that to 931.30\,km$^2$, 0.2\% below the reference; 79\% of the removed pixels were false positives (FP falls from 3.84 to 2.92\,M pixels while TP falls only from 9.75 to 9.50\,M). Fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ (IoU 0.546--0.622), and the ten-fold design is what exposes that spread; a single random split would have reported one number. Baseline A finds 74\% of the flooded pixels and labels 2245.66\,km$^2$ as new inundation, 2.4 times the reference. The same MMU removes only 58\,km$^2$ of it: the over-detection is connected, not speckle. Its own diagnostic says why. The Ashman test of \eqref{eq:ashman} passes on 92\% of the sub-blocks, including tiles without water, because dark fields and bright villages form a bimodal histogram too. That is a finding about the baseline, and we report it as one.
+
+Fig.~\ref{fig:q1_mmu} sweeps the mapping unit: 25 px leaves $+3.7\%$, 50 px gives $-0.2\%$, and 100 px buys 0.6 pp more IoU at a cost of $-5.5\%$ bias, which puts the knee at 50 px. Decomposed by \eqref{eq:fpfn_identity}, the MMU mask carries a quantity disagreement of 2.0\,km$^2$ and a location disagreement of 438\,km$^2$ ($2\min(\mathrm{FP},\mathrm{FN})$). Just under half the reference flood, 47\%, sits on the wrong side of the boundary; the $-0.2\%$ of \eqref{eq:area_metrics} is merely the residual of two errors that are each over two hundred times larger. Replacing the pixel classifier with a spatial model is what Problem~2 does about it.
 
 \begin{figure}[H]
   \centering
@@ -74,7 +76,7 @@ The 1000 reference tiles contain 933.41\,km$^2$ of new inundation. LightGBM retu
   \label{fig:q1_mmu}
 \end{figure}
 
-The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q1_visual_cmp} therefore shows four held-out tiles of increasing flood share, each predicted by the model of the fold in which it was a test tile; columns 4--6 are confusion maps (true positives, FP, FN) of baseline A, LightGBM and the final Problem~2 model M6.
+The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q1_visual_cmp} shows four held-out tiles of increasing flood share, each predicted by the model of the fold in which it was a test tile; columns 4--6 are confusion maps (true positives, FP, FN) of baseline A, LightGBM and the final Problem~2 model M6.
 
 \begin{figure}[!ht]
   \centering
@@ -103,7 +105,7 @@ That observation becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig
   \label{fig:q1_area_agreement}
 \end{figure}
 
-Baseline A over-estimates by $+1.31$\,km$^2$ per tile on average, with 95\% limits of $-1.76$ to $+4.38$\,km$^2$, and the excess grows on tiles with little reference flood (panel a). LightGBM removes most of the bias ($+0.086$\,km$^2$), and its limits of agreement, $-1.42$ to $+1.60$\,km$^2$, span about 1.1 times the mean tile area of 4.91\,km$^2$. The scatter is widest on tiles with intermediate flood share, where fragmented flood patches meet dark fields. A model whose area error has to be small on each assessment unit, not only in the city total, therefore needs spatial context, which motivates the convolutional model of Problem~2.
+Baseline A over-estimates by $+1.31$\,km$^2$ per tile on average, with 95\% limits of $-1.76$ to $+4.38$\,km$^2$, and the excess grows on tiles with little reference flood (panel a). LightGBM removes most of the bias ($+0.086$\,km$^2$), and its limits of agreement, $-1.42$ to $+1.60$\,km$^2$, span about 1.1 times the mean tile area of 4.91\,km$^2$. The scatter is widest on tiles with intermediate flood share, where fragmented flood patches meet dark fields. A model whose area error has to be small on each assessment unit, not only in the city total, needs spatial context; that is what motivates the convolutional model of Problem~2.
 
 \subsection{False Positives and False Negatives by Land Cover}
 
@@ -114,7 +116,7 @@ False positives and false negatives differ by land cover, and the area error dec
 \Delta A=\sum_c(\mathrm{FP}_c-\mathrm{FN}_c).
 \label{eq:fpfn_strata}
 \end{equation}
-The attachment carries no land cover, so the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbor. This describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
+The attachment carries no land cover; the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbor. This describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
 
 \begin{table}[H]
 \centering
@@ -167,8 +169,8 @@ To find the factors behind the tile error, each held-out tile gets label-free de
   \label{fig:q1_error_drivers}
 \end{figure}
 
-The error drivers are ranked in panel (b) of Fig.~\ref{fig:q1_error_drivers} by mean $|\mathrm{SHAP}|$: raw SAR standard deviation first (0.196), then tree share (0.077), boundary density of the flood (0.074), ENL (0.073), NDVI mean (0.057), bimodality share (0.050) and pre-flood water share (0.045). High SAR variance with low ENL means speckle and mixed scattering, tree share is the false-alarm mechanism of Table~\ref{tab:q1_fpfn}, and a high boundary density means fragmented flood that a pixel classifier cuts into pieces. Panel (a) sets the same drivers against the FP/FN bars of Table~\ref{tab:q1_fpfn} and, for later comparison, the net error of the Problem~2 model M6. Once the error is signed the ordering changes: reference flood share comes first, so the model over-estimates lightly flooded tiles and under-estimates heavily flooded ones.
+The error drivers are ranked in panel (b) of Fig.~\ref{fig:q1_error_drivers} by mean $|\mathrm{SHAP}|$: raw SAR standard deviation first (0.196), then tree share (0.077), boundary density of the flood (0.074), ENL (0.073), NDVI mean (0.057), bimodality share (0.050) and pre-flood water share (0.045). High SAR variance with low ENL means speckle and mixed scattering, tree share is the false-alarm mechanism of Table~\ref{tab:q1_fpfn}, and a high boundary density means fragmented flood that a pixel classifier cuts into pieces. Panel (a) sets the same drivers against the FP/FN bars of Table~\ref{tab:q1_fpfn} and, for later comparison, the net error of the Problem~2 model M6. Once the error is signed the ordering changes: reference flood share comes first, and the model over-estimates lightly flooded tiles while under-estimating heavily flooded ones.
 
 A harder notion of independence holds out a whole spatial cluster. Training on three of the four clusters and testing on the fourth lowers the pooled IoU from 0.598 to 0.508 and F1 from 0.749 to 0.674, and the cluster RAE is $+26\%$ on the 512-tile cluster and $+15\%$ on the 450-tile cluster. Transfer to an unseen region thus costs about 0.09 IoU and adds a positive area bias, which is what Problem~3 has to face in Guangxi.
 
-These analyses define what Problem~2 must fix. The 397 tiles with $A_t\ge0.05$\,km$^2$ and $|\mathrm{RAE}_t|>0.5$ under LightGBM form the ``hard set''. The dominant error mechanisms are dark dry surfaces (tree, built-up) and fragmented or vegetated flood, both of which need spatial context and the optical land state, and the dominant error measure is a positive total bias that pixel-wise training does not control\cite{deepseek2026,qwen2026,doubao2026}.
+These analyses define what Problem~2 must fix. Under LightGBM, 397 tiles have $A_t\ge0.05$\,km$^2$ and $|\mathrm{RAE}_t|>0.5$; those tiles form the ``hard set''. Dark dry surfaces (tree, built-up) and fragmented or vegetated flood dominate the mechanisms, and both need spatial context and the optical land state. A positive total bias that pixel-wise training does not control is the dominant error measure\cite{deepseek2026,qwen2026,doubao2026}.

@@ -3,17 +3,17 @@
 
 \subsection{Inherited Settings and New Components}
 
-Problem~2 keeps the preprocessing, the folds \eqref{eq:folds}, the metrics \eqref{eq:area_metrics} and the land-cover strata of Problem~1, so every number below is comparable with Table~\ref{tab:q1_metrics} on the identical 1000 held-out tiles (the test sets of all variants have the same ID hash). It adds four components, each aimed at a diagnosis of Section~\ref{sec:q1}: convolutional spatial context against fragmented flood and isolated dark surfaces; feature-level fusion of SAR with the pre-flood optical state, learned by gates; an area-aware loss followed by area calibration, against the positive total bias; and tile-level uncertainty that is carried into the grading. A model needed for Hengzhou has one more requirement: it has to work when the optical input is missing.
+Nothing in Problem~2 starts from zero. The preprocessing, the folds \eqref{eq:folds}, the metrics \eqref{eq:area_metrics} and the land-cover strata carry over from Problem~1 unchanged; every number below can be read against Table~\ref{tab:q1_metrics} on the same 1000 held-out tiles (all variants share one test-tile hash). What changes answers the four diagnoses of Section~\ref{sec:q1}, one component each. Fragmented flood and isolated dark surfaces need spatial context, which a pixel classifier does not have; the classifier gives way to a convolutional network. Dark fields and permanent ponds need the pre-flood optical state, which enters through gated feature fusion. An area-aware loss during training, followed by an area calibration, answers the positive total bias. Tile-level intervals carry the uncertainty into the grading, where it has to survive the transfer. Hengzhou adds a fifth requirement no component above provides: the model must run when the optical input is missing.
 
 \subsection{Dual-Branch Gated Fusion Network}
 
-The network has two encoders of the U-Net type~\cite{ronneberger2015unet}. The SAR branch reads $[z,\tilde z,\mathrm{std}_7(\tilde z)]$, the optical branch reads $[B,G,R,N]/255$, NDWI, NDVI and the validity $m_p$. Each branch has four stages of width 16, 32, 64 and 128 (two $3\times3$ convolutions with batch normalization and ReLU, then $2\times2$ max-pooling). At every scale $s$ the two feature maps $h_S^{(s)}$ and $h_O^{(s)}$ are mixed by a learned gate,
+Two U-Net encoders~\cite{ronneberger2015unet} form the network. The SAR branch reads $[z,\tilde z,\mathrm{std}_7(\tilde z)]$; the optical branch reads $[B,G,R,N]/255$, NDWI, NDVI and the validity $m_p$. Four stages of width 16, 32, 64 and 128 make up each branch (two $3\times3$ convolutions with batch normalization and ReLU, then $2\times2$ max-pooling). At every scale $s$ a learned gate mixes the two feature maps $h_S^{(s)}$ and $h_O^{(s)}$,
 \begin{equation}
 g^{(s)}=\sigma\!\left(W_g^{(s)}*\big[h_S^{(s)};h_O^{(s)}\big]\right),\qquad
 h^{(s)}=g^{(s)}\odot h_S^{(s)}+\big(1-g^{(s)}\big)\odot h_O^{(s)},
 \label{eq:gate}
 \end{equation}
-where $W_g^{(s)}$ is a $1\times1$ convolution, $\sigma$ the logistic function and $\odot$ the element-wise product. The fused map $h^{(s)}$ feeds the skip connection of a U-Net decoder (bottleneck 256 channels, bilinear upsampling, dropout 0.2), which ends in a $1\times1$ convolution to the logit $o_p$. The network has 2.30\,M parameters. Fig.~\ref{fig:arch_fusion} shows the data flow.
+where $W_g^{(s)}$ is a $1\times1$ convolution, $\sigma$ the logistic function and $\odot$ the element-wise product. The fused map feeds the skip connection of a U-Net decoder (bottleneck 256 channels, bilinear upsampling, dropout 0.2), which ends in a $1\times1$ convolution to the logit $o_p$. Parameters number 2.30\,M, and Fig.~\ref{fig:arch_fusion} shows the data flow.
 
 \begin{figure}[!ht]
   \centering
@@ -22,7 +22,7 @@ where $W_g^{(s)}$ is a $1\times1$ convolution, $\sigma$ the logistic function an
   \label{fig:arch_fusion}
 \end{figure}
 
-The gate of \eqref{eq:gate} decides per pixel and per channel how much to trust each sensor. Where the optical image says ``river before the flood'' the gate can lean on optics to suppress a SAR-dark pixel. Where optics are cloudy it can lean on SAR. The trained model distributes its weight almost evenly, with mean SAR gate values of 0.52, 0.57, 0.56 and 0.53 at the four scales, so neither sensor is ignored. The modality-dropout block at the bottom of Fig.~\ref{fig:arch_fusion} sets the entire optical input and $m_p$ to zero with probability 0.25 per training sample, and invalid optical pixels are always zeroed. The model therefore learns to work from SAR alone where optics are missing, which is the case for all of Hengzhou (Section~\ref{sec:q3}).
+Per pixel and per channel, the gate of \eqref{eq:gate} decides how much to trust each sensor. Where the optical image says ``river before the flood'', the gate can lean on optics to suppress a SAR-dark pixel; where optics are cloudy, it can lean on SAR. Weight is distributed almost evenly: mean SAR gate values are 0.52, 0.57, 0.56 and 0.53 at the four scales, and neither sensor is ignored. A modality-dropout block at the bottom of Fig.~\ref{fig:arch_fusion} sets the entire optical input and $m_p$ to zero with probability 0.25 per training sample, and invalid optical pixels are always zeroed. Working from SAR alone where optics are missing is part of what the model learns; Hengzhou is exactly that case (Section~\ref{sec:q3}).
 
 \textbf{Area-consistent loss.} With $\hat p_p=\sigma(o_p)$, $\hat p_{p,y}$ the probability of the true class, batch $\mathcal B$ and $N_b$ valid pixels in sample $b$, training minimizes
 \begin{equation}
@@ -45,12 +45,12 @@ q=\arg\min_{q\ \text{non-decreasing}}\ \sum_{p\in\mathrm{cal}}\big(y_p-q(\bar p_
 \label{eq:isotonic}
 \end{equation}
 
-\textbf{(iii) Area-preserving threshold.} The threshold $\tau_A$ is chosen so that the area of the binary mask equals the calibrated expected area:
+\textbf{(iii) Area-preserving threshold.} $\tau_A$ is chosen so that the area of the binary mask equals the calibrated expected area:
 \begin{equation}
 \sum_{p\in\mathrm{cal}}a_p\,\mathbb 1\big[\bar p_p\ge\tau_A\big]=\sum_{p\in\mathrm{cal}}a_p\,q(\bar p_p).
 \label{eq:tauA}
 \end{equation}
-The left side is non-increasing in $\tau_A$ and the right side is a constant, so \eqref{eq:tauA} has a solution found by bisection on $[0.01,0.99]$ with tolerance $10^{-4}$. The final mask is $\hat F=\{\bar p\ge\tau_A\}$, and the reported area is the area of that mask, so maps and areas always agree. The fold thresholds were $\tau_A=0.708$, 0.515, 0.388, 0.690 and 0.574. On the calibration folds the mask area is 933.111\,km$^2$ against an expected area of 933.112\,km$^2$, a relative gap of $6\times10^{-7}$. The identity holds on calibration data by construction. On test data the remaining bias is an empirical result.
+The left side is non-increasing in $\tau_A$, the right side is constant, and bisection on $[0.01,0.99]$ with tolerance $10^{-4}$ finds the solution. The final mask is $\hat F=\{\bar p\ge\tau_A\}$, and the reported area is the area of that mask; maps and areas agree by construction. Fold thresholds were $\tau_A=0.708$, 0.515, 0.388, 0.690 and 0.574. Calibration folds give a mask area of 933.111\,km$^2$ against an expected 933.112\,km$^2$, a relative gap of $6\times10^{-7}$. On calibration data the identity holds exactly; on test data the remaining bias is an empirical result.
 
 \textbf{Tile intervals.} The MC spread of the tile area, $\sigma_t=\mathrm{std}_\ell\big(\sum_{p\in t}a_p\mathbb 1[\hat p^{(\ell)}_p\ge\tau_A]\big)$, is stabilized as $\sigma'_t=\sigma_t+c$ with $c$ the larger of the calibration median of $\sigma_t$ and 0.005\,km$^2$. Split-conformal prediction~\cite{lei2018conformal} then gives a distribution-free tile interval:
 \begin{equation}
@@ -65,7 +65,7 @@ with $\alpha=0.1$, scores $s_t$ from the $n\approx200$ calibration tiles of the 
 
 \subsection{Ablation: Which Component Reduces the Area Error}
 
-Seven trained variants are evaluated on the same held-out tiles: M0 is the Problem~1 LightGBM; M1 the SAR-only U-Net with focal and Dice loss; M2 adds the gated optical branch; M3 adds the area term ($\lambda_A=1$); M4 adds modality dropout and the validity channel; M5 uses the MC-dropout mean; M6 adds isotonic calibration and $\tau_A$. Two further rows apply the 50 px MMU to M2 and M6; they are post-processing, not ablation steps. Table~\ref{tab:q2_ablation} lists the metrics.
+Seven trained variants are evaluated on a common held-out set: M0 is the Problem~1 LightGBM; M1 the SAR-only U-Net with focal and Dice loss; M2 adds the gated optical branch; M3 adds the area term ($\lambda_A=1$); M4 adds modality dropout and the validity channel; M5 uses the MC-dropout mean; M6 adds isotonic calibration and $\tau_A$. Two further rows apply the 50 px MMU to M2 and M6; they are post-processing, not ablation steps. Table~\ref{tab:q2_ablation} lists the metrics.
 
 \begin{table}[H]
 \centering
@@ -112,7 +112,7 @@ Fig.~\ref{fig:q2_mmu} isolates the MMU effect on the two candidates M2 and M6: l
   \label{fig:q2_mmu}
 \end{figure}
 
-M2 ranks first among the trained variants in IoU (0.798), F1 and MAE$_A$ (0.149\,km$^2$), and the MMU removes 1.3\% of its true positives but 10.3\% of its false positives. M6+MMU has the smallest total bias ($0.0\%$), yet it loses 6.7 pp IoU and 9.0 pp hard-set IoU relative to M2+MMU: calibration repairs the area of a weaker backbone, it does not recover its pixel accuracy. Between the trained variants lies the cost of robustness: M4 loses 0.06 IoU relative to M3 because a quarter of its training samples were deliberately blinded. The hard-set columns show the largest relative change of the whole study: on the 397 tiles where LightGBM had $|\mathrm{RAE}_t|>0.5$, IoU rises from 0.266 to 0.648 under M2+MMU (M6: 0.562), MAE$_A$ falls from 0.620 to 0.163\,km$^2$, and the RAE moves from $+20.8\%$ to $-2.0\%$. The gain is concentrated where Problem~1 failed.
+M2 ranks first among the trained variants in IoU (0.798), F1 and MAE$_A$ (0.149\,km$^2$); the MMU takes 1.3\% of its true positives and 10.3\% of its false positives. M6+MMU has the smallest total bias ($0.0\%$) and still loses 6.7 pp IoU and 9.0 pp hard-set IoU relative to M2+MMU: calibration repairs the area of a weaker backbone, it does not recover its pixel accuracy. Between the trained variants sits the cost of robustness, M4 giving up 0.06 IoU against M3 because a quarter of its training samples were deliberately blinded. Largest relative change of the whole study is in the hard-set columns. On the 397 tiles where LightGBM had $|\mathrm{RAE}_t|>0.5$, IoU rises from 0.266 to 0.648 under M2+MMU (M6: 0.562), MAE$_A$ falls from 0.620 to 0.163\,km$^2$, and RAE moves from $+20.8\%$ to $-2.0\%$. The gain is concentrated exactly where Problem~1 failed.
 
 Each step of the ablation can also be isolated. Fig.~\ref{fig:q2_ablation} attributes the change of IoU, MAE$_A$ and $|\mathrm{RAE}|$ to the component added at that step, with LightGBM as dashed reference. The open dot is the value before the step and the filled dot the value after it; green and red mark improvement and degradation.
 
@@ -125,21 +125,21 @@ Each step of the ablation can also be isolated. Fig.~\ref{fig:q2_ablation} attri
 
 Optical fusion is the decisive step. From M1 to M2 IoU rises by 0.25 and MAE$_A$ drops by 71\%. The SAR-only ablation M1 reaches IoU 0.549 and RAE $+34.9\%$, which is the measured cost of dropping the pre-flood land state: without it a dark field or a permanent pond cannot be told from new inundation. LightGBM did not pay this cost because its features already contained NDWI. The area term changes little in-domain, modality dropout costs 0.06 IoU, and the MC mean leaves the metrics unchanged. Calibration then reduces the total bias from $+4.1\%$ (M4) to $+1.45\%$, and the land-cover decomposition confirms where it went: the tree stratum, which contributed $+74.87$\,km$^2$ of net error under LightGBM, contributes $-5.43$\,km$^2$ under M6, and the largest remaining nets are $+15.88$\,km$^2$ in wetland and $+15.20$\,km$^2$ in permanent-water areas (Fig.~\ref{fig:q1_error_drivers}a).
 
-Which model goes to Hengzhou was fixed before the test metrics were read. M6, the calibrated variant with modality dropout and conformal intervals, is used for the SAR-only transfer. The two variants divide the work. M2+MMU sets the in-domain ceiling at IoU 0.797; M6 carries the transfer, because it is the variant that pairs the calibrated area with a per-tile conformal interval, which is what Problem~3 consumes. Conformal intervals of M6 cover the true tile area in 87.8\% of the test tiles (folds 82.7--92.6\%, flood-share terciles 85.3--92.8\%) at a mean width of 0.54\,km$^2$, reported per tile so that the width travels with the area wherever it is used.
+Which model goes to Hengzhou was fixed before the test metrics were read. M6, the calibrated variant with modality dropout and conformal intervals, is used for the SAR-only transfer, and the two variants divide the work. M2+MMU sets the in-domain ceiling at IoU 0.797; M6 carries the transfer, because it is the variant that pairs the calibrated area with a per-tile conformal interval, which is what Problem~3 consumes. Conformal intervals of M6 cover the true tile area in 87.8\% of the test tiles (folds 82.7--92.6\%, flood-share terciles 85.3--92.8\%) at a mean width of 0.54\,km$^2$, reported per tile so that the width travels with the area wherever it is used.
 
 \subsection{Data-Based Four-Level Intensity Grading}
 
-The grading uses the newly inundated area and its proportion of the study region as core indicators, with explicit area or proportion thresholds. Thresholds are set on $\rho=A_{new}/A_{reg}$, which is free of scale, and translated into area thresholds for any unit:
+Grading rests on the newly inundated area and its share of the study region, with explicit area or proportion thresholds. Because $\rho=A_{new}/A_{reg}$ is free of scale, thresholds are set on it and then translated into area thresholds for any unit:
 \begin{equation}
 A^*_g(A_{reg})=\theta_g\,A_{reg},\qquad g=1,2,3,
 \label{eq:area_thr}
 \end{equation}
-with grade general for $\rho<\theta_1$, relatively strong for $\theta_1\le\rho<\theta_2$, strong for $\theta_2\le\rho<\theta_3$ and extremely strong for $\rho\ge\theta_3$. The thresholds should come from data, not from round numbers. The flood share of the 985 non-empty official tiles is strongly skewed, so we work on $x_t=\operatorname{logit}\rho^{ref}_t$ (with $\rho$ clipped to $[10^{-4},1-10^{-4}]$) and fit a four-component Gaussian mixture by EM (20 initializations). Each threshold is the Bayes boundary between adjacent components $g$ and $g+1$, the root in $(\mu_g,\mu_{g+1})$ of
+with grade general for $\rho<\theta_1$, relatively strong for $\theta_1\le\rho<\theta_2$, strong for $\theta_2\le\rho<\theta_3$ and extremely strong for $\rho\ge\theta_3$. Round numbers are the wrong source for these cuts. The flood share of the 985 non-empty official tiles is strongly skewed; the fit is made on $x_t=\operatorname{logit}\rho^{ref}_t$ (with $\rho$ clipped to $[10^{-4},1-10^{-4}]$), a four-component Gaussian mixture by EM with 20 initializations. Adjacent components meet at their Bayes boundary, the root in $(\mu_g,\mu_{g+1})$ of
 \begin{equation}
 \pi_g\,\phi(x;\mu_g,s_g^2)=\pi_{g+1}\,\phi(x;\mu_{g+1},s_{g+1}^2),\qquad \theta_g=\frac{1}{1+e^{-x^*_g}},
 \label{eq:gmm_bayes}
 \end{equation}
-where $\pi_g$, $\mu_g$, $s_g$ are the mixture weight, mean and standard deviation of component $g$ and $\phi$ the normal density. A tile at the boundary is equally likely under both components, so the rule assigns each tile to the regime that most probably produced it. The fitted components have logit means $-4.30$, $-1.85$, $1.24$ and $5.43$ with weights 0.544, 0.301, 0.098 and 0.057, and give
+where $\pi_g$, $\mu_g$, $s_g$ are the mixture weight, mean and standard deviation of component $g$ and $\phi$ the normal density. A tile sitting on the boundary is equally likely under both components, and the rule assigns it to the regime that most probably produced it. Fitted logit means are $-4.30$, $-1.85$, $1.24$ and $5.43$ with weights 0.544, 0.301, 0.098 and 0.057, which gives
 \begin{equation}
 \theta=(\theta_1,\theta_2,\theta_3)=(0.0593,\ 0.530,\ 0.969).
 \label{eq:theta_values}
@@ -162,7 +162,7 @@ Extremely strong & $\ge96.9\%$ & $\ge4.77$ & $\ge0.969$ & $\ge3333.5$ \\
 \end{tabular}
 \end{table}
 
-How stable are these thresholds? We refit \eqref{eq:gmm_bayes} on 1000 block-bootstrap resamples of the 67 blocks. The 90\% intervals are $[0.0075,0.079]$ for $\theta_1$, $[0.067,0.655]$ for $\theta_2$ and $[0.522,0.998]$ for $\theta_3$, and 71\% of the resamples give a valid ordered four-component solution. The middle threshold is the least determined. BIC is lowest for two components (4604.8 against 4629.5 for four), so the data alone do not demand four modes; four grades are required by the problem, and the mixture is the most data-faithful way to place them. Jenks natural breaks on the same $x_t$ give $(0.035,0.371,0.967)$, close to the mixture for $\theta_1$ and $\theta_3$. The reference grades of the 1000 tiles are 575 general, 283 relatively strong, 89 strong and 53 extremely strong.
+How stable are these thresholds? We refit \eqref{eq:gmm_bayes} on 1000 block-bootstrap resamples of the 67 blocks. The 90\% intervals are $[0.0075,0.079]$ for $\theta_1$, $[0.067,0.655]$ for $\theta_2$ and $[0.522,0.998]$ for $\theta_3$, and 71\% of the resamples give a valid ordered four-component solution. The middle threshold is the least determined. BIC is lowest for two components (4604.8 against 4629.5 for four); the data alone do not demand four modes. Four grades are required by the problem, and the mixture is the most data-faithful way to place them. Jenks natural breaks on $x_t$ give $(0.035,0.371,0.967)$, close to the mixture for $\theta_1$ and $\theta_3$. The reference grades of the 1000 tiles are 575 general, 283 relatively strong, 89 strong and 53 extremely strong.
 
 \subsection{How Area Errors Move the Grades}
 
@@ -186,7 +186,7 @@ where $G(\rho;\theta)$ is the grade of \eqref{eq:area_thr}. The vector $\pi_j$ r
 
 Where the two weakest regimes meet on the logit axis, the bootstrap bands of $\theta_1$ and $\theta_3$ stay narrow while that of $\theta_2$ widens (panel a). Row-normalized confusion against the Monte Carlo grade of M6 (panel b) keeps 70\% of the general, 62\% of the relatively strong, 55\% of the strong and 83\% of the extremely strong tiles in their grade, and the errors fall almost entirely into the neighboring grade. With the deterministic M6 area the grade is correct for 86.2\% of the tiles, against 54.3\% for LightGBM, so area calibration pays off directly in the grading. The expected Monte Carlo accuracy is 67.0\%, which prices in threshold uncertainty. Within four standardized errors of a threshold the flip probability $1-\max_g\pi_{jg}$ is 0.33--0.37, and 0.22 farther away; a unit near a threshold should therefore carry $\pi_j$ with its grade\cite{deepseek2026,qwen2026,doubao2026}.
 
-Under a normal approximation of the signed tile-area error, Fig.~\ref{fig:q2_flip} makes this geometry explicit. The change probability is near zero deep inside a grade, peaks at one half exactly on a threshold, and the ridge widens as $\sigma$ grows. The four bins of the 1000 test tiles, placed at their mean estimated proportion and the standard deviation of their signed error, are $(1.1\%,0.026)$, $(10.2\%,0.098)$, $(32.1\%,0.141)$ and $(86.8\%,0.294)$. The 5--20\% bin and the highest bin sit in the high-probability band of the surface, consistent with the Monte Carlo flip rate of 0.33--0.37 even though most tiles lie far from $\theta_2$ and $\theta_3$.
+Under a normal approximation of the signed tile-area error, Fig.~\ref{fig:q2_flip} makes the geometry explicit. Deep inside a grade the change probability is near zero; it peaks at one half exactly on a threshold, and the ridge widens with $\sigma$. Placing the 1000 test tiles in four bins at their mean estimated proportion and the standard deviation of their signed error gives $(1.1\%,0.026)$, $(10.2\%,0.098)$, $(32.1\%,0.141)$ and $(86.8\%,0.294)$. Two of the bins, the 5--20\% one and the highest, sit in the high-probability band of the surface -- consistent with the Monte Carlo flip rate of 0.33--0.37, even though most tiles lie far from $\theta_2$ and $\theta_3$.
 
 \begin{figure}[H]
   \centering

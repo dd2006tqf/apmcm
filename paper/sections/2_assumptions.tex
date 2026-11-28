@@ -4,9 +4,9 @@
 
 The following simplifications are needed because the data do not fix them. Each assumed parameter is varied in the sensitivity analyses of the problem where it is used\cite{deepseek2026,qwen2026,doubao2026}.
 
-(1) Tiles of the official dataset inside one block of $5\times5$ tile positions (about $10.4\times11.9$\,km) are spatially dependent, while different blocks are exchangeable. Floods and land cover are autocorrelated over kilometers, so random tile or pixel splits would leak information. Block-level independence is what makes held-out metrics and conformal intervals meaningful.
+(1) Tiles of the official dataset inside one block of $5\times5$ tile positions (about $10.4\times11.9$\,km) are spatially dependent, while different blocks are exchangeable. Floods and land cover are autocorrelated over kilometers; random tile or pixel splits would leak information. What makes held-out metrics and conformal intervals meaningful is block-level independence.
 
-(2) The GF-3 uint8 value is a monotone function of radar backscatter whose radiometric scale is unknown. No calibration metadata is supplied, so the models only see per-tile rank-normalized SAR, and for Sentinel-1 the scale (dB or amplitude) is chosen by distribution matching.
+(2) The GF-3 uint8 value is a monotone function of radar backscatter whose radiometric scale is unknown. No calibration metadata is supplied; the models see per-tile rank-normalized SAR only, and for Sentinel-1 the scale (dB or amplitude) is chosen by distribution matching.
 
 (3) The Hengzhou flood around 6 July 2026 is represented by the Sentinel-1 passes of 4 July and 16 July, and the pass of 27 June is pre-flood. No pass exists on the reference date. Both flood-time dates are reported and neither is called the peak.
 

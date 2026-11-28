@@ -13,6 +13,10 @@
 \renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}
 % 节号统一为阿拉伯数字，使标题、目录条目与 \ref 三者一致（类文件原用罗马数字标节）
 \titleformat{\section}{\centering\normalfont\Large\bfseries}{\thesection.}{.5em}{}
+% 目录只列到节（一级），单页；小节结构仍可在 PDF 书签中展开
+\setcounter{tocdepth}{1}
+% 一级条目之间加 9 pt 间距，使单页目录的版心不至于过于拥挤
+\titlecontents{section}[0pt]{\bfseries\addvspace{9pt}}{{\thecontentslabel}.\enspace}{}{\titlerule*[0.5pc]{.}\contentspage}
 % 引用改为小号上标（原来方括号与正文同字号，显得过大）
 \makeatletter
 \def\@cite#1#2{\textsuperscript{\scriptsize[#1\if@tempswa , #2\fi]}}

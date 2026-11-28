@@ -48,7 +48,7 @@ Bias of the total is what RAE measures; how wrong a single tile is, that is MAE$
 
 Table~\ref{tab:q1_metrics} gives the pooled results. The two baselines differ by a factor of more than two in IoU and by a factor of 15 in total area bias. A 50 px minimum mapping unit (MMU), applied identically to both, raises the LightGBM IoU from 0.598 to 0.618 and removes its total bias ($+9.2\%$ to $-0.2\%$), whereas baseline A moves only from 0.278 to 0.281 and stays at $+134\%$: the baseline's excess is a dense, connected over-detection, not speckle.
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \caption{Problem 1 recognizers with and without the MMU}
 \label{tab:q1_metrics}
@@ -69,9 +69,9 @@ Across the 1000 reference tiles there are 933.41\,km$^2$ of new inundation. Ligh
 
 Fig.~\ref{fig:q1_mmu} sweeps the mapping unit: 25 px leaves $+3.7\%$, 50 px gives $-0.2\%$, and 100 px buys 0.6 pp more IoU at a cost of $-5.5\%$ bias, which puts the knee at 50 px. Decomposed by \eqref{eq:fpfn_identity}, the MMU mask carries a quantity disagreement of 2.0\,km$^2$ and a location disagreement of 438\,km$^2$ ($2\min(\mathrm{FP},\mathrm{FN})$). Just under half the reference flood, 47\%, sits on the wrong side of the boundary; the $-0.2\%$ of \eqref{eq:area_metrics} is merely the residual of two errors that are each over two hundred times larger. Replacing the pixel classifier with a spatial model is what Problem~2 does about it.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q1_mmu.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q1_mmu.pdf}
   \caption{Minimum mapping unit sweep for Problem 1}
   \label{fig:q1_mmu}
 \end{figure}
@@ -80,7 +80,7 @@ The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q1_visual_cmp.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q1_visual_cmp.pdf}
   \caption{Held-out predictions on four official tiles}
   \label{fig:q1_visual_cmp}
 \end{figure}
@@ -89,18 +89,18 @@ On tile 1446, where only 1.8\% of the area is flooded, the area becomes the hard
 
 Every held-out tile is also exported as a mask, and Fig.~\ref{fig:q1_pred_set} shows five of them that do not appear in Fig.~\ref{fig:q1_visual_cmp}, spanning a reference share from 2\% to 94\%. At the almost dry tile 1720 baseline A labels half of the tile as water, while LightGBM stays at 5.2\%; at the flooded tiles both follow the water outline. The upper row is baseline A and the lower row LightGBM; new water is blue.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q1_pred_examples.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q1_pred_examples.pdf}
   \caption{Exported tile masks of baseline A and LightGBM}
   \label{fig:q1_pred_set}
 \end{figure}
 
 That observation becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig:q1_area_agreement}, which compares estimated and reference tile areas for all 1000 tiles.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q1_area_agreement.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q1_area_agreement.pdf}
   \caption{Bland--Altman agreement of tile area}
   \label{fig:q1_area_agreement}
 \end{figure}
@@ -118,7 +118,7 @@ False positives and false negatives differ by land cover, and the area error dec
 \end{equation}
 The attachment carries no land cover; the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbor. This describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \caption{LightGBM area error by pre-flood land cover}
 \label{tab:q1_fpfn}
@@ -140,7 +140,7 @@ Wetland & 293.59 & 25.46 & 76.89 & $-51.43$ \\
 
 On dry land covers the model raises false alarms: tree cover contributes 79.80\,km$^2$ of FP against only 33.46\,km$^2$ of real new flood, built-up land 19.38\,km$^2$ against 8.79\,km$^2$. Radar shadow behind tree canopies and smooth surfaces in villages look as dark as water. On wet land covers it misses flood: in wetland and areas that WorldCover maps as permanent water, the net error is $-51.43$ and $-24.11$\,km$^2$, because water that rose over a wetland or a lake margin is hard to tell from the water that was already there. The positive and negative nets cancel to the total $+85.71$\,km$^2$. The worst strata by absolute net error are tree, wetland and cropland.
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \caption{Detection rate by size of the reference patch}
 \label{tab:q1_patch}
@@ -164,7 +164,7 @@ To find the factors behind the tile error, each held-out tile gets label-free de
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q1_error_drivers.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q1_error_drivers.pdf}
   \caption{Error structure of the Problem 1 model}
   \label{fig:q1_error_drivers}
 \end{figure}

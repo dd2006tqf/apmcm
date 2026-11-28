@@ -8,9 +8,9 @@ Problem~1 asks for preprocessing and a recognizer of flood-inundated area on the
 
 Fig.~\ref{fig:scenario} fixes the scene behind these five questions. A permanent channel runs along the valley floor, a road follows the terrace above it, and the settlements stand on ground that is normally dry. During the event the floor is covered by new water, the road is cut where it dips into the flood, and a terrace settlement can be reached only by boat.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_scenario.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_scenario.pdf}
   \caption{Schematic flood-inundation scenario}
   \label{fig:scenario}
 \end{figure}
@@ -28,7 +28,7 @@ where $W_0$ is the water before the flood, $W_1$ the water at the observation ti
 
 Five objects travel along the chain, and Fig.~\ref{fig:roadmap} draws the hand-offs; the arrow labels are those objects, nothing else. From Problem~1 come the baseline recognizer, its FP/FN hotspots by land cover and the hard tiles. A fused model with an area-preserving threshold $\tau_A$ and the grade thresholds $\theta_g$ is what Problem~2 makes of them. Applied unchanged to Sentinel-1 imagery of Hengzhou, that model yields the raster $F$ (Problem~3). Overlaid with population, land cover, roads and facility proxies, $F$ ranks the assessment units of Problem~4; that raster then deletes flooded roads and depots in Problem~5, where the flooded population and index of Problem~4 become demand and priority of a depot-activation and allocation model.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=0.82\textwidth,keepaspectratio]{../figures/fig_roadmap.pdf}
   \caption{Technical route of the five-problem chain}

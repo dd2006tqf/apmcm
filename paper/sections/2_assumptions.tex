@@ -20,6 +20,9 @@ The following simplifications are needed because the data do not fix them. Each 
 
 The table collects the symbols that are used across several chapters. Symbols needed only locally are defined where they appear.
 
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{0.95}
 \begin{longtable}{p{0.16\textwidth}p{0.60\textwidth}p{0.14\textwidth}}
 \toprule
 Symbol & Meaning & Unit \\
@@ -55,4 +58,5 @@ $x_{ij}$, $u_j$ & relief shipped from depot $i$ to unit $j$; unmet demand of $j$
 $t_{ij}$, $\mathcal A$ & travel time on the flood-cut network; admissible pairs & min, -- \\
 $f_1$, $f_2$ & priority-weighted unmet share; priority-weighted delivery time & --, min \\
 \end{longtable}
+\endgroup
 \addtocounter{table}{-1}% 符号表不占用表号，保证后续表从 1 连续编号

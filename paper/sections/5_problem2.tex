@@ -17,7 +17,7 @@ where $W_g^{(s)}$ is a $1\times1$ convolution, $\sigma$ the logistic function an
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.96\textwidth,keepaspectratio]{../figures/fig_arch_fusion.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_arch_fusion.pdf}
   \caption{Dual-branch gated fusion network}
   \label{fig:arch_fusion}
 \end{figure}
@@ -67,7 +67,7 @@ with $\alpha=0.1$, scores $s_t$ from the $n\approx200$ calibration tiles of the 
 
 Seven trained variants are evaluated on a common held-out set: M0 is the Problem~1 LightGBM; M1 the SAR-only U-Net with focal and Dice loss; M2 adds the gated optical branch; M3 adds the area term ($\lambda_A=1$); M4 adds modality dropout and the validity channel; M5 uses the MC-dropout mean; M6 adds isotonic calibration and $\tau_A$. Two further rows apply the 50 px MMU to M2 and M6; they are post-processing, not ablation steps. Table~\ref{tab:q2_ablation} lists the metrics.
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \caption{Ablation on all and hard held-out tiles}
 \label{tab:q2_ablation}
@@ -96,7 +96,7 @@ The same information for the seven trained variants, ranked column by column, is
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q2_model_compare.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q2_model_compare.pdf}
   \caption{Model comparison on all and hard tiles}
   \label{fig:q2_model_compare}
 \end{figure}
@@ -105,9 +105,9 @@ The heatmap separates the two regimes. In the all-tile block M2+optical fusion l
 
 Fig.~\ref{fig:q2_mmu} isolates the MMU effect on the two candidates M2 and M6: light bars are the raw masks, dark bars the MMU masks, panels (a)--(b) pool all 1000 tiles and (c)--(d) the 397 hard tiles. The MMU leaves IoU almost unchanged, cuts M2's all-tile RAE from 3.4\% to 0.9\%, and moves its hard-set bias from $+3.5\%$ to $-2.0\%$.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q2_mmu.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q2_mmu.pdf}
   \caption{Effect of the 50 px MMU on the Q2 candidates}
   \label{fig:q2_mmu}
 \end{figure}
@@ -116,9 +116,9 @@ M2 ranks first among the trained variants in IoU (0.798), F1 and MAE$_A$ (0.149\
 
 Each step of the ablation can also be isolated. Fig.~\ref{fig:q2_ablation} attributes the change of IoU, MAE$_A$ and $|\mathrm{RAE}|$ to the component added at that step, with LightGBM as dashed reference. The open dot is the value before the step and the filled dot the value after it; green and red mark improvement and degradation.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q2_ablation.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q2_ablation.pdf}
   \caption{Contribution of each component, M1 to M6}
   \label{fig:q2_ablation}
 \end{figure}
@@ -146,7 +146,7 @@ where $\pi_g$, $\mu_g$, $s_g$ are the mixture weight, mean and standard deviatio
 \end{equation}
 Table~\ref{tab:grade_thr} translates them by \eqref{eq:area_thr} for three unit sizes.
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \caption{Proportion and area thresholds of the four grades}
 \label{tab:grade_thr}
@@ -179,7 +179,7 @@ where $G(\rho;\theta)$ is the grade of \eqref{eq:area_thr}. The vector $\pi_j$ r
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q2_grading.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q2_grading.pdf}
   \caption{Gaussian-mixture grading and MC confusion}
   \label{fig:q2_grading}
 \end{figure}
@@ -188,9 +188,9 @@ Where the two weakest regimes meet on the logit axis, the bootstrap bands of $\t
 
 Under a normal approximation of the signed tile-area error, Fig.~\ref{fig:q2_flip} makes the geometry explicit. Deep inside a grade the change probability is near zero; it peaks at one half exactly on a threshold, and the ridge widens with $\sigma$. Placing the 1000 test tiles in four bins at their mean estimated proportion and the standard deviation of their signed error gives $(1.1\%,0.026)$, $(10.2\%,0.098)$, $(32.1\%,0.141)$ and $(86.8\%,0.294)$. Two of the bins, the 5--20\% one and the highest, sit in the high-probability band of the surface -- consistent with the Monte Carlo flip rate of 0.33--0.37, even though most tiles lie far from $\theta_2$ and $\theta_3$.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.98\textwidth,keepaspectratio]{../figures/fig_q2_flip_surface.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q2_flip_surface.pdf}
   \caption{Grade-change probability surface}
   \label{fig:q2_flip}
 \end{figure}

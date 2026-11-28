@@ -3,7 +3,7 @@
 % === Extra packages ===
 \usepackage{algorithm2e}
 \usepackage{float}
-\usepackage[section]{placeins}
+\usepackage{placeins}
 \usepackage[hidelinks]{hyperref}
 \usepackage{etoolbox}
 % 允许最后一行少量拉伸，消除正文右侧 3--10 pt 的溢出
@@ -29,6 +29,12 @@
 % 类文件把图表题注设为 \zihao{-4}（12 pt），比正文 10.5 pt 还大；压到 \small
 \captionsetup[figure]{font={small,bf}}
 \captionsetup[table]{font={small,bf}}
+% 收紧浮动体上下间距与题注留白（默认值在 25 图 13 表上会累积出整页空白）
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{0pt}
 
 % === TikZ ===
 \usepackage{tikz}
@@ -93,7 +99,7 @@ Sensitivity tests across the terrain guard, the probability threshold and the wa
 
 \noindent To: Emergency Management Bureau of Hengzhou City, Guangxi\\
 From: APMCM Team apmcm26300025\\
-Date: 27 November 2026\\
+Date: 29 November 2026\\
 Subject: Using satellite flood maps for relief allocation in Hengzhou
 
 \medskip

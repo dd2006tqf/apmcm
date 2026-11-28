@@ -9,7 +9,7 @@
 
 \textbf{Where the layers come from.} The official triplets are the competition attachment (Attachment~1), not an external download. The Hengzhou layers were downloaded from public archives: Sentinel-1 RTC from Microsoft Planetary Computer; Sentinel-2 L2A and the DEM from Copernicus; land cover from ESA WorldCover; OSM extracts from Geofabrik; population from WorldPop; and the boundary from GADM~4.1. Table~\ref{tab:hz_data} gives the date, resolution and use of each layer.
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \caption{Public data used for Hengzhou}
 \label{tab:hz_data}
@@ -31,9 +31,9 @@ GADM 4.1 boundary & -- & vector & study area \\
 
 Fig.~\ref{fig:data_samples} shows only representative samples, not the full inventory. Panels (a)--(c) are one official triplet: pre-flood optical, post-flood SAR and binary label. Panels (d)--(f) are three Hengzhou layers used downstream: Sentinel-1 VV on 16 July, WorldCover, and WorldPop with OSM roads. The Hengzhou panels use a 150\,m display grid. All analyses use their native grids.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=\textwidth,keepaspectratio]{../figures/fig_data_samples.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_data_samples.pdf}
   \caption{Representative data samples}
   \label{fig:data_samples}
 \end{figure}
@@ -44,9 +44,9 @@ Two of its rows needed repair, and the repair belongs to the method. Relative to
 
 The labels are binary and could mean either ``water after the flood'' ($W_1$) or ``new inundation'' ($F$). The difference decides whether a model trained on them learns the quantity the problem asks for. A label that marks $W_1$ must contain the permanent rivers and lakes. A label that marks $F$ must leave them at 0 even though they are dark in the post-flood SAR. We tested this on all 65,491,966 valid pixels with three definitions of pre-flood water ($\mathrm{NDWI}>0$; $\mathrm{NDWI}>0.1$; $\mathrm{NDWI}>0$ and $\mathrm{NDVI}<0$), using the water index of McFeeters~\cite{mcfeeters1996ndwi}.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.95\textwidth,keepaspectratio]{../figures/fig_q1_label_semantics.pdf}
+  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q1_label_semantics.pdf}
   \caption{Label-semantics test on all valid pixels}
   \label{fig:q1_label_semantics}
 \end{figure}
@@ -67,7 +67,7 @@ where $|\cdot|_a$ is the area-weighted size of a set. Comparing an estimate $\ha
 \end{equation}
 Fig.~\ref{fig:q1_set_logic} draws both identities.
 
-\begin{figure}[H]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/tikz_q1_set_logic.pdf}
   \caption{Set logic of the area definitions}

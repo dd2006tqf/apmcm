@@ -3,9 +3,9 @@
 
 \subsection{How Assumed Parameters Propagate}
 
-Assumed parameters have to be kept apart from observations and their influence analyzed separately. Table~\ref{tab:sens_chain} collects the assumed quantities, the range in which each was varied, and its effect on the answer that matters downstream.
+Assumed parameters are varied one at a time; Table~\ref{tab:sens_chain} gives the range and the downstream effect of each.
 
-\begin{table}[H]
+\begin{table}[!ht]
 \centering
 \caption{Assumed parameters along the chain}
 \label{tab:sens_chain}
@@ -19,7 +19,7 @@ Threshold shift $\Delta\tau$ (Q3) & $-0.2$ to $+0.2$ & $A_{new}$ 1.57--79.52\,km
 Change margin $\delta$ (Q3) & 0--4.5\,dB & $A_{new}$ 32.40--23.59\,km$^2$ \\
 $W_0$ definition (Q3) & union / SAR$+$WC / SAR only & $A_{new}$ 26.90 / 27.29 / 30.47\,km$^2$; Q4 Spearman 0.996 (WC) / 0.932 (SAR only) \\
 SAR scale (Q3) & dB / amplitude & 26.90 / 49.39\,km$^2$; dB chosen by KS distance 0.106 vs 0.241 \\
-Indicator weights (Q4) & Dirichlet, $M=2000$ & median Spearman 0.987, 5\% quantile 0.934 \\
+Indicator weights (Q4) & Dirichlet ($M{=}2000$) & median Spearman 0.987, 5\% quantile 0.934 \\
 Depot limit $K$ (Q5) & 3--8 & $f_1^*$ 0.5728--0.5699; $f_2$ about 22 to 9.32\,min \\
 Capacity, fleet, $T_{max}\ge90$, $q$ (Q5) & $\times0.5$--$1.5$; 20--60; 90--240\,min; 2.5--15.6\,kg & $f_1^*$ changes by at most 0.0003 \\
 Road buffer (Q5) & 0 / 20 / 50\,m & $f_1^*$ 0.564 / 0.570 / 0.650 \\
@@ -27,22 +27,14 @@ Road buffer (Q5) & 0 / 20 / 50\,m & $f_1^*$ 0.564 / 0.570 / 0.650 \\
 \end{tabular}
 \end{table}
 
-Two things are separated in this table. New-inundation area moves with the terrain and probability thresholds, which is what the sensitivity surface of Fig.~\ref{fig:q3_threshold_surface} is for. Decisions taken from it do not move: the city grade never leaves ``general'', the unit ranking keeps a Spearman correlation of at least 0.889 under every alternative input of 16 July, and the relief plan changes only when the flood extent on the roads changes. Largest single change in the ranking (Spearman 0.662) comes from using the 4 July instead of the 16 July image, which is new information rather than a modeling choice.
+Area moves with terrain and thresholds, 1.57--79.52\,km$^2$ over the grid; decisions do not. The grade stays ``general'', the 16 July ranking keeps Spearman at least 0.889, and the plan moves only with flooded roads, 0.564 without a buffer against 0.650 at 50\,m. The one large ranking change, 0.662, is the 4 July image: new information, not a modeling choice.
 
-\subsection{Strengths}
+\subsection{Strengths and Innovations}
 
-Validation is spatially blocked with a buffer, every tuning step uses a separate calibration fold, and the leave-one-cluster-out test leaves IoU 0.508; the numbers reported here are held-out estimates. One raster, $F$, defines the hazard of Problem~4 and the cut network of Problem~5, the Problem~4 population and index set demand and priority, and the solver returns status optimal with zero gap on every run. At town-centre resolution, relief is limited by isolation, and that holds under every assumption tested.
+Validation is spatially blocked with a buffer, every tuning step uses a separate calibration fold, and leave-one-cluster-out leaves IoU 0.508, so every number here is a held-out estimate. One raster $F$ supplies the hazard, the cut network, demand and priority, and the MILP returns optimal with zero gap on every run. At town-centre resolution relief is limited by isolation, and that holds under every assumption tested.
 
-\subsection{Innovations}
-
-Every choice that could have peeked at the test tiles was made on the calibration fold, and two of them predate any metric. The label audit came first: all 65.5\,M valid pixels mark new inundation rather than water after the flood. The network learns $F$ directly, while Problem~3 subtracts a $W_0$ built independently of it; permanent water never enters the training target, and the target stays identical to the definition the problem gives. What a threshold should preserve was the second decision. Segmentation work usually cuts at 0.5 or at the F1-optimal point; here the mask area is matched to the calibrated expected area \eqref{eq:tauA}, and every tile carries a conformal interval. M6 closes at $+1.45\%$ total area error against $+4.1\%$ uncalibrated, with the network untouched and the maps and reported areas identical. The uncalibrated M2+MMU reaches $+0.9\%$ but cannot state an interval.
-
-
-
-How a grade should be read belongs to the method, not to the reader. Boundaries sit where adjacent components of a Gaussian mixture of the logit flood share are equally likely \eqref{eq:gmm_bayes}, each threshold carries a bootstrap interval, and each unit leaves with a probability vector \eqref{eq:grade_mc}: grading stays reproducible from data, and a fragile grade says so. Then that raster enters the relief model twice, once as roads and depots it deletes and once as demand and priority it generates. What the next satellite pass is worth becomes the change of the optimal unmet share, 3.9 points -- a quantity an emergency manager can set against the price of extra acquisitions.
-
-
+Every choice that could have peeked at the test tiles was made on the calibration fold. The label audit came first: all 65.5\,M valid pixels mark new inundation, not post-flood water. The network learns $F$ directly while Problem~3 subtracts an independent $W_0$, so permanent water never enters the target. Segmentation usually cuts at 0.5 or the F1 optimum; here the mask area matches the calibrated expected area \eqref{eq:tauA}, with a conformal interval on every tile. M6 closes at $+1.45\%$ against $+4.1\%$ uncalibrated, network untouched; uncalibrated M2+MMU reaches $+0.9\%$ but states no interval. Grades sit on mixture boundaries with bootstrap intervals, so a grade is a probability vector \eqref{eq:grade_mc}. The raster enters relief twice, which makes the next satellite pass worth 3.9 points of unmet share.
 
 \subsection{Conclusions}
 
-We built one chain from images to relief. On the official data, a LightGBM pixel classifier reaches IoU 0.618 with a total area error of $-0.2\%$ after a 50 px MMU; a dual-branch gated SAR--optical U-Net reaches IoU 0.797 and $+0.9\%$ in-domain after the same MMU, while its calibrated modality-dropout variant used for transfer reaches IoU 0.730 and $+1.45\%$. Four intensity grades are separated at flood shares of 5.9\%, 53.0\% and 96.9\%. Transferred to Hengzhou with co-registered Sentinel-1 data and physical guards, the model finds 26.90\,km$^2$ of new inundation on 16 July (0.78\% of the city, grade ``general'') and a net change of $-52.53$\,km$^2$ caused by water receding after a wet baseline. On 393 settlement catchments the assessment ranks Shitang, Maling and Luancheng as the most affected zones, with a ranking that is stable under weight perturbation. The relief MILP opens six depots and serves 7316 of 13,948 people in need; the remaining need is cut off by water, not short of supplies, which defines where the authority should send boats rather than trucks. That share equals the weighted demand of the isolated units, so it is a floor and not slack; 600 scenarios that perturb both the demand and the roads put its CVaR$_{95}$ at 0.651 and never make the plan infeasible\cite{deepseek2026,qwen2026,doubao2026}.
+One chain runs from images to relief. LightGBM reaches IoU 0.618 at $-0.2\%$ after the 50\,px MMU; the gated U-Net reaches 0.797 at $+0.9\%$ in-domain and 0.730 at $+1.45\%$ after transfer. Grades split at 5.9\%, 53.0\% and 96.9\%. In Hengzhou 16 July gives 26.90\,km$^2$ new, 0.78\% of the city and grade ``general'', with a net $-52.53$\,km$^2$ from receding water. On 393 catchments Shitang, Maling and Luancheng rank highest, stable under weight perturbation. The MILP opens six depots and serves 7316 of 13,948; the rest is cut off by water, so the shortfall is a floor, not slack. Across 600 scenarios CVaR$_{95}$ is 0.651 and the plan stays feasible\cite{deepseek2026,qwen2026,doubao2026}.

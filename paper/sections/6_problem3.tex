@@ -131,27 +131,7 @@ After MMU              &  24.53 &  9.79 &  26.90 & 10.08 & Net $A_{net}$     & $
 
 The water-balance block of Table~\ref{tab:q3_budget} shows that 79.4\,km$^2$ of water seen by SAR on 27 June is no longer water on 16 July, three times the new inundation. Of this recession, 72.4\,km$^2$ lie outside every mapped water source, mostly under tree cover (49.4\,km$^2$) and cropland (16.7\,km$^2$): wet fields, ponds and seasonally flooded land that were already dark in late June. The 27 June baseline itself was a wet-season state, and \eqref{eq:net_identity} makes the net increase negative ($-52.53$\,km$^2$; the literal variant gives $-153.19$\,km$^2$). The definition $F=W_1\setminus W_0$ is not affected by this, which is why both quantities are requested.
 
-\begin{table}[H]
-\centering
-\caption{Decomposition of the net increase, 16 July 2026 (km$^2$)}
-\label{tab:q3_net_decomp}
-\small
-\begin{tabular}{lrl}
-\toprule
-Term & Area & Composition \\
-\midrule
-New inundation $A_{new}$   & $+26.90$ & outside $W_0$ \\
-Recession, permanent water & $-7.04$  & channels, reservoirs \\
-Recession, seasonal fringe & $-72.40$ & wet fields, flooded scrub \\
-\midrule
-Net increase $A_{net}$     & $-52.54$ & \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:q3_net_decomp} separates the three terms of the total, because they have different origins and opposite signs. Permanent water---channels, reservoirs and the mapped water polygons---loses 7.04\,km$^2$ between the two passes, the amount a receding river leaves on its banks. The seasonal fringe, the 149.2\,km$^2$ that only the 27 June pass records, loses 72.40\,km$^2$: wet fields, ponds and flooded scrub that were dark in late June and dry by mid-July. The net increase therefore measures the state of the catchment rather than the size of the flood. It also does not depend on which flood-time pass is used: 4 July and 16 July give recessions of 79.24 and 79.44\,km$^2$, 0.3\% apart, so the sign is a property of the baseline and not of one scene.
-
-The sign would move only if the baseline were narrowed. With the mapped static water bodies alone as $W_0$ (143.4\,km$^2$), the 61.1\,km$^2$ of seasonal water still standing on 16 July would enter $F$ as new inundation, and $A_{new}$ would rise from 26.90 to about 88\,km$^2$. That is the failure the problem statement excludes when it asks for pre-existing water bodies to be identified before the new area is computed. Keeping the union as the reference state costs a negative net increase and buys a new-inundation estimate that contains only water that was not there before.
+Read by component, the recession splits into 7.04\,km$^2$ of permanent water---channels and reservoirs, which sit inside the mapped sources---and 72.40\,km$^2$ of the seasonal fringe that only the 27 June pass records. The net increase is therefore 26.90 of new water against 79.44 of recession, $-52.54$ in all, and it measures the state of the catchment rather than the size of the flood; both flood-time passes give the same recession to 0.3\%. The sign would move only if the baseline were narrowed: with static water bodies alone as $W_0$ (143.4\,km$^2$), the 61.1\,km$^2$ of seasonal water still standing on 16 July would enter $F$ as new inundation and $A_{new}$ would rise from 26.90 to about 88\,km$^2$, the failure the problem statement excludes when it asks for pre-existing water bodies first.
 
 On 16 July the cascade of \eqref{eq:F_hz} runs from a raw model mask of 154.43\,km$^2$ to 68.85\,km$^2$ after removing $W_0$, 44.74\,km$^2$ after the REM guard, 36.98\,km$^2$ after the change guard and 26.90\,km$^2$ after the MMU (Table~\ref{tab:q3_budget}), i.e. the guards remove 82.6\% of the model area (83.3\% on 4 July). Most of that removed area is permanent water: without optics the model assigns it a mean probability of 0.285 and cannot exclude it on its own, while $W_0$ does. The Hengzhou estimate therefore rests on the physics guards, which are built from drainage, terrain and multi-date change rather than fitted to the model, so the transfer is held by evidence independent of the network instead of by tuned constants.
 

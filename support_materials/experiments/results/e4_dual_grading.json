@@ -1,0 +1,63 @@
+{
+ "meta": {
+  "n_units": 393,
+  "n_affected": 259,
+  "gmm_means_log10": [
+   0.5724478182926255,
+   0.795930523054492,
+   1.1429696918847154,
+   1.5174333058513076
+  ],
+  "area_bounds_km2": [
+   4.832692593849444,
+   9.3207338592543,
+   21.38954266267904
+  ],
+  "threshold_area_note": "boundaries are Bayes midpoints of a 4-component GMM on log10(A_reg)"
+ },
+ "levels_share": {
+  "0": 134,
+  "1": 3,
+  "2": 28,
+  "3": 96,
+  "4": 132
+ },
+ "levels_area": {
+  "0": 134,
+  "1": 71,
+  "2": 119,
+  "3": 48,
+  "4": 21
+ },
+ "levels_dual": {
+  "0": 134,
+  "1": 1,
+  "2": 19,
+  "3": 97,
+  "4": 142
+ },
+ "n_upgraded": 16,
+ "n_downgraded": 0,
+ "frac_upgraded": 0.04071246819338423,
+ "area_upgraded_km2": 433.3619367380633,
+ "area_total_km2": 3440.091902536204,
+ "spearman_dual_vs_share": 0.9734022854369937,
+ "spearman_area_vs_share": 0.7490505411174764,
+ "affected_only": {
+  "n": 259,
+  "n_upgraded": 16,
+  "frac": 0.06177606177606178,
+  "share_level_counts": {
+   "1": 3,
+   "2": 28,
+   "3": 96,
+   "4": 132
+  },
+  "dual_level_counts": {
+   "1": 1,
+   "2": 19,
+   "3": 97,
+   "4": 142
+  }
+ }
+}

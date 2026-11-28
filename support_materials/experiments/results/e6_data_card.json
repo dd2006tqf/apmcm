@@ -1,0 +1,248 @@
+{
+ "layers": [
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\Problem A Dataset 1\\Dataset\\label information\\label_1001.tif",
+   "exists": true,
+   "crs": "EPSG:4326",
+   "width": 256,
+   "height": 256,
+   "count": 1,
+   "dtype": "uint8",
+   "nodata": null,
+   "res": [
+    8.334887425759385e-05,
+    8.334887425760772e-05
+   ],
+   "bounds": [
+    116.14501552839118,
+    28.622855639173046,
+    116.16635284020113,
+    28.644192950982994
+   ],
+   "descriptions": [],
+   "name": "official label tiles",
+   "role": "Q1-Q2 target (new inundation)"
+  },
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\Problem A Dataset 1\\Dataset\\post-disaster SAR images\\after_gf3_hh_1001.TIF",
+   "exists": true,
+   "crs": "EPSG:4326",
+   "width": 256,
+   "height": 256,
+   "count": 1,
+   "dtype": "uint8",
+   "nodata": null,
+   "res": [
+    8.332999999999258e-05,
+    8.332999999999258e-05
+   ],
+   "bounds": [
+    116.14502068,
+    28.622855040000008,
+    116.16635316,
+    28.644187520000006
+   ],
+   "descriptions": [],
+   "name": "post-disaster SAR",
+   "role": "Q1-Q2 predictor (HH, rank-normalised)"
+  },
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\Problem A Dataset 2\\Dataset\\pre-disaster optical images\\before_s2_1001.TIF",
+   "exists": true,
+   "crs": "EPSG:4326",
+   "width": 256,
+   "height": 256,
+   "count": 4,
+   "dtype": "uint8",
+   "nodata": null,
+   "res": [
+    8.332999999999258e-05,
+    8.333000000000645e-05
+   ],
+   "bounds": [
+    116.14498148999999,
+    28.62285747,
+    116.16631396999999,
+    28.64418995
+   ],
+   "descriptions": [],
+   "name": "pre-disaster optical",
+   "role": "Q1-Q2 predictor (4 bands)"
+  },
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\\u516c\u5f00\u6570\u636e\\Sentinel1\\Sentinel1_20260716_VV_VH_dB.tif",
+   "exists": true,
+   "crs": "EPSG:32649",
+   "width": 8700,
+   "height": 7500,
+   "count": 2,
+   "dtype": "float32",
+   "nodata": -999.9000244140625,
+   "res": [
+    10.0,
+    10.0
+   ],
+   "bounds": [
+    272000.0,
+    2486000.0,
+    359000.0,
+    2561000.0
+   ],
+   "descriptions": [
+    "VV_dB",
+    "VH_dB"
+   ],
+   "name": "Sentinel-1 VV/VH",
+   "role": "Q3 VV branch; VH audit"
+  },
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\\u516c\u5f00\u6570\u636e\\Sentinel2\\Sentinel2_20260531_B432_NIR_SCL.tif",
+   "exists": true,
+   "crs": "EPSG:32649",
+   "width": 8700,
+   "height": 7500,
+   "count": 5,
+   "dtype": "uint16",
+   "nodata": 0.0,
+   "res": [
+    10.0,
+    10.0
+   ],
+   "bounds": [
+    272000.0,
+    2486000.0,
+    359000.0,
+    2561000.0
+   ],
+   "descriptions": [
+    "blue",
+    "green",
+    "red",
+    "nir",
+    "scl"
+   ],
+   "name": "Sentinel-2",
+   "role": "Q3 W0 optical (not used in run)"
+  },
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\\u516c\u5f00\u6570\u636e\\WorldPop\\WorldPop_Hengzhou_2020_100m.tif",
+   "exists": true,
+   "crs": "EPSG:4326",
+   "width": 985,
+   "height": 769,
+   "count": 1,
+   "dtype": "float32",
+   "nodata": -99999.0,
+   "res": [
+    0.0008333333299936017,
+    0.0008333333300101461
+   ],
+   "bounds": [
+    108.79291624578947,
+    22.492916778561735,
+    109.61374957583317,
+    23.133750109339537
+   ],
+   "descriptions": [],
+   "name": "WorldPop 100 m",
+   "role": "Q4 E1 area-weighted overlay"
+  },
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\\u516c\u5f00\u6570\u636e\\LandCover\\WorldCover2021_Hengzhou_10m.tif",
+   "exists": true,
+   "crs": "EPSG:4326",
+   "width": 9843,
+   "height": 7675,
+   "count": 1,
+   "dtype": "uint8",
+   "nodata": 0.0,
+   "res": [
+    8.333333333333333e-05,
+    8.333333333333333e-05
+   ],
+   "bounds": [
+    108.79308333333333,
+    22.493583333333333,
+    109.61333333333333,
+    23.133166666666668
+   ],
+   "descriptions": [],
+   "name": "WorldCover 10 m",
+   "role": "Q3 W0 water class, Q4 E2/E3, Q1 strata"
+  },
+  {
+   "path": "user_data\\a\u9898\u6570\u636e\u6c47\u603b\\\u516c\u5f00\u6570\u636e\\DEM_clip\\DEM_Hengzhou_30m_mosaic.tif",
+   "exists": true,
+   "crs": "EPSG:4326",
+   "width": 4320,
+   "height": 3600,
+   "count": 1,
+   "dtype": "float32",
+   "nodata": null,
+   "res": [
+    0.0002777777777777778,
+    0.0002777777777777778
+   ],
+   "bounds": [
+    108.6,
+    22.3,
+    109.8,
+    23.3
+   ],
+   "descriptions": [],
+   "name": "DEM 30 m",
+   "role": "Q3 REM (relative elevation)"
+  },
+  {
+   "path": "output\\q3_newflood_0716.tif",
+   "exists": true,
+   "crs": "EPSG:32649",
+   "width": 8700,
+   "height": 7500,
+   "count": 1,
+   "dtype": "uint8",
+   "nodata": null,
+   "res": [
+    10.0,
+    10.0
+   ],
+   "bounds": [
+    272000.0,
+    2486000.0,
+    359000.0,
+    2561000.0
+   ],
+   "descriptions": [],
+   "name": "flood mask 07-16",
+   "role": "Q3 output -> Q4/Q5"
+  },
+  {
+   "path": "output\\q3_w0.tif",
+   "exists": true,
+   "crs": "EPSG:32649",
+   "width": 8700,
+   "height": 7500,
+   "count": 1,
+   "dtype": "uint8",
+   "nodata": null,
+   "res": [
+    10.0,
+    10.0
+   ],
+   "bounds": [
+    272000.0,
+    2486000.0,
+    359000.0,
+    2561000.0
+   ],
+   "descriptions": [],
+   "name": "W0 water union",
+   "role": "Q3 physical guard"
+  },
+  {
+   "name": "label anisotropy",
+   "role": "9 tiles are resampled to the SAR grid by nearest neighbour",
+   "note": "see code/common.py load_tile; counted in Q1 preprocessing"
+  }
+ ]
+}

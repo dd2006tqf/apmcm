@@ -1,0 +1,126 @@
+{
+ "meta": {
+  "date": "20260716",
+  "seed": 2026,
+  "runtime_s": 5.274433612823486,
+  "n_candidates": 21,
+  "n_admissible": 20,
+  "n_demand": 164
+ },
+ "milp": {
+  "f1": 0.5699279050956868,
+  "f2": 13.0546653946975,
+  "served_pop": 7315.8104815881425,
+  "shipped_t": 76.81601005667551,
+  "demand_t": 146.45674370971693,
+  "n_open": 6,
+  "open_depots": [
+   "\u4e91\u8868\u9547",
+   "\u9676\u5729\u9547",
+   "\u516d\u666f\u9547",
+   "\u77f3\u5858\u9547",
+   "\u9547\u9f99\u4e61",
+   "\u9ad8\u6751\u5c0f\u5b66"
+  ],
+  "fleet_used_vehmin": 1496.5470873516504,
+  "fleet_budget_vehmin": 86400.0,
+  "seconds": 0.7829189300537109,
+  "status": [
+   "Optimal",
+   "Optimal"
+  ],
+  "optimal": true
+ },
+ "no_map": {
+  "f1": 0.001487406050612522,
+  "f2": 14.54959141241431,
+  "served_pop": 13924.1039267802,
+  "shipped_t": 146.20309123119213,
+  "demand_t": 146.45674370971693,
+  "n_open": 6,
+  "open_depots": [
+   "\u5ce6\u57ce\u9547",
+   "\u516d\u666f\u9547",
+   "\u90a3\u9633\u9547",
+   "\u83b2\u5858\u9547",
+   "\u77f3\u5858\u9547",
+   "\u9a6c\u5cad\u9547"
+  ],
+  "fleet_used_vehmin": 1828.5137124971038,
+  "fleet_budget_vehmin": 86400.0,
+  "seconds": 1.2118942737579346,
+  "status": [
+   "Optimal",
+   "Optimal"
+  ],
+  "optimal": true,
+  "n_candidates": 21,
+  "n_admissible": 21
+ },
+ "no_map_replay": {
+  "f1": 0.5915343100972263,
+  "f2": 20.523549697241574,
+  "served_pop": 6997.291583562134,
+  "shipped_t": 73.47156162740242,
+  "demand_t": 146.45674370971693,
+  "n_open": 5,
+  "open_depots": [
+   "\u5ce6\u57ce\u9547",
+   "\u516d\u666f\u9547",
+   "\u90a3\u9633\u9547",
+   "\u83b2\u5858\u9547",
+   "\u77f3\u5858\u9547"
+  ],
+  "seconds": 0.25531435012817383,
+  "status": [
+   "Optimal",
+   "Optimal"
+  ],
+  "optimal": true,
+  "note": "depot set chosen without the flood map, flows re-optimised on the real cut network"
+ },
+ "greedy": {
+  "f1": 0.5727957946598552,
+  "f2": 9.467878294207036,
+  "served_pop": 7236.880030391877,
+  "shipped_t": 75.9872403191147,
+  "demand_t": 146.45674370971693,
+  "n_open": 6,
+  "open_depots": [
+   "\u5ce6\u57ce\u9547",
+   "\u6821\u6905\u9547",
+   "\u4e91\u8868\u9547",
+   "\u83b2\u5858\u9547",
+   "\u77f3\u5858\u9547",
+   "\u9ad8\u6751\u5c0f\u5b66"
+  ],
+  "fleet_used_vehmin": 1243.5711605007184,
+  "fleet_budget_vehmin": 86400.0
+ },
+ "proportional": {
+  "f1": 0.5699269050956864,
+  "f2": 19.554531713668716,
+  "served_pop": 7315.841781529008,
+  "shipped_t": 76.81633870605458,
+  "demand_t": 146.45674370971693,
+  "n_open": 6,
+  "open_depots": [
+   "\u4e91\u8868\u9547",
+   "\u9676\u5729\u9547",
+   "\u516d\u666f\u9547",
+   "\u77f3\u5858\u9547",
+   "\u9547\u9f99\u4e61",
+   "\u9ad8\u6751\u5c0f\u5b66"
+  ],
+  "fleet_used_vehmin": 2040.432708361312,
+  "fleet_budget_vehmin": 86400.0
+ },
+ "gaps": {
+  "f1_greedy_vs_opt": 0.002867889564168391,
+  "f2_greedy_vs_opt": -3.5867871004904632,
+  "f1_nomap_vs_opt": -0.5684404990450743,
+  "f2_nomap_vs_opt": 1.4949260177168107,
+  "f1_prop_vs_opt": -1.0000000003618226e-06,
+  "served_pop_nomap_share": 1.9032893159033155
+ }
+}

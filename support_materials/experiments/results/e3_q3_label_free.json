@@ -1,0 +1,94 @@
+{
+ "meta": {
+  "s2": "Sentinel2_20260531_B432_NIR_SCL.tif",
+  "vh": [
+   "Sentinel1_20260627_VV_VH_dB.tif",
+   "Sentinel1_20260716_VV_VH_dB.tif"
+  ],
+  "dem": "DEM_Hengzhou_30m_mosaic.tif"
+ },
+ "w0_provenance": {
+  "w0_km2": 292.5999,
+  "wc80_km2": 137.5627,
+  "sar_only_km2": 155.0372,
+  "sar_only_share": 0.5298607415792008,
+  "s2_class6_km2": 42.3661,
+  "s2_mndwi03_km2": 38.908500000000004,
+  "sar_only_confirmed_by_s2class6": 1.484,
+  "sar_only_confirmed_by_mndwi03": 1.2946,
+  "s2_valid_km2": 1857.0974,
+  "note": "W0 = WorldCover water (class 80) union SAR low-backscatter union OSM water; no S2 NDWI component was used in the run (q3_results.s2_used=false)"
+ },
+ "vh_change_sweep": {
+  "sweep": [
+   {
+    "db": -2.0,
+    "precision": 0.009461324126413536,
+    "recall": 0.2850272070411228,
+    "iou": 0.009241982893786976,
+    "f1": 0.018314701628419288,
+    "detected_km2": 810.5208
+   },
+   {
+    "db": -3.0,
+    "precision": 0.009992530532044968,
+    "recall": 0.1951622015402456,
+    "iou": 0.00959704931126531,
+    "f1": 0.019011642947673626,
+    "detected_km2": 525.4725000000001
+   },
+   {
+    "db": -4.0,
+    "precision": 0.010968133118712704,
+    "recall": 0.13709077934048944,
+    "iou": 0.010259813846854392,
+    "f1": 0.020311238171074438,
+    "detected_km2": 336.2833
+   },
+   {
+    "db": -5.0,
+    "precision": 0.012353674625318787,
+    "recall": 0.10145401564033184,
+    "iou": 0.01113532958266583,
+    "f1": 0.022025399087304772,
+    "detected_km2": 220.95450000000002
+   },
+   {
+    "db": -6.0,
+    "precision": 0.01387325851594819,
+    "recall": 0.07917546311438851,
+    "iou": 0.011945819299715459,
+    "f1": 0.02360960255358766,
+    "detected_km2": 153.5472
+   },
+   {
+    "db": -7.0,
+    "precision": 0.0153997851847939,
+    "recall": 0.06501442121851862,
+    "iou": 0.012607610118378338,
+    "f1": 0.02490127467421354,
+    "detected_km2": 113.586
+   },
+   {
+    "db": -8.0,
+    "precision": 0.016637636237290615,
+    "recall": 0.0541055871071333,
+    "iou": 0.012888745257584544,
+    "f1": 0.02544947866768299,
+    "detected_km2": 87.4944
+   }
+  ],
+  "f_km2": 26.9048,
+  "note": "detector = VH(07-16) - VH(06-27) <= threshold, outside W0 and inside boundary"
+ },
+ "elevation": {
+  "mean_F": 79.83134460449219,
+  "mean_in": 121.50853729248047,
+  "median_F": 75.71226501464844,
+  "median_in": 95.13374328613281,
+  "pct_rank_F_median": 0.2728285027780858,
+  "p90_F": 103.33470916748047,
+  "p90_in": 216.43406677246094,
+  "valid_px": 269048
+ }
+}

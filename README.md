@@ -10,7 +10,7 @@ paper/                论文 LaTeX 源码与成品
   sections/           1_introduction … 10_evaluation, Z_ai_disclosure
   appendix/A_code.tex 软件清单 + 五问核心代码（附录 A）
   references.bib      文献元数据（17 条）
-  references.tex      成文参考文献（20 条，APMCM 格式：[J]/[C]/[CP/OL]/[EB/OL] + 卷期页/URL + 访问日期）
+  references.tex      成文参考文献（27 条，APMCM 格式：[J]/[C]/[CP/OL]/[EB/OL] + 卷期页/URL + 访问日期）
   main.pdf            论文成品（49 页）
   Aapmcm26300025ai.pdf 按赛事第 7 条要求单独提交的 AI 使用说明（2 页）
   ai_usage_detail.tex 该说明的源码

@@ -32,7 +32,9 @@ Matplotlib & 3.8+ & all figures and panel layouts \\
 \end{tabular}
 \end{table}
 
-The complete implementation consists of 15 Python modules and 3,826 lines: \texttt{config.py} (all parameters), \texttt{common.py} (pixel area, normalization, Lee filter, features, metrics), \texttt{problem1.py}--\texttt{problem5.py}, \texttt{unet.py}, \texttt{network.py}, \texttt{q5\_audit.py}, \texttt{constraint\_audit.py}, \texttt{coreg\_official.py}, \texttt{fetch\_worldcover.py}, \texttt{main.py} and \texttt{summarize.py}. It is archived in the support materials together with the plotting scripts and the result files, and \texttt{python code/main.py} reproduces the chain end to end. The excerpts below reproduce the core routine of each problem from those files; comments and unchanged helper code are abridged.
+\begin{sloppypar}
+The complete implementation consists of 15 Python modules and 3,826 lines: \texttt{config.py} (all parameters), \texttt{common.py} (pixel area, normalization, Lee filter, features, metrics), \texttt{problem1.py}--\allowbreak\texttt{problem5.py}, \texttt{unet.py}, \texttt{network.py}, \texttt{q5\_audit.py}, \texttt{constraint\_audit.py}, \texttt{coreg\_official.py}, \texttt{fetch\_worldcover.py}, \texttt{main.py} and \texttt{summarize.py}. It is archived in the support materials together with the plotting scripts and the result files, and \texttt{python code/main.py} reproduces the chain end to end. The excerpts below reproduce the core routine of each problem from those files; comments and unchanged helper code are abridged.
+\end{sloppypar}
 
 \subsection{Problem 1: blocked folds, pixel features and the LightGBM classifier}
 

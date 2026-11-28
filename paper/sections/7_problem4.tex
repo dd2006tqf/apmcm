@@ -44,7 +44,7 @@ At 1\,km the two fields separate rather than co-vary (Fig.~\ref{fig:q4_grid1km})
 
 \subsection{Combined Weights and the TOPSIS Index}
 
-Indicators are min--max normalized over the affected units, $r_{jk}=(X_{jk}-\min_jX_{jk})/(\max_jX_{jk}-\min_jX_{jk})$. Inside each criterion two objective weightings are combined. Entropy weights $w^e_k\propto1-e_k$ with $e_k=-\frac{1}{\ln n}\sum_j\tilde r_{jk}\ln\tilde r_{jk}$ and $\tilde r_{jk}=r_{jk}/\sum_jr_{jk}$ reward discrimination between units. CRITIC weights~\cite{diakoulaki1995critic} $w^c_k\propto s_k\sum_l(1-\mathrm{corr}_{kl})$ reward variation that is not redundant. The game-theoretic combination chooses the mix closest to both:
+Indicators are min--max normalized over units, $r_{jk}=(X_{jk}-\min_jX_{jk})/(\max_jX_{jk}-\min_jX_{jk})$. Inside each criterion two objective weightings are combined. Entropy weights $w^e_k\propto1-e_k$ with $e_k=-\frac{1}{\ln n}\sum_j\tilde r_{jk}\ln\tilde r_{jk}$ and $\tilde r_{jk}=r_{jk}/\sum_jr_{jk}$ reward discrimination between units. CRITIC weights~\cite{diakoulaki1995critic} $w^c_k\propto s_k\sum_l(1-\mathrm{corr}_{kl})$ reward variation that is not redundant. The game-theoretic combination chooses the mix closest to both:
 \begin{equation}
 \begin{bmatrix}w^e\!\cdot\!w^e & w^e\!\cdot\!w^c\\ w^c\!\cdot\!w^e & w^c\!\cdot\!w^c\end{bmatrix}
 \begin{bmatrix}\alpha_1\\ \alpha_2\end{bmatrix}=

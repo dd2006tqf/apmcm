@@ -29,22 +29,22 @@ stress = d["stress"]["f1"]
 GROUPS = [("demand", "Demand", "#9dbcd4"), ("network", "Network", "#4a7ba7"), ("both", "Both", "#1f4e79")]
 rng = np.random.default_rng(7)
 
-fig, ax = plt.subplots(figsize=(3.35, 2.62))
-fig.subplots_adjust(left=0.145, right=0.975, bottom=0.255, top=0.965)
+fig, ax = plt.subplots(figsize=(5.6, 2.4))
+fig.subplots_adjust(left=0.105, right=0.985, bottom=0.135, top=0.855)
 
 for xi, (key, lab, col) in enumerate(GROUPS):
     v = np.array([s["f1"] for s in sc if s["kind"] == key])
-    jit = rng.uniform(-0.155, 0.155, len(v))
+    jit = rng.uniform(-0.27, 0.27, len(v))
     ax.scatter(np.full(len(v), xi) + jit, v, s=2.2, color=col, alpha=0.55, lw=0, zorder=2)
     q1, med, q3 = np.percentile(v, [25, 50, 75])
-    ax.plot([xi - 0.214, xi + 0.214], [med, med], color=col, lw=1.0, zorder=4)
+    ax.plot([xi - 0.34, xi + 0.34], [med, med], color=col, lw=1.0, zorder=4)
     ax.plot([xi, xi], [q1, q3], color=col, lw=0.8, zorder=3)
 
 ax.axhline(base, color="0.25", lw=1.0, ls="-", zorder=5)
 ax.axhline(cvar, color="#a63d00", lw=1.2, ls=(0, (3.4, 1.6)), zorder=5)
 ax.scatter([2.0], [stress], marker="D", s=17, facecolors="none", edgecolors="#a63d00", lw=0.9, zorder=6)
 
-ax.set_xlim(-0.42, 2.42)
+ax.set_xlim(-0.55, 2.55)
 ax.set_ylim(0.547, 0.6815)
 ax.set_xticks(range(3))
 ax.set_xticklabels([g[1] for g in GROUPS], fontsize=6.2)
@@ -59,8 +59,8 @@ handles = [
            markeredgecolor="#a63d00", markeredgewidth=0.9, markersize=3.6,
            label="Stress 0.670"),
 ]
-ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.50, -0.135),
-          ncol=3, fontsize=5.5, handlelength=1.7, columnspacing=1.3, handletextpad=0.55)
+ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.50, 1.01),
+          ncol=3, fontsize=5.8, handlelength=1.7, columnspacing=1.4, handletextpad=0.55)
 
 fig.savefig("figures/fig_q5_cvar.pdf", bbox_inches="tight")
 fig.savefig("figures/fig_q5_cvar.png", dpi=400, bbox_inches="tight")

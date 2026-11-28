@@ -115,7 +115,7 @@ False positives and false negatives differ by land cover, and the area error dec
 \Delta A=\sum_c(\mathrm{FP}_c-\mathrm{FN}_c).
 \label{eq:fpfn_strata}
 \end{equation}
-The attachment carries no land cover; the strata come from ESA WorldCover 2021, read for each tile footprint and resampled by nearest neighbor. This describes the pre-flood land state under the assumption that it did not change much between 2021 and the image date. Table~\ref{tab:q1_fpfn} lists the decomposition for LightGBM.
+Land cover is not in the attachment: the strata come from ESA WorldCover 2021, read per tile footprint and resampled by nearest neighbour, and are taken as the pre-flood state on the assumption that it changed little by the image date. Table~\ref{tab:q1_fpfn} gives the decomposition for LightGBM.
 
 \begin{table}[!ht]
 \centering
@@ -137,7 +137,7 @@ Wetland & 293.59 & 25.46 & 76.89 & $-51.43$ \\
 \end{tabularx}}
 \end{table}
 
-On dry land covers the model raises false alarms: tree cover contributes 79.80\,km$^2$ of FP against only 33.46\,km$^2$ of real new flood, built-up land 19.38\,km$^2$ against 8.79\,km$^2$. Radar shadow behind tree canopies and smooth surfaces in villages look as dark as water. On wet land covers it misses flood: in wetland and areas that WorldCover maps as permanent water, the net error is $-51.43$ and $-24.11$\,km$^2$, because water that rose over a wetland or a lake margin is hard to tell from the water that was already there. The positive and negative nets cancel to the total $+85.71$\,km$^2$. The worst strata by absolute net error are tree, wetland and cropland.
+On dry covers the model raises false alarms: tree contributes 79.80\,km$^2$ of FP against 33.46\,km$^2$ of real new flood and built-up 19.38 against 8.79, because canopy shadow and smooth village surfaces look as dark as water. On wet covers it misses flood: wetland and permanent water give nets of $-51.43$ and $-24.11$\,km$^2$, since water risen over a wetland or a lake margin is hard to separate from water already there. The nets cancel to $+85.71$\,km$^2$, the worst strata being tree, wetland and cropland.
 
 \begin{table}[!ht]
 \centering
@@ -155,7 +155,7 @@ $>0.05$\,km$^2$ & 1,018 & 821.5 & 71.7\% & 77.8\% \\
 \end{tabularx}}
 \end{table}
 
-Table~\ref{tab:q1_patch} splits the recall by the size of the reference patch, and the profile it shows is the opposite of a speckle-driven error. Baseline A detects 88.3\% of the smallest patches and only 71.7\% of the largest: it over-detects small water and misses large water. LightGBM is flat across the three classes (76.0, 85.8, 77.8) and is ahead of the baseline exactly on the patches above 0.05\,km$^2$ that carry 821.5 of the 933.4\,km$^2$ of reference water, 88\% of the total. Its net error is therefore a large-patch omission, and speckle plays no part; patches above 0.05\,km$^2$ are the scale on which the spatial model of Problem~2 lifts IoU from 0.618 to 0.797.
+Table~\ref{tab:q1_patch} splits recall by reference-patch size, and the profile is the opposite of speckle: baseline A detects 88.3\% of the smallest patches but only 71.7\% of the largest, over-detecting small water and missing large water, whereas LightGBM is flat (76.0, 85.8, 77.8) and ahead only above 0.05\,km$^2$, the patches carrying 821.5 of the 933.4\,km$^2$ (88\%). Its net error is a large-patch omission, not speckle, and that scale is where the spatial model of Problem~2 lifts IoU from 0.618 to 0.797.
 
 \subsection{Key Factors of Area Accuracy}
 

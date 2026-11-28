@@ -11,7 +11,7 @@ paper/                论文 LaTeX 源码与成品
   appendix/A_code.tex 软件清单 + 五问核心代码（附录 A）
   references.bib      文献元数据（17 条）
   references.tex      成文参考文献（27 条，APMCM 格式：[J]/[C]/[CP/OL]/[EB/OL] + 卷期页/URL + 访问日期）
-  main.pdf            论文成品（49 页）
+  main.pdf            论文成品（48 页）
   Aapmcm26300025ai.pdf 按赛事第 7 条要求单独提交的 AI 使用说明（2 页）
   ai_usage_detail.tex 该说明的源码
   apmcmthesis.cls/.cfg 官方模板
@@ -66,7 +66,7 @@ xelatex main.tex && xelatex main.tex && xelatex main.tex
 
 参考文献已改为 `references.tex` 里的手工条目（不再走 BibTeX，无需 `bibtex main`）；`main.bbl` 不再参与编译。
 
-环境：TeX Live / MiKTeX（XeLaTeX + ctex + 模板自带 `apmcmthesis.cls`）。结果为 49 页（正文 38 页）、0 错误、0 未定义引用。单独说明：`xelatex ai_usage_detail.tex` 两遍，产物即 `Aapmcm26300025ai.pdf`。
+环境：TeX Live / MiKTeX（XeLaTeX + ctex + 模板自带 `apmcmthesis.cls`）。结果为 48 页（正文 37 页）、0 错误、0 未定义引用。单独说明：`xelatex ai_usage_detail.tex` 两遍，产物即 `Aapmcm26300025ai.pdf`。
 
 ## 5. 论文数字与结果文件的对应
 

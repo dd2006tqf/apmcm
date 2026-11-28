@@ -3,11 +3,11 @@
 
 \subsection{Official Tiles and Self-Collected Layers}
 
-\textbf{Official data (Attachment~1).} Attachment~1 holds 1000 co-registered triplets, IDs 1001--2000: one pre-flood Sentinel-2 tile with four uint8 bands (B, G, R, NIR), one post-flood GF-3 HH SAR tile with a single uint8 band, and a binary label, each $256\times256$ pixels and stored as GeoTIFF in WGS-84 geographic coordinates at $8.333\times10^{-5}$\,degree per pixel. GeoTIFF tags place the tiles between 112.69 and 116.91$^\circ$E and 28.43 and 29.30$^\circ$N, in four spatial clusters of 512, 450, 22 and 16 tiles -- consistent with the Dongting and Poyang lake basins. The attachment states no event date, and we do not assign one. Class imbalance is strong: pixel-weighted, 18.99\% of the labeled pixels are flooded, yet the median tile carries only 3.76\% flood and 15 tiles carry none, which leaves many tiles with almost no target. The README quotes a mean flood share of 24.5\%; a full traversal of the 1000 label files gives 18.99\%, and the verified value is the one used here.
+\textbf{Official data (Attachment~1).} Attachment~1 holds 1000 co-registered triplets, IDs 1001--2000: one pre-flood Sentinel-2 tile (four uint8 bands, B--NIR), one post-flood GF-3 HH SAR tile (one uint8 band) and a binary label, each $256\times256$ pixels as GeoTIFF in WGS-84 at $8.333\times10^{-5}$\,degree per pixel. The tags place them between 112.69 and 116.91$^\circ$E and 28.43 and 29.30$^\circ$N, in four clusters of 512, 450, 22 and 16 tiles, consistent with the Dongting and Poyang lake basins; no event date is stated, and none is assigned. Class imbalance is strong: 18.99\% of the labeled pixels are flooded, the median tile only 3.76\% and 15 tiles none, so the README's 24.5\% mean is replaced by the 18.99\% of a full traversal.
 
 \textbf{Self-collected data (Hengzhou).} Problems~3--5 use only public layers, listed in Table~\ref{tab:hz_data}. They are reprojected to the 10\,m UTM~49N grid of the Sentinel-1 product (nearest neighbor for classes, bilinear for continuous values) and clipped to the GADM~4.1 boundary, whose geodesic area is 3440.09\,km$^2$.
 
-\textbf{Where the layers come from.} The official triplets are the competition attachment (Attachment~1), not an external download. The Hengzhou layers were downloaded from public archives: Sentinel-1 RTC from Microsoft Planetary Computer; Sentinel-2 L2A and the DEM from Copernicus; land cover from ESA WorldCover; OSM extracts from Geofabrik; population from WorldPop; and the boundary from GADM~4.1. Table~\ref{tab:hz_data} gives the date, resolution and use of each layer.
+\textbf{Where the layers come from.} The official triplets are the competition attachment, not an external download; every Hengzhou layer in Table~\ref{tab:hz_data} is a public download, with its archive, date and resolution given there.
 
 \begin{table}[!ht]
 \centering
@@ -29,7 +29,7 @@ GADM 4.1 boundary\cite{gadm2026} & -- & vector & study area \\
 \end{tabular}
 \end{table}
 
-Fig.~\ref{fig:data_samples} shows only representative samples, not the full inventory. Panels (a)--(c) are one official triplet: pre-flood optical, post-flood SAR and binary label. Panels (d)--(f) are three Hengzhou layers used downstream: Sentinel-1 VV on 16 July, WorldCover, and WorldPop with OSM roads. The Hengzhou panels use a 150\,m display grid. All analyses use their native grids.
+Fig.~\ref{fig:data_samples} shows representative samples only: panels (a)--(c) are one official triplet (optical, SAR, label), panels (d)--(f) the Sentinel-1 VV of 16 July, WorldCover and WorldPop with OSM roads, displayed on a 150\,m grid; all analyses use native grids.
 
 \begin{figure}[!ht]
   \centering
@@ -38,7 +38,7 @@ Fig.~\ref{fig:data_samples} shows only representative samples, not the full inve
   \label{fig:data_samples}
 \end{figure}
 
-Two of its rows needed repair, and the repair belongs to the method. Relative to their geotransform the Sentinel-1 rasters are shifted north--south by 5.4--6.2\,km, and the Sentinel-2 scene cannot be aligned by any translation; both findings, and how they were handled, are reported in Section~\ref{sec:q3_verify}, since they affect only Problems~3--5. Official tiles passed the same test: on the 491 tiles carrying 3--60\% optical water, the shift that best aligns SAR-dark pixels with optical water has a median of $(0,0)$ pixels, and 63.3\% of the tiles align within 2 pixels, which keeps the official triplets on their native grid.
+Two of its rows needed repair, and the repair belongs to the method. Relative to their geotransform the Sentinel-1 rasters are shifted north--south by 5.4--6.2\,km, and the Sentinel-2 scene cannot be aligned by any translation; both are handled in Section~\ref{sec:q3_verify}, since they affect only Problems~3--5. Official tiles passed the same test: on the 491 tiles carrying 3--60\% optical water, the shift that best aligns SAR-dark pixels with optical water has a median of $(0,0)$ pixels and 63.3\% of them align within 2 pixels, so the triplets stay on their native grid.
 
 \subsection{What the Official Labels Actually Mark}
 

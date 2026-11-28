@@ -65,9 +65,9 @@ B + 50 px MMU & 0.911 & 0.765 & 0.763 & 0.764 & 0.618 & 0.709 & $-0.002$ & 0.368
 \end{tabular}}
 \end{table}
 
-Across the 1000 reference tiles there are 933.41\,km$^2$ of new inundation. LightGBM returns 1019.12\,km$^2$, 9.2\% above the reference (an excess of 85.71\,km$^2$). Applying the 50 px MMU to the same classifier brings that to 931.30\,km$^2$, 0.2\% below the reference; 79\% of the removed pixels were false positives (FP falls from 3.84 to 2.92\,M pixels while TP falls only from 9.75 to 9.50\,M). Fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ (IoU 0.546--0.622), and the ten-fold design is what exposes that spread; a single random split would have reported one number. Baseline A finds 74\% of the flooded pixels and labels 2245.66\,km$^2$ as new inundation, 2.4 times the reference. The same MMU removes only 58\,km$^2$ of it: the over-detection is connected, not speckle. Its own diagnostic says why. The Ashman test of \eqref{eq:ashman} passes on 92\% of the sub-blocks, including tiles without water, because dark fields and bright villages form a bimodal histogram too. That is a finding about the baseline, and we report it as one.
+Of the 933.41\,km$^2$ of new inundation in the reference, LightGBM returns 1019.12\,km$^2$ ($+9.2\%$, an excess of 85.71\,km$^2$), and the same MMU brings that to 931.30\,km$^2$ ($-0.2\%$), 79\% of the removed pixels being false positives (FP falls from 3.84 to 2.92\,M pixels, TP only from 9.75 to 9.50\,M). Fold-level RAE ranges from $-13.9\%$ to $+34.6\%$ (IoU 0.546--0.622), the spread that the ten-fold design exposes; a single random split would have reported one number. Baseline A finds 74\% of the flooded pixels while labelling 2245.66\,km$^2$, 2.4 times the reference, and the MMU removes only 58\,km$^2$ of it: the over-detection is connected, not speckle. Its own Ashman test passes on 92\% of the sub-blocks, dry tiles included, because dark fields and bright villages also form a bimodal histogram.
 
-Fig.~\ref{fig:q1_mmu} sweeps the mapping unit: 25 px leaves $+3.7\%$, 50 px gives $-0.2\%$, and 100 px buys 0.6 pp more IoU at a cost of $-5.5\%$ bias, which puts the knee at 50 px. Decomposed by \eqref{eq:fpfn_identity}, the MMU mask carries a quantity disagreement of 2.0\,km$^2$ and a location disagreement of 438\,km$^2$ ($2\min(\mathrm{FP},\mathrm{FN})$). Just under half the reference flood, 47\%, sits on the wrong side of the boundary; the $-0.2\%$ of \eqref{eq:area_metrics} is merely the residual of two errors that are each over two hundred times larger. Replacing the pixel classifier with a spatial model is what Problem~2 does about it.
+Fig.~\ref{fig:q1_mmu} puts the knee at 50 px: 25 px leaves $+3.7\%$ bias and 100 px buys 0.6 pp IoU at $-5.5\%$ bias. By \eqref{eq:fpfn_identity} the MMU mask carries 2.0\,km$^2$ of quantity and 438\,km$^2$ of location disagreement ($2\min(\mathrm{FP},\mathrm{FN})$); 47\% of the reference flood sits on the wrong side of the boundary, so the $-0.2\%$ of \eqref{eq:area_metrics} is the residual of two errors each over two hundred times larger.
 
 \begin{figure}[!ht]
   \centering
@@ -76,7 +76,7 @@ Fig.~\ref{fig:q1_mmu} sweeps the mapping unit: 25 px leaves $+3.7\%$, 50 px give
   \label{fig:q1_mmu}
 \end{figure}
 
-The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q1_visual_cmp} shows four held-out tiles of increasing flood share, each predicted by the model of the fold in which it was a test tile; columns 4--6 are confusion maps (true positives, FP, FN) of baseline A, LightGBM and the final Problem~2 model M6.
+Fig.~\ref{fig:q1_visual_cmp} shows four held-out tiles of increasing flood share, each predicted by the fold in which it was a test tile; columns 4--6 are confusion maps (true positives, FP, FN) of baseline A, LightGBM and the final model M6.
 
 \begin{figure}[!ht]
   \centering
@@ -85,9 +85,9 @@ The pooled numbers do not tell where on a tile the errors occur. Fig.~\ref{fig:q
   \label{fig:q1_visual_cmp}
 \end{figure}
 
-On tile 1446, where only 1.8\% of the area is flooded, the area becomes the hard part: baseline A reaches IoU 0.052 with a relative area error of $+18.2$, and LightGBM predicts 4.65 times the reference area (RAE$_t=+3.65$), because a few dark fields form most of the prediction. On the medium tiles 1074 ($\rho=7.4\%$) and 1265 ($\rho=30.5\%$) LightGBM has IoU 0.707 and 0.734 and area errors of $+27\%$ and $+15\%$; the false alarms sit along field edges and the misses inside vegetated patches. On the almost fully flooded tile 1655 ($\rho=97.3\%$) LightGBM reaches IoU 0.959 and M6 0.980 with an area error of $+0.4\%$. Relative area error is therefore driven by small reference areas, not by poor pixel classification, which is why the per-tile error has to be read together with the total.
+On the near-dry tile 1446 ($\rho=1.8\%$) area becomes the hard part: baseline A reaches IoU 0.052 with a relative area error of $+18.2$, and LightGBM predicts 4.65 times the reference area (RAE$_t=+3.65$). On the medium tiles 1074 ($\rho=7.4\%$) and 1265 ($\rho=30.5\%$) LightGBM holds IoU 0.707 and 0.734 with area errors of $+27\%$ and $+15\%$, false alarms along field edges and misses inside vegetated patches; on the flooded tile 1655 ($\rho=97.3\%$) IoU is 0.959 and M6 0.980 at $+0.4\%$. Relative area error is thus driven by small reference areas, not by poor pixel classification.
 
-Every held-out tile is also exported as a mask, and Fig.~\ref{fig:q1_pred_set} shows five of them that do not appear in Fig.~\ref{fig:q1_visual_cmp}, spanning a reference share from 2\% to 94\%. At the almost dry tile 1720 baseline A labels half of the tile as water, while LightGBM stays at 5.2\%; at the flooded tiles both follow the water outline. The upper row is baseline A and the lower row LightGBM; new water is blue.
+Fig.~\ref{fig:q1_pred_set} exports five further tiles, reference share 2\% to 94\%: at the almost dry tile 1720 baseline A labels half the tile as water while LightGBM stays at 5.2\%, and on flooded tiles both follow the outline. Upper row baseline A, lower row LightGBM.
 
 \begin{figure}[!ht]
   \centering
@@ -96,7 +96,6 @@ Every held-out tile is also exported as a mask, and Fig.~\ref{fig:q1_pred_set} s
   \label{fig:q1_pred_set}
 \end{figure}
 
-That observation becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig:q1_area_agreement}, which compares estimated and reference tile areas for all 1000 tiles.
 
 \begin{figure}[!ht]
   \centering
@@ -105,7 +104,7 @@ That observation becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig
   \label{fig:q1_area_agreement}
 \end{figure}
 
-Baseline A over-estimates by $+1.31$\,km$^2$ per tile on average, with 95\% limits of $-1.76$ to $+4.38$\,km$^2$, and the excess grows on tiles with little reference flood (panel a). LightGBM removes most of the bias ($+0.086$\,km$^2$), and its limits of agreement, $-1.42$ to $+1.60$\,km$^2$, span about 1.1 times the mean tile area of 4.91\,km$^2$. The scatter is widest on tiles with intermediate flood share, where fragmented flood patches meet dark fields. A model whose area error has to be small on each assessment unit, not only in the city total, needs spatial context; that is what motivates the convolutional model of Problem~2.
+That becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig:q1_area_agreement}, which compares estimated and reference tile areas over all 1000 tiles: baseline A over-estimates by $+1.31$\,km$^2$ per tile, with 95\% limits of $-1.76$ to $+4.38$\,km$^2$, the excess growing where the reference flood is small (panel a). LightGBM removes most of the bias ($+0.086$\,km$^2$), and its limits, $-1.42$ to $+1.60$\,km$^2$, span about 1.1 times the mean tile area of 4.91\,km$^2$. The scatter is widest at intermediate flood share, where fragmented patches meet dark fields, which is what motivates the convolutional model of Problem~2.
 
 \subsection{False Positives and False Negatives by Land Cover}
 

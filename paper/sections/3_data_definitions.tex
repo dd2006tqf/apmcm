@@ -38,7 +38,7 @@ Fig.~\ref{fig:data_samples} shows only representative samples, not the full inve
   \label{fig:data_samples}
 \end{figure}
 
-The table is short, and two of its rows needed repair. The Sentinel-1 rasters are shifted north--south by 5.4--6.2\,km relative to their geotransform, and the Sentinel-2 scene cannot be aligned by any translation; both findings, and how they were handled, are reported in Section~\ref{sec:q3_verify} because they only affect Problems~3--5. The official tiles passed the same kind of test: on the 491 tiles with 3--60\% optical water, the median shift that best aligns SAR-dark pixels with optical water is $(0,0)$ pixels, and 63.3\% of the tiles align within 2 pixels, so the official triplets are used on their native grid.
+Two of its rows needed repair, and the repair is part of the method. The Sentinel-1 rasters are shifted north--south by 5.4--6.2\,km relative to their geotransform, and the Sentinel-2 scene cannot be aligned by any translation; both findings, and how they were handled, are reported in Section~\ref{sec:q3_verify} because they only affect Problems~3--5. The official tiles passed the same kind of test: on the 491 tiles with 3--60\% optical water, the median shift that best aligns SAR-dark pixels with optical water is $(0,0)$ pixels, and 63.3\% of the tiles align within 2 pixels, so the official triplets are used on their native grid.
 
 \subsection{What the Official Labels Actually Mark}
 

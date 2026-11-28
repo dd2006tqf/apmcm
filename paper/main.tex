@@ -52,23 +52,14 @@
 
 \begin{document}
 
-% === Page numbering: abstract and contents are i, ii; the body starts at 1 ===
-% The denominator stays the physical page count of the whole PDF (49), so the
-% last page of the appendix reads Page 47 of 49.
-\makeatletter
-\AtEndDocument{\immediate\write\@auxout{\string\gdef\string\totalpages{\number\numexpr\value{page}-1\relax}}}
-\makeatother
-\providecommand{\totalpages}{49}
+% === Page numbering: the abstract and the contents carry no page number; the body starts at 1 ===
+% \thepage prints 1 on the first page after the contents, so the final lastpage label gives
+% the body total (47) and the closing page of the appendix reads Page 47 of 47.
 \renewcommand{\thepage}{\ifnum\value{page}>2 \the\numexpr\value{page}-2\relax\else\roman{page}\fi}
 
 % === Official template layout: abstract is page 1, title sits above the team table ===
-\fancypagestyle{mainmatterstyle}{%
-  \fancyhf{}%
-  \lhead{\small \team}%
-  \rhead{\small  Page \thepage\ of \totalpages}%
-}
-\pagestyle{mainmatterstyle}
-\thispagestyle{mainmatterstyle}
+\pagestyle{frontmatterstyle}
+\thispagestyle{frontmatterstyle}
 
 \begin{center}
 \parbox{0.92\textwidth}{\centering\large\bfseries
@@ -99,6 +90,8 @@ Sensitivity tests across the terrain guard, the probability threshold and the wa
 \newpage
 
 % === Body ===
+\pagestyle{mainmatterstyle}
+\thispagestyle{mainmatterstyle}
 \input{sections/1_introduction}
 \input{sections/2_assumptions}
 \input{sections/3_data_definitions}

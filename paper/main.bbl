@@ -1,16 +1,16 @@
 \begin{thebibliography}{10}
 
 \bibitem{deepseek2026}
-{DeepSeek, DeepSeek-V4-Flash,
-  杭州深度求索人工智能基础技术研究有限公司,
-  \mbox{2026-11-27}}.
+{DeepSeek, DeepSeek-V4-Flash, Hangzhou DeepSeek Artificial Intelligence Basic
+  Technology Research Co., Ltd., \mbox{2026-11-27}}.
 
 \bibitem{qwen2026}
-{Tongyi Qianwen (Qwen), Qwen3.8-Max, 阿里云计算有限公司,
+{Tongyi Qianwen (Qwen), Qwen3.8-Max, Alibaba Cloud Computing Co., Ltd.,
   \mbox{2026-11-27}}.
 
 \bibitem{doubao2026}
-{豆包 2.0 Pro, 北京抖音信息服务有限公司, \mbox{2026-11-27}}.
+{Doubao 2.0 Pro, Beijing Douyin Information Service Co., Ltd.,
+  \mbox{2026-11-27}}.
 
 \bibitem{martinis2009splitbased}
 S.~Martinis, A.~Twele, and S.~Voigt.

@@ -11,6 +11,8 @@
 % 类文件默认在节号中插入 \thinspace，标题会显示成“4 . 1”，此处收紧为标准点号
 \renewcommand\thesubsection{\arabic{section}.\arabic{subsection}}
 \renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}
+% 节号统一为阿拉伯数字，使标题、目录条目与 \ref 三者一致（类文件原用罗马数字标节）
+\titleformat{\section}{\centering\normalfont\Large\bfseries}{\thesection.}{.5em}{}
 % 引用改为小号上标（原来方括号与正文同字号，显得过大）
 \makeatletter
 \def\@cite#1#2{\textsuperscript{\scriptsize[#1\if@tempswa , #2\fi]}}
@@ -68,8 +70,7 @@ Sensitivity tests across the terrain guard, the probability threshold and the wa
 \end{abstract}
 
 \newpage
-% Do NOT add \tableofcontents back: competition papers ship without a TOC.
-%   The adjacent \newpage/\clearpage is the abstract-to-body break; keep it.
+\tableofcontents
 \newpage
 
 % === Body ===
@@ -125,6 +126,10 @@ APMCM Team apmcm26300025
 
 % === Appendix ===
 \begin{appendices}
+% 附录小节号跟随附录字母（A.1、A.2 …），与目录和标题一致
+\renewcommand\thesubsection{\thesection.\arabic{subsection}}
+% 编号 A. 已表明附录，目录条目不再重复 “Appendix” 一词
+\renewcommand{\appendixname}{}
 \input{appendix/A_code}
 \end{appendices}
 

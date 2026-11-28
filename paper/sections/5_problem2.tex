@@ -92,20 +92,11 @@ M6 + 50 px MMU & 0.730 & 0.844 & 0.807 & $0.000$ & 0.238 & 0.35 & 0.558 & $-0.08
 \end{tabular}}
 \end{table}
 
-No single variant wins every metric (Fig.~\ref{fig:q2_model_compare} re-ranks the columns). Optical fusion leads the pixel metrics, IoU 0.798 and F1 0.888 on all tiles; M2+MMU is the only row with a total RAE below 1\%; in the hard block M3 has the highest IoU (0.664) and M6+MMU the smallest RAE ($-0.085$). Area calibration and pixel overlap are different objectives.
+No single variant wins every metric. Optical fusion leads IoU (0.798) and F1 (0.888); in the hard block M3 has the highest IoU (0.664) and M6+MMU the smallest RAE ($-0.085$). The MMU acts on area only: it takes M2's all-tile RAE from 3.4\% to 0.9\% and its hard-set bias from $+3.5\%$ to $-2.0\%$, and M2+MMU is the only row with a total RAE below 1\%.
 
-The MMU acts on area only: IoU barely moves, while M2's all-tile RAE falls from 3.4\% to 0.9\% and its hard-set bias from $+3.5\%$ to $-2.0\%$ (Table~\ref{tab:q2_ablation}).
+Pixel overlap and area calibration are different objectives: M6+MMU reaches a total bias of $0.0\%$ yet loses 6.7 pp IoU and 9.0 pp hard-set IoU against M2+MMU, so calibration repairs the area of a weaker backbone, not its pixel accuracy. M2 leads MAE$_A$ (0.149\,km$^2$); its MMU removes 1.3\% of true positives and 10.3\% of false positives. The largest relative change is in the hard columns: on the 397 tiles where LightGBM had $|\mathrm{RAE}_t|>0.5$, M2+MMU lifts IoU from 0.266 to 0.648 (M6: 0.562), cuts MAE$_A$ from 0.620 to 0.163\,km$^2$ and moves RAE from $+20.8\%$ to $-2.0\%$.
 
-M2 also leads MAE$_A$ (0.149\,km$^2$); its MMU removes 1.3\% of true positives and 10.3\% of false positives. M6+MMU reaches a total bias of $0.0\%$ yet loses 6.7 pp IoU and 9.0 pp hard-set IoU against M2+MMU: calibration repairs the area of a weaker backbone, not its pixel accuracy. The largest relative change of the study is in the hard columns: on the 397 tiles where LightGBM had $|\mathrm{RAE}_t|>0.5$, M2+MMU lifts IoU from 0.266 to 0.648 (M6: 0.562), cuts MAE$_A$ from 0.620 to 0.163\,km$^2$ and moves RAE from $+20.8\%$ to $-2.0\%$, the gain sitting exactly where Problem~1 failed.
-
-\begin{figure}[!b]
-  \centering
-  \includegraphics[width=0.90\textwidth,keepaspectratio]{../figures/fig_q2_model_compare.pdf}
-  \caption{Model comparison on all and hard tiles}
-  \label{fig:q2_model_compare}
-\end{figure}
-
-Each step can be isolated in Fig.~\ref{fig:q2_ablation}, which attributes the change of IoU, MAE$_A$ and $|\mathrm{RAE}|$ to the component added at that step, LightGBM dashed; the open dot is the value before the step and the filled dot the value after, green and red marking improvement and degradation.
+Fig.~\ref{fig:q2_ablation} isolates each step: the change of IoU, MAE$_A$ and $|\mathrm{RAE}|$ attributed to the component added there (LightGBM dashed), open dots before and filled dots after, green and red for improvement and degradation.
 
 \begin{figure}[!ht]
   \centering
@@ -114,9 +105,9 @@ Each step can be isolated in Fig.~\ref{fig:q2_ablation}, which attributes the ch
   \label{fig:q2_ablation}
 \end{figure}
 
-Optical fusion is the decisive step: from M1 to M2 IoU rises by 0.25 and MAE$_A$ drops by 71\%. SAR-only M1 reaches IoU 0.549 and RAE $+34.9\%$, the measured cost of dropping the pre-flood land state, without which a dark field or a permanent pond cannot be told from new inundation; LightGBM did not pay it because its features already contained NDWI. The area term changes little in-domain, modality dropout (a quarter of the training samples blinded) costs 0.06 IoU, and the MC mean leaves the metrics unchanged. Calibration cuts the total bias from $+4.1\%$ (M4) to $+1.45\%$, and the land-cover decomposition shows where it went: the tree stratum, $+74.87$\,km$^2$ of net error under LightGBM, contributes $-5.43$\,km$^2$ under M6, and the largest remaining nets are $+15.88$\,km$^2$ in wetland and $+15.20$\,km$^2$ in permanent water (Fig.~\ref{fig:q1_error_drivers}a).
+Optical fusion is the decisive step: M1 to M2 raises IoU by 0.25 and cuts MAE$_A$ by 71\%. SAR-only M1 reaches IoU 0.549 and RAE $+34.9\%$, the measured cost of dropping the pre-flood land state, which alone separates a dark field or a permanent pond from new inundation; LightGBM paid no such cost because its features already contained NDWI. The area term changes little in-domain, modality dropout (a quarter of the training samples blinded) costs 0.06 IoU, and the MC mean leaves the metrics unchanged. Calibration cuts the total bias from $+4.1\%$ (M4) to $+1.45\%$: the tree stratum, $+74.87$\,km$^2$ of net error under LightGBM, contributes $-5.43$\,km$^2$ under M6, and the largest remaining nets are $+15.88$\,km$^2$ in wetland and $+15.20$\,km$^2$ in permanent water (Fig.~\ref{fig:q1_error_drivers}a).
 
-Which model goes to Hengzhou was fixed before the test metrics were read: M2+MMU sets the in-domain ceiling at IoU 0.797, and M6 carries the SAR-only transfer because it pairs the calibrated area with a per-tile conformal interval, which is what Problem~3 consumes. Its intervals cover the true tile area in 87.8\% of test tiles (folds 82.7--92.6\%, flood-share terciles 85.3--92.8\%) at a mean width of 0.54\,km$^2$.
+Model choice was fixed before the test metrics were read: M2+MMU sets the in-domain ceiling at IoU 0.797, and M6 carries the SAR-only transfer because it pairs the calibrated area with a per-tile conformal interval, which is what Problem~3 consumes; its intervals cover the true tile area in 87.8\% of test tiles (folds 82.7--92.6\%, flood-share terciles 85.3--92.8\%) at a mean width of 0.54\,km$^2$.
 
 \subsection{Data-Based Four-Level Intensity Grading}
 

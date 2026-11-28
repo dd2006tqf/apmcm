@@ -58,7 +58,7 @@ Probabilistic Intensity Grading and Flood-Cut Relief Allocation in Hengzhou\par}
 
 \begin{abstract}
 \zihao{5}
-Flood relief needs to know where new water stands, whom it reaches and which roads it cuts. This paper reads the \textbf{newly inundated set} $F=W_1\setminus W_0$ from pre-flood optical and post-flood SAR imagery and carries it through a \textbf{five-stage chain}, from recognition to relief allocation in Hengzhou.
+\noindent\hspace*{2em}Flood relief needs to know where new water stands, whom it reaches and which roads it cuts. This paper reads the \textbf{newly inundated set} $F=W_1\setminus W_0$ from pre-flood optical and post-flood SAR imagery and carries it through a \textbf{five-stage chain}, from recognition to relief allocation in Hengzhou.
 
 The recognizer of Problem~1 starts from the labels: of 65.5 million valid pixels only 2.37\% of the flooded ones were water before the event. Per-tile rank normalization and Lee filtering precede a \textbf{LightGBM} classifier, and spatially blocked five-fold validation gives IoU 0.618 with a total area error of $-0.2\%$ once a 50 px minimum mapping unit is applied (raw 0.598 and $+9.2\%$; split-Otsu $+134\%$). False alarms gather under tree cover, misses in wetland. The mapping unit removes isolated alarms; the baseline's over-detection is connected and survives it.
 

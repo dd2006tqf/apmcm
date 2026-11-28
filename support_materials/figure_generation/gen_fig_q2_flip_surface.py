@@ -129,7 +129,7 @@ for k, p in enumerate([ta, tb]):
     bottom = 0.96 - hfrac
     ax = fig.add_axes([0.008 + 0.44 * k, bottom, wfrac, hfrac])
     ax.imshow(im); ax.axis('off')
-    ax.text(0.02, 0.99, f'({chr(97 + k)})', transform=ax.transAxes,
+    ax.text(0.02, 0.99, f'({chr(65 + k)})', transform=ax.transAxes,
             fontsize=10, fontweight='bold', va='top')
 
 cax = fig.add_axes([0.895, 0.24, 0.011, 0.64])

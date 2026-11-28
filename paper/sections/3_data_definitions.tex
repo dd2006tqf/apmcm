@@ -51,7 +51,7 @@ The labels are binary and could mean either ``water after the flood'' ($W_1$) or
   \label{fig:q1_label_semantics}
 \end{figure}
 
-The distributions in Fig.~\ref{fig:q1_label_semantics} separate cleanly. Panel (a) shows pre-flood NDWI for three pixel groups: label-1 pixels sit almost entirely below zero, and only 2.37\% of them had $\mathrm{NDWI}>0$ before the event (2.06\% under the strict definition). Panel (b) shows post-flood SAR brightness: pre-flood water pixels that carry label 0 are just as dark as the flooded pixels, and 70.1\% of them fall below the dark threshold $\tilde z<0.2$. Pre-flood water is therefore still water after the flood, but the labels exclude it. The labels mark newly inundated area with permanent water set to 0, and this holds for all three definitions. Problems~1--2 therefore learn $F$ directly, and Problem~3, where no labels exist, builds $W_0$ independently and subtracts it.
+The distributions in Fig.~\ref{fig:q1_label_semantics} separate cleanly. Panel (A) shows pre-flood NDWI for three pixel groups: label-1 pixels sit almost entirely below zero, and only 2.37\% of them had $\mathrm{NDWI}>0$ before the event (2.06\% under the strict definition). Panel (B) shows post-flood SAR brightness: pre-flood water pixels that carry label 0 are just as dark as the flooded pixels, and 70.1\% of them fall below the dark threshold $\tilde z<0.2$. Pre-flood water is therefore still water after the flood, but the labels exclude it. The labels mark newly inundated area with permanent water set to 0, and this holds for all three definitions. Problems~1--2 therefore learn $F$ directly, and Problem~3, where no labels exist, builds $W_0$ independently and subtracts it.
 
 \subsection{Area Definitions and Their Set Logic}
 
@@ -74,7 +74,7 @@ Fig.~\ref{fig:q1_set_logic} draws both identities.
   \label{fig:q1_set_logic}
 \end{figure}
 
-Panel (a) of Fig.~\ref{fig:q1_set_logic} explains why the net increase can be negative while new inundation is positive: any receded water $R$ (drained ponds, a lower river stage) is subtracted from $A_{new}$, and this happens in Hengzhou. Panel (b) explains why IoU alone is not enough for this problem. Identity \eqref{eq:fpfn_identity} lets a model with many false alarms and as many misses report an almost exact total area. Area error is always reported together with IoU here, split by land cover into FP and FN parts.
+Panel (A) of Fig.~\ref{fig:q1_set_logic} explains why the net increase can be negative while new inundation is positive: any receded water $R$ (drained ponds, a lower river stage) is subtracted from $A_{new}$, and this happens in Hengzhou. Panel (B) explains why IoU alone is not enough for this problem. Identity \eqref{eq:fpfn_identity} lets a model with many false alarms and as many misses report an almost exact total area. Area error is always reported together with IoU here, split by land cover into FP and FN parts.
 
 \subsection{Shared Preprocessing}
 

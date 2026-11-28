@@ -39,7 +39,7 @@ mpl.rcParams.update({
 
 
 def panel_label(ax, letter):
-    ax.text(-0.02, 1.07, letter, transform=ax.transAxes, ha="right", va="bottom",
+    ax.text(-0.03, 1.07, "(%s)" % letter.upper(), transform=ax.transAxes, ha="right", va="bottom",
             fontsize=9, fontweight="bold", color=DARK, clip_on=False)
 
 

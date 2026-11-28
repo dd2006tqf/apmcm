@@ -164,7 +164,7 @@ def panel(ax, letter, title):
     ax.set_ylim(-0.12, 4.05)
     ax.set_aspect("equal")
     ax.axis("off")
-    ax.text(0.00, 4.00, letter, fontsize=10.2, ha="left", va="top",
+    ax.text(0.00, 4.00, "(%s)" % letter.upper(), fontsize=10.2, ha="left", va="top",
             weight="bold", color="#1A1A1A")
     ax.text(0.58, 4.00, title, fontsize=9.4, ha="left", va="top",
             weight="normal", color="#1A1A1A")

@@ -104,7 +104,7 @@ Fig.~\ref{fig:q1_pred_set} exports five further tiles, reference share 2\% to 94
   \label{fig:q1_area_agreement}
 \end{figure}
 
-That becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig:q1_area_agreement}, which compares estimated and reference tile areas over all 1000 tiles: baseline A over-estimates by $+1.31$\,km$^2$ per tile, with 95\% limits of $-1.76$ to $+4.38$\,km$^2$, the excess growing where the reference flood is small (panel a). LightGBM removes most of the bias ($+0.086$\,km$^2$), and its limits, $-1.42$ to $+1.60$\,km$^2$, span about 1.1 times the mean tile area of 4.91\,km$^2$. The scatter is widest at intermediate flood share, where fragmented patches meet dark fields, which is what motivates the convolutional model of Problem~2.
+That becomes quantitative in the Bland--Altman plot of Fig.~\ref{fig:q1_area_agreement}, which compares estimated and reference tile areas over all 1000 tiles: baseline A over-estimates by $+1.31$\,km$^2$ per tile, with 95\% limits of $-1.76$ to $+4.38$\,km$^2$, the excess growing where the reference flood is small (panel A). LightGBM removes most of the bias ($+0.086$\,km$^2$), and its limits, $-1.42$ to $+1.60$\,km$^2$, span about 1.1 times the mean tile area of 4.91\,km$^2$. The scatter is widest at intermediate flood share, where fragmented patches meet dark fields, which is what motivates the convolutional model of Problem~2.
 
 \subsection{False Positives and False Negatives by Land Cover}
 
@@ -168,7 +168,7 @@ Each held-out tile carries label-free descriptors (raw SAR mean and standard dev
   \label{fig:q1_error_drivers}
 \end{figure}
 
-Panel (b) ranks them by mean $|\mathrm{SHAP}|$: raw SAR standard deviation first (0.196), then tree share (0.077), flood boundary density (0.074), ENL (0.073), NDVI mean (0.057), bimodality share (0.050) and pre-flood water share (0.045). High SAR variance with low ENL means speckle and mixed scattering, tree share is the false-alarm mechanism of Table~\ref{tab:q1_fpfn}, and high boundary density means fragmented flood. Panel (a) puts the same drivers against the FP/FN bars and the net error of M6: once the error is signed the order changes, reference flood share first, and the model over-estimates lightly flooded tiles while under-estimating heavily flooded ones.
+Panel (B) ranks them by mean $|\mathrm{SHAP}|$: raw SAR standard deviation first (0.196), then tree share (0.077), flood boundary density (0.074), ENL (0.073), NDVI mean (0.057), bimodality share (0.050) and pre-flood water share (0.045). High SAR variance with low ENL means speckle and mixed scattering, tree share is the false-alarm mechanism of Table~\ref{tab:q1_fpfn}, and high boundary density means fragmented flood. Panel (A) puts the same drivers against the FP/FN bars and the net error of M6: once the error is signed the order changes, reference flood share first, and the model over-estimates lightly flooded tiles while under-estimating heavily flooded ones.
 
 Holding out a whole cluster is harder: training on three and testing on the fourth lowers pooled IoU from 0.598 to 0.508 and F1 from 0.749 to 0.674, with a cluster RAE of $+26\%$ on the 512-tile cluster and $+15\%$ on the 450-tile one; an unseen region thus costs 0.09 IoU and adds a positive area bias, which Problem~3 faces in Guangxi.
 

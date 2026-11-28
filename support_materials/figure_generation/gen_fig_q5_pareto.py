@@ -106,7 +106,7 @@ ax.set_xlabel(r"Weighted unmet share $f_1$")
 ax.set_ylabel(r"Weighted delivery time $f_2$ (min)")
 ax.spines[["top", "right"]].set_visible(False)
 ax.tick_params(axis="both", pad=2.5)
-ax.text(-0.14, 1.02, "a", transform=ax.transAxes, fontsize=9.2,
+ax.text(-0.14, 1.02, "(A)", transform=ax.transAxes, fontsize=9.2,
         fontweight="bold", va="bottom", ha="left")
 
 # shared legend above the panels
@@ -161,7 +161,7 @@ ax2.set_xlabel(r"$\Delta f_1^*$ relative to adopted plan")
 ax2.tick_params(axis="y", length=0, pad=4)
 ax2.tick_params(axis="x", pad=2)
 ax2.spines[["top", "right"]].set_visible(False)
-ax2.text(-0.24, 1.02, "b", transform=ax2.transAxes, fontsize=9.2,
+ax2.text(-0.24, 1.02, "(B)", transform=ax2.transAxes, fontsize=9.2,
          fontweight="bold", va="bottom", ha="left")
 ax2.legend(
     handles=[Patch(facecolor=RED, edgecolor="none", alpha=0.92),

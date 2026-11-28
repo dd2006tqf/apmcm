@@ -161,7 +161,7 @@ for k, p in enumerate([tmp_a, tmp_b]):
     bottom = 0.955 - hfrac
     ax = fig.add_axes([0.008 + 0.497 * k, bottom, wfrac, hfrac])
     ax.imshow(im); ax.axis('off')
-    ax.text(0.02, 0.99, f'({chr(97 + k)})', transform=ax.transAxes,
+    ax.text(0.02, 0.99, f'({chr(65 + k)})', transform=ax.transAxes,
             fontsize=10, fontweight='bold', va='top')
 
 handles = [Patch(facecolor=BLUE, label=f'Pre-flood water $W_0$ ({W0_km2:.1f} km$^2$)'),

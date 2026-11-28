@@ -71,7 +71,7 @@ def draw_panel(ax, key, title, rows, ylabels, letter, formatter, m0):
     ax.xaxis.set_major_formatter(formatter)
     for s in ("left", "right", "top"):
         ax.spines[s].set_visible(False)
-    ax.text(0.01, 0.99, letter, transform=ax.transAxes, ha="left", va="top",
+    ax.text(0.01, 0.99, "(%s)" % letter.upper(), transform=ax.transAxes, ha="left", va="top",
             fontsize=9.5, fontweight="bold", color=DARK, zorder=5)
 
 

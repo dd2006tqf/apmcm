@@ -49,7 +49,8 @@ def load(name):
 
 
 def panel(ax, letter):
-    ax.set_title(letter, loc='left', fontweight='bold', pad=3)
+    lab = '(%s)' % str(letter).strip('()').upper()
+    ax.set_title(lab, loc='left', fontweight='bold', pad=3)
 
 
 def finish(fig, name):

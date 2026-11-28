@@ -98,7 +98,7 @@ span = xmax - xmin
 ax.set_xlim(xmin - 0.05 * span, xmax + 0.06 * span)
 ax.set_ylim(-0.55, len(rows) - 0.45)
 style(ax)
-ax.set_title("a", loc="left", fontweight="bold", fontsize=9, pad=3)
+ax.set_title("(A)", loc="left", fontweight="bold", fontsize=9, pad=3)
 
 # ---- (b) SHAP beeswarm
 ax2 = fig.add_subplot(gs[0, 1])
@@ -121,7 +121,7 @@ ax2.set_xlim(smin - 0.04 * (smax - smin), smax + 0.04 * (smax - smin))
 ax2.set_ylim(-0.55, len(order) - 0.45)
 style(ax2)
 ax2.tick_params(axis="y", labelsize=6.9, pad=2)
-ax2.set_title("b", loc="left", fontweight="bold", fontsize=9, pad=3)
+ax2.set_title("(B)", loc="left", fontweight="bold", fontsize=9, pad=3)
 
 cax = fig.add_subplot(gs[0, 2])
 cb = fig.colorbar(sc, cax=cax, ticks=[0, 1])

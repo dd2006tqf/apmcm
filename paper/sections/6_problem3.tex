@@ -103,7 +103,7 @@ On 100\,m cells (panel a of Fig.~\ref{fig:q3_newflood_map}) the new inundation f
 
 Fig.~\ref{fig:q3_terrain} places those masks on the terrain. The 40$\times$32\,km window is the one with the densest new inundation. It contains 6.4\,km$^2$ of $F$ and 54.5\,km$^2$ of $W_0$, about a quarter and a fifth of the city totals. Every new pixel lies below 200\,m (median 58\,m) and follows the valley floor, whereas the eastern ridge rises to 710\,m and stays dry: the flood is a corridor phenomenon, not a sheet.
 
-Why the net increase is negative while new inundation is positive is answered by the water balance in Table~\ref{tab:q3_budget}.
+Table~\ref{tab:q3_budget} answers why the net increase is negative while new inundation is positive.
 
 \begin{table}[!ht]
 \centering
@@ -129,9 +129,9 @@ After MMU              &  24.53 &  9.79 &  26.90 & 10.08 & Net $A_{net}$     & $
 \end{tabular*}
 \end{table}
 
-The balance explains the negative net increase. SAR sees 79.4\,km$^2$ of water on 27 June that is gone by 16 July, three times the new inundation; 72.4\,km$^2$ of this recession lies outside every mapped source, under tree cover (49.4\,km$^2$) and cropland (16.7\,km$^2$), and the remaining 7.04\,km$^2$ is permanent channels and reservoirs. New water of 26.90 against 79.44 of recession gives $A_{net}=-52.54$ by \eqref{eq:net_identity}, a water-balance quantity rather than the size of the flood, and the two flood-time passes agree on the recession to 0.3\% (the literal $-153.19$ comes from the wider 4 July recession). Narrowing the baseline would move the sign: with static water bodies alone (143.4\,km$^2$), the 61.1\,km$^2$ still standing on 16 July would enter $F$ and $A_{new}$ would rise from 26.90 to about 88\,km$^2$, the failure the problem excludes by asking for pre-existing water first.
+The balance explains the negative net increase: SAR sees 79.4\,km$^2$ on 27 June that is gone by 16 July, three times the new inundation, 72.4\,km$^2$ of it outside every mapped source (49.4 under tree cover, 16.7 under cropland) and 7.04\,km$^2$ in permanent channels and reservoirs. New water of 26.90 against 79.44 of recession gives $A_{net}=-52.54$ by \eqref{eq:net_identity}, a water-balance quantity rather than the size of the flood; the two flood-time passes agree on the recession to 0.3\% (the literal $-153.19$ comes from the wider 4 July recession). Narrowing the baseline would move the sign: with static water bodies alone (143.4\,km$^2$), the 61.1\,km$^2$ still standing on 16 July would enter $F$ and raise $A_{new}$ from 26.90 to about 88\,km$^2$.
 
-On 16 July the cascade of \eqref{eq:F_hz} steps from 154.43\,km$^2$ raw to 26.90\,km$^2$ final, removing 82.6\% (83.3\% on 4 July), mostly permanent water that the model scores at 0.285 mean probability and $W_0$ excludes. What holds the Hengzhou estimate is the physics guards -- drainage, terrain, multi-date change -- evidence independent of the network.
+The cascade of \eqref{eq:F_hz} steps from 154.43\,km$^2$ raw to 26.90\,km$^2$ final on 16 July, removing 82.6\% (83.3\% on 4 July), mostly permanent water scored at 0.285 mean probability and excluded by $W_0$. What holds the Hengzhou estimate is the physics guards---drainage, terrain, multi-date change---evidence independent of the network.
 
 \subsection{Transfer Checks and Sensitivity}
 

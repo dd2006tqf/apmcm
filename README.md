@@ -8,10 +8,11 @@
 paper/                论文 LaTeX 源码与成品
   main.tex            主文件（标题页 / 摘要 / 10 节 / 建议信 / 参考文献 / 附录）
   sections/           1_introduction … 10_evaluation, Z_ai_disclosure
-  appendix/A_code.tex 代码结构与关键片段
-  references.bib      17 条参考文献
-  main.pdf            论文成品（49 页）
-  AI工具使用详情.pdf   按赛事第 7 条要求单独提交的 AI 使用说明（2 页）
+  appendix/A_code.tex 软件清单 + 五问核心代码（附录 A）
+  references.bib      文献元数据（17 条）
+  references.tex      成文参考文献（20 条，APMCM 格式：[J]/[C]/[CP/OL]/[EB/OL] + 卷期页/URL + 访问日期）
+  main.pdf            论文成品（53 页）
+  Aapmcm26300025ai.pdf 按赛事第 7 条要求单独提交的 AI 使用说明（2 页）
   ai_usage_detail.tex 该说明的源码
   apmcmthesis.cls/.cfg 官方模板
 code/                 Python 求解代码（详见 code/README.md）
@@ -60,10 +61,12 @@ python code/main.py --only 3 4 5                          # 复用 Q1/Q2 已有�
 
 ```bash
 cd paper
-xelatex main.tex && bibtex main && xelatex main.tex && xelatex main.tex
+xelatex main.tex && xelatex main.tex && xelatex main.tex
 ```
 
-环境：TeX Live / MiKTeX（XeLaTeX + ctex + 模板自带 `apmcmthesis.cls`）。结果为 45 页、0 错误、0 未定义引用。单独说明：`xelatex ai_usage_detail.tex` 两遍，产物即 `AI工具使用详情.pdf`。
+参考文献已改为 `references.tex` 里的手工条目（不再走 BibTeX，无需 `bibtex main`）；`main.bbl` 不再参与编译。
+
+环境：TeX Live / MiKTeX（XeLaTeX + ctex + 模板自带 `apmcmthesis.cls`）。结果为 53 页、0 错误、0 未定义引用。单独说明：`xelatex ai_usage_detail.tex` 两遍，产物即 `Aapmcm26300025ai.pdf`。
 
 ## 5. 论文数字与结果文件的对应
 

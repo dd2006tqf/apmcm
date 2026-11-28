@@ -1,13 +1,118 @@
-\section{Key Algorithm Code}
+\section{Software, Data and Source Code}
+\label{app:code}
 
-The complete, runnable code is organized as \texttt{config.py} (all parameters), \texttt{common.py} (pixel area, normalization, Lee filter, indices and features), \texttt{problem1.py} to \texttt{problem5.py}, \texttt{unet.py} and an independent audit script for the relief plans; \texttt{main.py} runs the chain. The excerpts below are the core routines referred to in the paper.
+% 附录代码统一用 8 pt 等宽字体，比正文 \small 更紧凑，避免源码把附录撑到十页
+\lstset{basicstyle={\footnotesize\ttfamily}}
 
-\subsection{Gated fusion network and area-consistent loss}
+\subsection{Software and Computing Environment}
+All computations were carried out in Python on a Windows workstation; Table~\ref{tab:software} lists the software, its version and the role it plays in the chain. The versions are the pinned ones under which the reported numbers were produced.
+
+\begin{table}[H]
+\centering
+\caption{Software used in this work}
+\label{tab:software}
+\small
+\begin{tabular}{p{0.255\textwidth}p{0.175\textwidth}p{0.45\textwidth}}
+\toprule
+Software & Version & Role \\
+\midrule
+Python & 3.11.9 & interpreter for all five problems \\
+NumPy / SciPy & 2.4.6 / 1.17.1 & arrays, spatial filters, FFT co-registration \\
+pandas & 2.3.3 & tabular results, unit and scenario tables \\
+GeoPandas / Shapely & 1.1.3 / 2.1.2 & Voronoi units, road graphs, clipping \\
+rasterio (GDAL) & 1.4.4 & GeoTIFF I/O, reprojection, COG streaming \\
+pyproj & 3.7.2 & WGS-84 and UTM 49N transforms \\
+scikit-image & 0.26.0 & Otsu thresholds, connected components \\
+scikit-learn & 1.8.0 & isotonic calibration, Gaussian mixture \\
+LightGBM & 4.6.0 & pixel classifier of Problem 1 (M0) \\
+PyTorch & 2.13.0 & dual-branch gated U-Net of Problem 2 \\
+PuLP with HiGHS & 3.3.0 + highspy & MILP of Problem 5, relative gap 0 \\
+Matplotlib & 3.8+ & all figures and panel layouts \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The complete implementation consists of 15 Python modules and 3,826 lines: \texttt{config.py} (all parameters), \texttt{common.py} (pixel area, normalization, Lee filter, features, metrics), \texttt{problem1.py}--\texttt{problem5.py}, \texttt{unet.py}, \texttt{network.py}, \texttt{q5\_audit.py}, \texttt{constraint\_audit.py}, \texttt{coreg\_official.py}, \texttt{fetch\_worldcover.py}, \texttt{main.py} and \texttt{summarize.py}. It is archived in the support materials together with the plotting scripts and the result files, and \texttt{python code/main.py} reproduces the chain end to end. The excerpts below reproduce the core routine of each problem from those files; comments and unchanged helper code are abridged.
+
+\subsection{Problem 1: blocked folds, pixel features and the LightGBM classifier}
+
+\begin{lstlisting}[language=Python]
+def build_folds(col, row, flood_share, seed=C.FOLD_SEED):
+    """Greedy stratified assignment of 5x5-tile blocks to 5 folds."""
+    B, K = C.BLOCK, C.N_FOLDS
+    bid = (col // B) * 10000 + (row // B)
+    ub, inv = np.unique(bid, return_inverse=True)
+    barea = np.bincount(inv, weights=flood_share)
+    bn = np.bincount(inv)
+    rng = np.random.default_rng(seed)
+    perm = rng.permutation(len(ub))
+    order = perm[np.argsort(-barea[perm], kind="stable")]
+    fa, fn = np.zeros(K), np.zeros(K)
+    fob = np.zeros(len(ub), int)
+    for b in order:
+        k = min(range(K), key=lambda k: (fn[k] / 200 + fa[k] / flood_share.sum() * 5))
+        fob[b] = k
+        fa[k] += barea[b]
+        fn[k] += bn[b]
+    return fob[inv], inv, len(ub)
+
+def feature_stack(z, zt, opt, m):
+    """19-channel pixel features; uses only the pixel's own tile."""
+    ndwi, ndvi, bri = optical_indices(opt, m)
+    f = np.zeros((len(FEATURES),) + z.shape, np.float32)
+    f[FI["z"]], f[FI["zt"]] = z, zt
+    for s in (3, 7, 15):
+        mu, var = local_stats(zt, s)
+        f[FI[f"zt_mean{s}"]], f[FI[f"zt_std{s}"]] = mu, np.sqrt(var)
+    f[FI["zt_min7"]] = ndi.minimum_filter(zt, 7)
+    f[FI["ndwi"]], f[FI["ndvi"]], f[FI["bri"]] = ndwi, ndvi, bri
+    f[FI["ndwi_mean7"]] = ndi.uniform_filter(ndwi, 7)
+    # four scaled bands, validity mask and the interaction z*(1-NDWI+) follow ...
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def train_lgb(tr_idx, cal_idx, seed):
+    rng = np.random.default_rng(seed)
+    Xtr, ytr = sample_pixels(tr_idx, C.LGB_PIX_PER_TILE, True, rng)
+    Xca, yca = sample_pixels(cal_idx, C.LGB_CAL_PIX_PER_TILE, False, rng)
+    clf = lgb.LGBMClassifier(objective="binary", n_jobs=8, verbose=-1, **C.LGB_PARAMS)
+    clf.fit(Xtr, ytr, eval_set=[(Xca, yca)], eval_metric="binary_logloss",
+            callbacks=[lgb.early_stopping(50, verbose=False)])
+    pca = clf.predict_proba(Xca)[:, 1]
+    tau, f1 = f1_threshold(pca, yca)
+    return clf, tau, f1, len(ytr), len(yca)
+
+def predict_tiles(clf, idx, tau, ids, model_name, prob_mm=None):
+    feats = mm("feats.f16", np.float16, (NT, NF, H, H))
+    V = mm("valid.u8", np.uint8, (NT, H, H))
+    for i in idx:
+        X = feats[i].reshape(NF, -1).T.astype(np.float32)
+        p = clf.predict_proba(X)[:, 1].reshape(H, H)
+        save_mask(model_name, ids[i], (p >= tau) & (V[i] > 0))
+\end{lstlisting}
+
+\subsection{Problem 2: gated fusion network, area loss, calibration and grading}
 
 \begin{lstlisting}[language=Python]
 class GatedFusionUNet(nn.Module):
     """SAR branch + optional optical branch; at each scale s the fused feature is
     h = g*h_S + (1-g)*h_O with g = sigmoid(W_g * [h_S; h_O]) (1x1 conv)."""
+    def __init__(self, c_sar=3, c_opt=7, widths=(16, 32, 64, 128), bottleneck=256, p_drop=0.2):
+        super().__init__()
+        self.use_opt = c_opt > 0
+        self.enc_s = Encoder(c_sar, widths)
+        if self.use_opt:
+            self.enc_o = Encoder(c_opt, widths)
+            self.gates = nn.ModuleList([nn.Conv2d(2 * w, w, 1) for w in widths])
+        self.bott = block(widths[-1], bottleneck)
+        self.drop = nn.Dropout2d(p_drop)
+        self.dec = nn.ModuleList()
+        c = bottleneck
+        for w in reversed(widths):
+            self.dec.append(block(c + w, w))
+            c = w
+        self.head = nn.Conv2d(widths[0], 1, 1)
+
     def forward(self, x_sar, x_opt=None, return_gates=False):
         hs = self.enc_s(x_sar)
         if self.use_opt:
@@ -27,7 +132,7 @@ class GatedFusionUNet(nn.Module):
         return (out, gvals) if return_gates else out
 
 def flood_loss(logit, y, valid, lam_area=1.0, gamma=2.0, alpha1=0.75):
-    """Focal + soft Dice + lambda_A * area consistency, valid pixels only."""
+    """Focal + soft Dice + lambda_A * area-consistency, valid pixels only."""
     v = valid.float(); p = torch.sigmoid(logit); yf = y.float()
     pt = torch.where(yf > 0.5, p, 1 - p).clamp(1e-6, 1 - 1e-6)
     at = torch.where(yf > 0.5, torch.full_like(p, alpha1), torch.full_like(p, 1 - alpha1))
@@ -39,11 +144,18 @@ def flood_loss(logit, y, valid, lam_area=1.0, gamma=2.0, alpha1=0.75):
     return focal + dice + lam_area * area
 \end{lstlisting}
 
-\subsection{Area-preserving threshold}
-
 \begin{lstlisting}[language=Python]
+def fit_isotonic(pbar, y, valid, seed, n=2_000_000):
+    vi = torch.nonzero(valid.reshape(-1) > 0).squeeze(1)
+    g = torch.Generator(device=vi.device).manual_seed(seed)
+    sel = vi[torch.randperm(len(vi), generator=g, device=vi.device)[:n]]
+    x = pbar.reshape(-1)[sel].cpu().numpy().astype(np.float64)
+    t = y.reshape(-1)[sel].cpu().numpy().astype(np.float64)
+    iso = IsotonicRegression(y_min=0, y_max=1, out_of_bounds="clip", increasing=True).fit(x, t)
+    return iso
+
 def area_preserving_tau(pbar, wA, expected, lo=0.01, hi=0.99, tol=1e-4):
-    """bisection: sum a*1[p>=tau] = sum a*q(p); left side non-increasing in tau."""
+    """Bisection: sum a*1[p>=tau] = sum a*q(p); left side non-increasing in tau."""
     def f(t):
         return float((wA * (pbar >= t)).sum()) - expected
     if f(lo) < 0 or f(hi) > 0:
@@ -56,78 +168,163 @@ def area_preserving_tau(pbar, wA, expected, lo=0.01, hi=0.99, tol=1e-4):
             hi = mid
     t = lo if abs(f(lo)) <= abs(f(hi)) else hi
     return t, f(t) + expected
-\end{lstlisting}
 
-\subsection{Grade thresholds and grade probabilities}
-
-\begin{lstlisting}[language=Python]
-def gmm_thresholds(x, seed=2026, n_init=20, K=4):
-    """Bayes boundaries between adjacent components of a K-component 1-D GMM on logit(rho)."""
-    g = GaussianMixture(n_components=K, covariance_type="full", n_init=n_init,
-                        random_state=seed).fit(x[:, None])
-    order = np.argsort(g.means_.ravel())
-    mu = g.means_.ravel()[order]; sd = np.sqrt(g.covariances_.ravel()[order]); pi = g.weights_[order]
-    th = []
-    for j in range(K - 1):
-        fun = lambda t: (np.log(pi[j]) + norm.logpdf(t, mu[j], sd[j])
-                         - np.log(pi[j + 1]) - norm.logpdf(t, mu[j + 1], sd[j + 1]))
-        a, b = mu[j], mu[j + 1]
-        if not (fun(a) > 0 and fun(b) < 0):
-            return None, dict(mu=mu, sd=sd, pi=pi)
-        th.append(brentq(fun, a, b))
-    theta = 1 / (1 + np.exp(-np.array(th)))
-    ok = bool(np.all(np.diff(theta) > 0) and theta[0] > 0 and theta[-1] < 1)
-    return (theta if ok else None), dict(mu=mu, sd=sd, pi=pi, bic=g.bic(x[:, None]))
-
-def mc_grades(Ahat, sigp, Areg, resid_pool, boot_theta, M=2000, seed=2026):
-    """grade probabilities pi_jg for units j (one shared residual per draw)."""
+def mc_grades(Ahat, sigp, Areg, resid_pool, boot_theta, M=C.MC_GRADE, seed=C.SEED):
+    """Grade probabilities pi_jg for units j (one shared residual per draw)."""
     rng = np.random.default_rng(seed)
     r = rng.choice(resid_pool, M, replace=True)
     th = boot_theta[rng.integers(0, len(boot_theta), M)]
     A = np.clip(Ahat[:, None] + r[None, :] * sigp[:, None], 0, Areg[:, None])
     rho = A / Areg[:, None]
     g = 1 + (rho[:, :, None] >= th[None, :, :]).sum(2)
-    return np.stack([(g == gg).mean(1) for gg in (1, 2, 3, 4)], 1)
+    pi = np.stack([(g == gg).mean(1) for gg in (1, 2, 3, 4)], 1)
+    return pi
 \end{lstlisting}
 
-\subsection{Guarded newly inundated set in Hengzhou}
+\subsection{Problem 3: co-registration, physics guards and the final sets}
 
 \begin{lstlisting}[language=Python]
-def compute_F(meta, date, tauA, dtau=0.0, hstar=15.0, delta=3.0, w0mode="union", mmu=50, scale="db"):
+def coreg_shift(raw, ref, k=4, n_pts=120_000):
+    """Integer (dr, dc) maximizing SAR darkness on the permanent-water reference:
+    FFT cross-correlation on a 4x decimated grid, then a +-6 px refinement."""
+    rng = np.random.default_rng(C.SEED)
+    rr, cc = np.nonzero(ref)
+    sel = rng.choice(len(rr), min(n_pts, len(rr)), replace=False)
+    rr, cc = rr[sel], cc[sel]
+    a = ref[::k, ::k].astype(float)
+    b = (np.nan_to_num(np.asarray(raw[::k, ::k]), nan=0) < -15).astype(float)
+    a, b = a - a.mean(), b - b.mean()
+    c = np.fft.irfft2(np.fft.rfft2(a) * np.conj(np.fft.rfft2(b)), s=a.shape)
+    i, j = np.unravel_index(np.argmax(c), c.shape)
+    i = i if i < a.shape[0] // 2 else i - a.shape[0]
+    j = j if j < a.shape[1] // 2 else j - a.shape[1]
+    cands = [(sr * i * k, sc * j * k) for sr in (1, -1) for sc in (1, -1)]
+    dr0, dc0 = max(cands, key=lambda t: water_hit(raw, rr, cc, *t))
+    best = max(((dr0 + x, dc0 + y) for x in range(-6, 7) for y in range(-6, 7)),
+               key=lambda t: water_hit(raw, rr, cc, *t))
+    return dict(dr=int(best[0]), dc=int(best[1]), score_before=water_hit(raw, rr, cc, 0, 0),
+                score_after=water_hit(raw, rr, cc, *best))
+
+def compute_F(meta, date, tauA, dtau=0.0, hstar=C.REM_MAX, delta=C.DELTA_DB,
+              w0mode=C.W0_MODE, mmu=C.MMU_PX_S1, scale="db", want_stages=False):
     """F_d = MMU( {p>=tau_A+dtau} & ~W0 & {REM<=h*} & {dVV<=-delta} ) inside the boundary."""
-    # ... memory-mapped rasters: PB (mean probability), W0, boundary bm, Lee-filtered VV, REM ...
+    shape = tuple(meta["shape"]); Hh, Ww = shape
+    PB = mmap(f"pbar_{date}_{scale}.f2", np.float16, shape)
+    W0 = mmap("W0_union.u1" if w0mode == "union" else "W0_sar.u1", np.uint8, shape)
+    bm = mmap("boundary.u1", np.uint8, shape)
+    lf_d, lf_0 = mmap(f"vvlee_{date}.f4", np.float32, shape), mmap(f"vvlee_{C.PRE_DATE}.f4", np.float32, shape)
+    A = area_raster(meta)
+    rem30 = np.load(CQ3 / "rem30.npy")
+    cand = np.zeros(shape, bool); stages = np.zeros(4)
     for r in range(0, Hh, 512):
         sl = slice(r, min(r + 512, Hh))
-        raw = (PB[sl] >= tauA + dtau) & (bm[sl] > 0)
-        c1 = raw & (W0[sl] == 0)                                   # not pre-flood water
+        inb = bm[sl] > 0
+        raw = (PB[sl] >= tauA + dtau) & inb
+        a = A[sl]
+        c1 = raw & (W0[sl] == 0)
         rem = rem10_strip(rem30, r, sl.stop - r, Ww)
-        c2 = c1 & (np.nan_to_num(rem, nan=1e9) <= hstar)           # REM guard
+        c2 = c1 & (np.nan_to_num(rem, nan=1e9) <= hstar)
         dvv = np.nan_to_num(lf_d[sl] - lf_0[sl], nan=0.0)
-        cand[sl] = c2 & (dvv <= -delta)                            # change guard
-    return U.mmu_filter(cand, mmu) if mmu > 1 else cand            # minimum mapping unit
+        c3 = c2 & (dvv <= -delta)
+        cand[sl] = c3
+        if want_stages:
+            stages += [float(a[raw].sum()), float(a[c1].sum()), float(a[c2].sum()), float(a[c3].sum())]
+    F = U.mmu_filter(cand, mmu) if mmu > 1 else cand
+    return (F, stages) if want_stages else F
+
+def water_states(f, w0, d0, dd):
+    """W1 and receded water R with observed recession only."""
+    R = w0 & d0 & ~dd & ~f
+    W1 = f | (w0 & ~R)
+    return W1, R
 \end{lstlisting}
 
-\subsection{Depot-activation and allocation MILP}
+\subsection{Problem 4: combined weights and the TOPSIS index}
 
 \begin{lstlisting}[language=Python]
-def build(obj):
-    m = pulp.LpProblem("relief", pulp.LpMinimize)
-    eta = {i: pulp.LpVariable(f"eta_{i}", cat=pulp.LpBinary) for i in range(nI)}
-    f = {(i, j): pulp.LpVariable(f"f_{i}_{j}", lowBound=0) for (i, j) in A}
-    u = {j: pulp.LpVariable(f"u_{j}", lowBound=0) for j in range(nJ)}
-    f1 = pulp.lpSum(w[j] * u[j] for j in range(nJ)) * (1.0 / Wd)
-    f2 = pulp.lpSum(w[j] * tt[i, j] * f[i, j] for (i, j) in A) * (1.0 / Wd)
-    for j in range(nJ):                                   # demand balance
-        m += pulp.lpSum(byj.get(j, [])) + u[j] == d[j]
-    for i in range(nI):                                   # capacity, open depots only
-        m += pulp.lpSum(byi.get(i, [])) <= cap[i] * eta[i]
-        if not cand["admissible"].iloc[i]:               # depots near F stay closed
-            m += eta[i] == 0
-    for (i, j) in A:                                      # valid tightening
-        m += f[i, j] <= d[j] * eta[i]
-    m += pulp.lpSum(eta.values()) <= p["K"]               # at most K open depots
-    m += pulp.lpSum((2 * tt[i, j] + p["t_load"]) / p["q_veh"] * f[i, j] for (i, j) in A) \
-        <= 60 * p["n_veh"] * p["shift"] * p["H"]          # fleet vehicle-minutes
-    return m, eta, f, u, f1, f2
-# lexicographic: min f1, then min f2 s.t. f1 <= f1* + 1e-6; HiGHS with gapRel = 0
+def entropy_w(R):
+    n = R.shape[0]
+    P = R / np.where(R.sum(0) > 0, R.sum(0), 1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        e = -np.nansum(np.where(P > 0, P * np.log(P), 0), 0) / np.log(n)
+    d = 1 - e
+    return d / d.sum()
+
+def critic_w(R):
+    s = R.std(0, ddof=1)
+    cr = np.nan_to_num(np.atleast_2d(np.corrcoef(R, rowvar=False)), nan=0.0)
+    c = s * (1 - cr).sum(1)
+    return c / c.sum() if c.sum() > 0 else np.full(R.shape[1], 1 / R.shape[1])
+
+def game_combine(we, wc):
+    A = np.array([[we @ we, we @ wc], [wc @ we, wc @ wc]])
+    b = np.array([we @ we, wc @ wc])
+    try:
+        al = np.linalg.solve(A, b)
+    except np.linalg.LinAlgError:
+        al = np.array([0.5, 0.5])
+    w = (abs(al[0]) * we + abs(al[1]) * wc) / (abs(al[0]) + abs(al[1]))
+    return w / w.sum(), al
+
+def ahp():
+    J = np.array([[1, 2, 3], [1 / 2, 1, 2], [1 / 3, 1 / 2, 1]])
+    vals, vecs = np.linalg.eig(J)
+    k = np.argmax(vals.real)
+    w = np.abs(vecs[:, k].real); w /= w.sum()
+    lam = vals[k].real
+    return w, lam, (lam - 3) / 2 / 0.58
+
+def topsis(R, w):
+    V = R * w
+    vp, vm = V.max(0), V.min(0)
+    dp = np.sqrt(((V - vp) ** 2).sum(1)); dm = np.sqrt(((V - vm) ** 2).sum(1))
+    return np.where(dp + dm > 0, dm / (dp + dm), 0.0)
+\end{lstlisting}
+
+\subsection{Problem 5: lexicographic location--allocation MILP}
+
+\begin{lstlisting}[language=Python]
+def solve(inp, stage="lex", eps=None, fix_eta=None, time_limit=300):
+    p, dem, cand, tt, cap = inp["p"], inp["dem"], inp["cand"], inp["tt"], inp["cap"]
+    nI, nJ = tt.shape
+    d, w = dem["d"].values, dem["w"].values
+    Wd = float((w * d).sum())
+    A = [(i, j) for i in range(nI) for j in range(nJ) if tt[i, j] <= p["t_max"]]
+
+    def build(obj):
+        m = pulp.LpProblem("relief", pulp.LpMinimize)
+        eta = {i: pulp.LpVariable(f"eta_{i}", cat=pulp.LpBinary) for i in range(nI)}
+        f = {(i, j): pulp.LpVariable(f"f_{i}_{j}", lowBound=0) for (i, j) in A}
+        u = {j: pulp.LpVariable(f"u_{j}", lowBound=0) for j in range(nJ)}
+        f1 = pulp.lpSum(w[j] * u[j] for j in range(nJ)) * (1.0 / Wd)
+        f2 = pulp.lpSum(w[j] * tt[i, j] * f[i, j] for (i, j) in A) * (1.0 / Wd)
+        byj, byi = {}, {}
+        for (i, j) in A:
+            byj.setdefault(j, []).append(f[i, j]); byi.setdefault(i, []).append(f[i, j])
+        for j in range(nJ):                                              # demand balance
+            m += pulp.lpSum(byj.get(j, [])) + u[j] == d[j], f"bal_{j}"
+        for i in range(nI):                                              # capacity, open depots only
+            m += pulp.lpSum(byi.get(i, [])) <= cap[i] * eta[i], f"cap_{i}"
+            if not cand["admissible"].iloc[i]:
+                m += eta[i] == 0, f"excl_{i}"
+        for (i, j) in A:                                                 # valid tightening
+            m += f[i, j] <= d[j] * eta[i], f"tight_{i}_{j}"
+        m += pulp.lpSum(eta.values()) <= p["K"], "K"
+        m += pulp.lpSum((2 * tt[i, j] + p["t_load"]) / p["q_veh"] * f[i, j] for (i, j) in A) \
+            <= 60 * p["n_veh"] * p["shift"] * p["H"], "fleet"
+        return m, eta, f, u, f1, f2
+
+    def run(m):
+        m.solve(pulp.HiGHS(msg=False, timeLimit=time_limit, gapRel=0, threads=1))
+        return pulp.LpStatus[m.status]
+
+    # lexicographic: stage 1 min f1, stage 2 min f2 s.t. f1 <= f1* + 1e-6
+    m, eta, f, u, f1, f2 = build(None)
+    m.setObjective(f1); run(m); f1s = pulp.value(f1)
+    m, eta, f, u, f1, f2 = build(None)
+    m += f1 <= f1s + 1e-6, "lex"
+    m.setObjective(f2); run(m)
+    return dict(f1=pulp.value(f1), f2=pulp.value(f2),
+                eta=[int(round(eta[i].value() or 0)) for i in range(nI)],
+                gap=0.0)
 \end{lstlisting}

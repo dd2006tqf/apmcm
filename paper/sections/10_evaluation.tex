@@ -31,9 +31,7 @@ Area moves with terrain and thresholds, 1.57--79.52\,km$^2$ over the grid; decis
 
 \subsection{Strengths and Innovations}
 
-Validation is spatially blocked with a buffer, every tuning step uses a separate calibration fold, and leave-one-cluster-out leaves IoU 0.508, so every number here is a held-out estimate. One raster $F$ supplies the hazard, the cut network, demand and priority, and the MILP returns optimal with zero gap on every run. At town-centre resolution relief is limited by isolation, and that holds under every assumption tested.
-
-Every choice that could have peeked at the test tiles was made on the calibration fold. The label audit came first: all 65.5\,M valid pixels mark new inundation, not post-flood water. The network learns $F$ directly while Problem~3 subtracts an independent $W_0$, so permanent water never enters the target. Segmentation usually cuts at 0.5 or the F1 optimum; here the mask area matches the calibrated expected area \eqref{eq:tauA}, with a conformal interval on every tile. M6 closes at $+1.45\%$ against $+4.1\%$ uncalibrated, network untouched; uncalibrated M2+MMU reaches $+0.9\%$ but states no interval. Grades sit on mixture boundaries with bootstrap intervals, so a grade is a probability vector \eqref{eq:grade_mc}. The raster enters relief twice, which makes the next satellite pass worth 3.9 points of unmet share.
+Every number here is held out: validation is spatially blocked, tuning uses separate calibration folds, and leave-one-cluster-out leaves IoU 0.508. One raster $F$ supplies the hazard, the cut network, demand and priority, and the MILP closes with zero gap on every run. No step peeked at the test tiles: the mask is cut where its area matches the calibrated expectation \eqref{eq:tauA}, with a conformal interval on every tile, not at 0.5 or the F1 optimum; grades sit on mixture boundaries, so a grade is a probability vector \eqref{eq:grade_mc}; and because the raster enters relief twice, a second satellite pass is worth 3.9 points of unmet share.
 
 \subsection{Conclusions}
 

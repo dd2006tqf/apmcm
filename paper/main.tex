@@ -11,12 +11,12 @@
 % 类文件默认在节号中插入 \thinspace，标题会显示成“4 . 1”，此处收紧为标准点号
 \renewcommand\thesubsection{\arabic{section}.\arabic{subsection}}
 \renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}
-% 节号统一为阿拉伯数字，使标题、目录条目与 \ref 三者一致（类文件原用罗马数字标节）
+% 节标题恢复模板的罗马数字（I. II. …），目录条目随 \thesection 自动同步；小节号仍为 4.1 式
+\renewcommand{\thesection}{\Roman{section}}
 \titleformat{\section}{\centering\normalfont\Large\bfseries}{\thesection.}{.5em}{}
-% 目录只列到节（一级），单页；小节结构仍可在 PDF 书签中展开
-\setcounter{tocdepth}{1}
-% 一级条目之间加 9 pt 间距，使单页目录的版心不至于过于拥挤
-\titlecontents{section}[0pt]{\bfseries\addvspace{9pt}}{{\thecontentslabel}.\enspace}{}{\titlerule*[0.5pc]{.}\contentspage}
+% 目录列到小节（二级），条目用 8.5 pt 正文压缩，使全部 60 条压在一页内
+\setcounter{tocdepth}{2}
+\titlecontents{section}[0pt]{\bfseries\addvspace{2pt}}{{\thecontentslabel}.\enspace}{}{\titlerule*[0.5pc]{.}\contentspage}
 % 引用改为小号上标（原来方括号与正文同字号，显得过大）
 \makeatletter
 \def\@cite#1#2{\textsuperscript{\scriptsize[#1\if@tempswa , #2\fi]}}
@@ -74,7 +74,8 @@ Sensitivity tests across the terrain guard, the probability threshold and the wa
 \end{abstract}
 
 \newpage
-\tableofcontents
+{\fontsize{9}{10}\selectfont\lineskiplimit=-\maxdimen\setlength{\baselineskip}{10pt}
+\tableofcontents}
 \newpage
 
 % === Body ===

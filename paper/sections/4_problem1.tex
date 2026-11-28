@@ -168,7 +168,7 @@ Each held-out tile carries label-free descriptors (raw SAR mean and standard dev
   \label{fig:q1_error_drivers}
 \end{figure}
 
-Panel (B) ranks them by mean $|\mathrm{SHAP}|$: raw SAR standard deviation first (0.196), then tree share (0.077), flood boundary density (0.074), ENL (0.073), NDVI mean (0.057), bimodality share (0.050) and pre-flood water share (0.045). High SAR variance with low ENL means speckle and mixed scattering, tree share is the false-alarm mechanism of Table~\ref{tab:q1_fpfn}, and high boundary density means fragmented flood. Panel (A) puts the same drivers against the FP/FN bars and the net error of M6: once the error is signed the order changes, reference flood share first, and the model over-estimates lightly flooded tiles while under-estimating heavily flooded ones.
+Panel (B) ranks them by mean $|\mathrm{SHAP}|$: raw SAR standard deviation first (0.196), then tree share (0.077) and flood boundary density (0.074). High SAR variance with low ENL means speckle, tree share is the false-alarm mechanism of Table~\ref{tab:q1_fpfn}, and high boundary density means fragmented flood. Panel (A) puts the same drivers against the FP/FN bars: once the error is signed the order changes, reference flood share first, and the model over-estimates lightly flooded tiles while under-estimating heavily flooded ones.
 
 Holding out a whole cluster is harder: training on three and testing on the fourth lowers pooled IoU from 0.598 to 0.508 and F1 from 0.749 to 0.674, with a cluster RAE of $+26\%$ on the 512-tile cluster and $+15\%$ on the 450-tile one; an unseen region thus costs 0.09 IoU and adds a positive area bias, which Problem~3 faces in Guangxi.
 

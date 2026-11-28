@@ -44,7 +44,7 @@ At 1\,km the two fields separate rather than co-vary (Fig.~\ref{fig:q4_grid1km})
 
 \subsection{Combined Weights and the TOPSIS Index}
 
-Indicators are min--max normalized over units, $r_{jk}=(X_{jk}-\min_jX_{jk})/(\max_jX_{jk}-\min_jX_{jk})$. Inside each criterion two objective weightings are combined. Entropy weights $w^e_k\propto1-e_k$ with $e_k=-\frac{1}{\ln n}\sum_j\tilde r_{jk}\ln\tilde r_{jk}$ and $\tilde r_{jk}=r_{jk}/\sum_jr_{jk}$ reward discrimination between units. CRITIC weights~\cite{diakoulaki1995critic} $w^c_k\propto s_k\sum_l(1-\mathrm{corr}_{kl})$ reward variation that is not redundant. The game-theoretic combination chooses the mix closest to both:
+Indicators are min--max normalized over units, $r_{jk}=(X_{jk}-\min_jX_{jk})/(\max_jX_{jk}-\min_jX_{jk})$. Inside each criterion two objective weightings are combined. Entropy weights $w^e_k\propto1-e_k$ with $e_k=-\frac{1}{\ln n}\sum_j\tilde r_{jk}\ln\tilde r_{jk}$ and $\tilde r_{jk}=r_{jk}/\sum_jr_{jk}$ reward discrimination; CRITIC weights~\cite{diakoulaki1995critic} $w^c_k\propto s_k\sum_l(1-\mathrm{corr}_{kl})$ reward non-redundant variation. The game-theoretic combination chooses the mix closest to both:
 \begin{equation}
 \begin{bmatrix}w^e\!\cdot\!w^e & w^e\!\cdot\!w^c\\ w^c\!\cdot\!w^e & w^c\!\cdot\!w^c\end{bmatrix}
 \begin{bmatrix}\alpha_1\\ \alpha_2\end{bmatrix}=
@@ -52,19 +52,19 @@ Indicators are min--max normalized over units, $r_{jk}=(X_{jk}-\min_jX_{jk})/(\m
 w^{(c)}=\frac{|\alpha_1|w^e+|\alpha_2|w^c}{|\alpha_1|+|\alpha_2|}.
 \label{eq:game_weights}
 \end{equation}
-For the hazard criterion, entropy gives (0.477, 0.404, 0.119) and CRITIC (0.320, 0.273, 0.407), and the combination with $\alpha=(0.767,0.303)$ gives (0.432, 0.367, 0.201). Between criteria we use a judgment that follows the problem text, hazard as core, exposure second, response third, through the AHP matrix
+For the hazard criterion the combination uses $\alpha=(0.767,0.303)$. Between criteria we use a judgment that follows the problem text, hazard as core, exposure second, response third, through the AHP matrix
 \begin{equation}
 J=\begin{bmatrix}1&2&3\\ 1/2&1&2\\ 1/3&1/2&1\end{bmatrix},\qquad
 \Omega=\text{principal eigenvector of }J,\qquad
 \mathrm{CR}=\frac{(\lambda_{max}-3)/2}{0.58},
 \label{eq:ahp}
 \end{equation}
-which gives $\Omega=(0.540,0.297,0.163)$ with $\lambda_{max}=3.0092$ and $\mathrm{CR}=0.0079<0.1$. The final weights $w_k=\Omega_{c(k)}w^{(c(k))}_k$ sum to one and are listed in Table~\ref{tab:q4_ind}. The three core hazard indicators carry 0.539 of the total weight. The disaster index is the TOPSIS closeness on $v_{jk}=w_kr_{jk}$,
+which gives $\Omega=(0.540,0.297,0.163)$ with $\lambda_{max}=3.0092$ and $\mathrm{CR}=0.0079<0.1$. The final weights $w_k=\Omega_{c(k)}w^{(c(k))}_k$ sum to one and are listed in Table~\ref{tab:q4_ind}. The disaster index is the TOPSIS closeness on $v_{jk}=w_kr_{jk}$,
 \begin{equation}
 S_j=\frac{D^-_j}{D^+_j+D^-_j},\qquad D^\pm_j=\big\lVert v_j-v^\pm\big\rVert_2,\qquad v^+_k=\max_jv_{jk},\ v^-_k=\min_jv_{jk},
 \label{eq:topsis}
 \end{equation}
-so $S_j=1$ for a unit at the worst observed value of every indicator. Four disaster levels (I most severe) are formed by Jenks natural breaks of $S_j$. Zones are scored analogously from aggregated indicators.
+so $S_j=1$ at the worst value of every indicator. Four disaster levels (I most severe) are formed by Jenks natural breaks of $S_j$. Zones are scored analogously from aggregated indicators.
 
 \subsection{Spatial Pattern of Disaster Severity}
 

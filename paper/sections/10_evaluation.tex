@@ -27,11 +27,11 @@ Road buffer (Q5) & 0 / 20 / 50\,m & $f_1^*$ 0.564 / 0.570 / 0.650 \\
 \end{tabular}
 \end{table}
 
-Area moves with terrain and thresholds, 1.57--79.52\,km$^2$ over the grid; decisions do not. The grade stays ``general'', the 16 July ranking keeps Spearman at least 0.889, and the plan moves only with flooded roads, 0.564 without a buffer against 0.650 at 50\,m. The one large ranking change, 0.662, is the 4 July image: new information, not a modeling choice.
+Area moves with terrain and thresholds, 1.57--79.52\,km$^2$ over the grid; decisions do not. The grade stays ``general'', the 16 July ranking keeps Spearman at least 0.889, and the plan moves only with flooded roads, 0.564 without a buffer against 0.650 at 50\,m.
 
 \subsection{Strengths and Innovations}
 
-Every number here is held out: validation is spatially blocked, tuning uses separate calibration folds, and leave-one-cluster-out leaves IoU 0.508. One raster $F$ supplies the hazard, the cut network, demand and priority, and the MILP closes with zero gap on every run. No step peeked at the test tiles: the mask is cut where its area matches the calibrated expectation \eqref{eq:tauA}, with a conformal interval on every tile, not at 0.5 or the F1 optimum; grades sit on mixture boundaries, so a grade is a probability vector \eqref{eq:grade_mc}; and because the raster enters relief twice, a second satellite pass is worth 3.9 points of unmet share.
+Every number is held out: validation is spatially blocked, calibration folds are kept separate, and leave-one-cluster-out leaves IoU 0.508. One raster $F$ supplies hazard, cut network, demand and priority, and the MILP closes with zero gap. The mask is cut at the calibrated area \eqref{eq:tauA}, not at 0.5 or the F1 optimum, with a conformal interval on every tile; grades are probability vectors \eqref{eq:grade_mc}; and a second satellite pass is worth 3.9 points of unmet share.
 
 \subsection{Conclusions}
 

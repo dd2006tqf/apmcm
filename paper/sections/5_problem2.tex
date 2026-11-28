@@ -3,7 +3,7 @@
 
 \subsection{Inherited Settings and New Components}
 
-Nothing in Problem~2 starts from zero. The preprocessing, the folds \eqref{eq:folds}, the metrics \eqref{eq:area_metrics} and the land-cover strata carry over from Problem~1 unchanged; every number below can be read against Table~\ref{tab:q1_metrics} on the same 1000 held-out tiles (all variants share one test-tile hash). What changes answers the four diagnoses of Section~\ref{sec:q1}, one component each. Fragmented flood and isolated dark surfaces need spatial context, which a pixel classifier does not have; the classifier gives way to a convolutional network. Dark fields and permanent ponds need the pre-flood optical state, which enters through gated feature fusion. An area-aware loss during training, followed by an area calibration, answers the positive total bias. Tile-level intervals carry the uncertainty into the grading, where it has to survive the transfer. Hengzhou adds a fifth requirement no component above provides: the model must run when the optical input is missing.
+Problem~2 keeps the preprocessing, folds \eqref{eq:folds}, metrics \eqref{eq:area_metrics} and land-cover strata of Problem~1 on the same 1000 held-out tiles, so every number below reads against Table~\ref{tab:q1_metrics}. Each diagnosis of Section~\ref{sec:q1} gets one component: a convolutional network for spatial context, gated optical fusion against dark fields and ponds, an area-aware loss with area calibration against the positive bias, and tile intervals that carry uncertainty into the grading. Hengzhou adds a fifth requirement: the model must run without optics.
 
 \subsection{Dual-Branch Gated Fusion Network}
 

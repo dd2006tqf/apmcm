@@ -126,7 +126,7 @@ Two questions remain: is the plan a reasonable coverage--speed compromise, and d
 
 Panel (A) runs from the recommended plan $(0.570,13.05\ \mathrm{min})$, 7316 people served, to $(1,0)$ with nothing delivered. Its knee lies at $k=3$ ($f_1=0.662$, $f_2=4.79$\,min, 5195 served): 9 points more unmet need buys a 63\% cut in delivery time. As the problem stresses urgent need, we keep the coverage-first plan and report the knee as the alternative when speed matters, for instance for medical supplies.
 
-Two solves measure the update. On the 4 July inputs the plan opens Xiaoyi, Yunbiao, Liujing, Zhenlong, Hengzhou Town and the Gaocun school and reaches $f_1=0.477$; keeping those depots but re-optimizing shipments against the 16 July cut network gives $f_1=0.609$, $f_2=12.43$\,min and 6775 served. The value of information is
+Two solves measure the update. On the 4 July inputs the plan opens six different depots and reaches $f_1=0.477$; keeping those depots but re-optimizing shipments against the 16 July cut network gives $f_1=0.609$, $f_2=12.43$\,min and 6775 served. The value of information is
 \begin{equation}
 \begin{split}
 \mathrm{VoI}_1&=f_1^{04\to16}-f_1^{*,16}=0.609-0.570=0.039,\\
@@ -134,7 +134,7 @@ Two solves measure the update. On the 4 July inputs the plan opens Xiaoyi, Yunbi
 \end{split}
 \label{eq:voi}
 \end{equation}
-Re-planning with the 16 July image lowers the weighted unmet share by 3.9 points, or delivers 5.54\,min faster at equal coverage. Read as two stages, 4 July is the first stage and 16 July the recourse a real operation would run; a frozen plan loses at least 3.9 points and 5.5\,min, since re-optimizing shipments alone already leaves 0.609. The tail sits in the depot set: the two open sets share half their members (Jaccard 0.50), demand changes by $-3.57$\,t, and 677 pairs are lost while 625 are gained. That is what the next satellite pass is worth.
+Re-planning with the 16 July image lowers the weighted unmet share by 3.9 points, or delivers 5.54\,min faster at equal coverage; read as two stages, 4 July first and 16 July the recourse. The tail sits in the depot set: the two open sets share half their members (Jaccard 0.50), demand changes by $-3.57$\,t, and 677 pairs are lost while 625 are gained. That is what the next satellite pass is worth.
 
 Inputs can also move under a frozen plan---six depots fixed, shipments re-optimized---across 600 scenarios that perturb demand and the network: Fig.~\ref{fig:q5_cvar} plots every scenario, Table~\ref{tab:q5_cvar} its family statistics.
 
